@@ -415,7 +415,7 @@
       const u = new SpeechSynthesisUtterance(text);
       u.lang  = "zh-CN";
       u.voice = selectedZhVoice;
-      u.rate  = 0.65;
+      u.rate  = 0.8;
       u.pitch = 1.0;
 
       window.speechSynthesis.speak(u);
@@ -431,7 +431,7 @@
         const u = new SpeechSynthesisUtterance(text);
         u.lang  = "zh-CN";
         u.voice = selectedZhVoice;
-        u.rate  = 0.65;
+        u.rate  = 0.8;
         u.pitch = 1.0;
 
         u.onend = () => {
