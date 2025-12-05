@@ -48,7 +48,6 @@
       box-shadow: 0 0 0 2px #ffedd5 inset;
     }
 
-
     .card {
       background: #ffffff;
       border-radius: 20px;
@@ -319,36 +318,86 @@
   <div id="content"></div>
 
   <script>
-    /* ===== 공통: 중국어 음성 ===== */
-    function speakChineseOnce(text) {
+    /* ===== 공통: 중국어 음성 (TTS) 설정 ===== */
+
+    let zhVoices = [];
+    let selectedZhVoice = null;
+
+    function loadZhVoices() {
+      if (!("speechSynthesis" in window)) return;
+
+      const voices = window.speechSynthesis.getVoices();
+      zhVoices = voices.filter(v =>
+        (v.lang && v.lang.toLowerCase().startsWith("zh")) ||
+        (v.lang && v.lang.toLowerCase().includes("hans")) ||
+        (v.name && v.name.toLowerCase().includes("chinese"))
+      );
+
+      // 우선순위: zh-CN -> 그 외 중국어
+      selectedZhVoice =
+        zhVoices.find(v => v.lang && v.lang.toLowerCase() === "zh-cn") ||
+        zhVoices[0] ||
+        null;
+    }
+
+    if ("speechSynthesis" in window) {
+      loadZhVoices();
+      window.speechSynthesis.onvoiceschanged = loadZhVoices;
+    }
+
+    function ensureChineseVoice() {
       if (!("speechSynthesis" in window)) {
         alert("브라우저가 음성 재생을 지원하지 않아요.");
-        return;
+        return false;
       }
-      speechSynthesis.cancel();
+      if (!selectedZhVoice) {
+        alert(
+          "기기에서 중국어 음성을 찾지 못했어요.\n" +
+          "휴대폰/컴퓨터 설정에서 '중국어(Chinese, China / 普通话)' 음성을 설치하고,\n" +
+          "텍스트 읽기(TTS) 기본 음성으로 설정해 주세요."
+        );
+        return false;
+      }
+      return true;
+    }
+
+    function speakChineseOnce(text) {
+      if (!ensureChineseVoice()) return;
+
+      window.speechSynthesis.cancel();
+
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = "zh-CN";
-      u.rate = 0.65;
-      speechSynthesis.speak(u);
+      u.lang  = "zh-CN";
+      u.voice = selectedZhVoice;
+      u.rate  = 0.8;
+      u.pitch = 1.0;
+
+      window.speechSynthesis.speak(u);
     }
 
     function speakChineseFive(text) {
-      if (!("speechSynthesis" in window)) {
-        alert("브라우저가 음성 재생을 지원하지 않아요.");
-        return;
-      }
-      speechSynthesis.cancel();
+      if (!ensureChineseVoice()) return;
+
+      window.speechSynthesis.cancel();
       let count = 0;
+
       function play() {
         const u = new SpeechSynthesisUtterance(text);
-        u.lang = "zh-CN";
-        u.rate = 0.65;
+        u.lang  = "zh-CN";
+        u.voice = selectedZhVoice;
+        u.rate  = 0.8;
+        u.pitch = 1.0;
+
         u.onend = () => {
           count++;
-          if (count < 5) setTimeout(play, 300);
+          if (count < 5) {
+            setTimeout(play, 300);
+          }
         };
-        speechSynthesis.speak(u);
+
+        window.speechSynthesis.speak(u);
       }
+
       play();
     }
 
@@ -446,16 +495,16 @@
       { kr: "외할아버지", zh: "外公", pinyin: "wàigōng", meaning: "외할아버지" }
     ];
 
-// 새 탭 5: (    )는(은) 기독교인이다.
-const words45Subject = [
-  { kr: "나",    subjKo: "나는",    zh: "我",   pinyin: "wǒ",     meaning: "나" },
-  { kr: "너",    subjKo: "너는",    zh: "你",   pinyin: "nǐ",     meaning: "너" },
-  { kr: "그",    subjKo: "그는",    zh: "他",   pinyin: "tā",     meaning: "그" },
-  { kr: "그녀",  subjKo: "그녀는",  zh: "她",   pinyin: "tā",     meaning: "그녀" },
-  { kr: "우리",  subjKo: "우리는",  zh: "我们", pinyin: "wǒmen", meaning: "우리" },
-  { kr: "너희",  subjKo: "너희는",  zh: "你们", pinyin: "nǐmen", meaning: "너희" },
-  { kr: "그들",  subjKo: "그들은",  zh: "他们", pinyin: "tāmen", meaning: "그들" }
-];
+    // 새 탭 5: (    )는(은) 기독교인이다.
+    const words45Subject = [
+      { kr: "나",    subjKo: "나는",    zh: "我",   pinyin: "wǒ",     meaning: "나" },
+      { kr: "너",    subjKo: "너는",    zh: "你",   pinyin: "nǐ",     meaning: "너" },
+      { kr: "그",    subjKo: "그는",    zh: "他",   pinyin: "tā",     meaning: "그" },
+      { kr: "그녀",  subjKo: "그녀는",  zh: "她",   pinyin: "tā",     meaning: "그녀" },
+      { kr: "우리",  subjKo: "우리는",  zh: "我们", pinyin: "wǒmen", meaning: "우리" },
+      { kr: "너희",  subjKo: "너희는",  zh: "你们", pinyin: "nǐmen", meaning: "너희" },
+      { kr: "그들",  subjKo: "그들은",  zh: "他们", pinyin: "tāmen", meaning: "그들" }
+    ];
 
     /* ===== 탭 1: 말씀 카드 ===== */
     function renderTab1() {
@@ -716,71 +765,70 @@ const words45Subject = [
       });
     }
 
-// 새 탭 5: (    )는(은) 기독교인이다 · 문장 만들기
-function renderTab5SubjectChristian() {
-  clear(contentEl);
+    // 새 탭 5: (    )는(은) 기독교인이다 · 문장 만들기
+    function renderTab5SubjectChristian() {
+      clear(contentEl);
 
-  const card = document.createElement("div");
-  card.className = "card";
-  card.innerHTML = `
-    <div class="section-label">4-5 · (    )는(은) 기독교인이다 · 문장 만들기</div>
-    <div style="background:#e0f2fe; padding:12px 16px; border-radius:12px;">
-      <div id="t5c-zh" class="zh" style="font-size:36px; margin-bottom:6px;">
-        <span class="inline-highlight">(    )</span>是基督徒。
-      </div>
-      <div id="t5c-ko" class="ko" style="margin:0;">
-        <span class="inline-highlight">(    )</span>는(은) 기독교인이다.
-      </div>
-    </div>
-    <div class="hint" style="margin-top:8px;">
-      아래 <b>사람 카드</b>를 눌러서 “(    )는(은) 기독교인이다.” 문장을 만들어 보아요.
-    </div>
-    <div class="mini-card-container" id="wrap5c"></div>
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="section-label">4-5 · (    )는(은) 기독교인이다 · 문장 만들기</div>
+        <div style="background:#e0f2fe; padding:12px 16px; border-radius:12px;">
+          <div id="t5c-zh" class="zh" style="font-size:36px; margin-bottom:6px;">
+            <span class="inline-highlight">(    )</span>是基督徒。
+          </div>
+          <div id="t5c-ko" class="ko" style="margin:0;">
+            <span class="inline-highlight">(    )</span>는(은) 기독교인이다.
+          </div>
+        </div>
+        <div class="hint" style="margin-top:8px;">
+          아래 <b>사람 카드</b>를 눌러서 “(    )는(은) 기독교인이다.” 문장을 만들어 보아요.
+        </div>
+        <div class="mini-card-container" id="wrap5c"></div>
 
-    <div class="zh" id="out5c-zh" style="display:none; margin-top:16px;"></div>
-    <div class="pinyin" id="out5c-py" style="display:none;"></div>
-    <div class="ko" id="out5c-ko" style="display:none; font-size:22px;"></div>
-  `;
-  contentEl.appendChild(card);
+        <div class="zh" id="out5c-zh" style="display:none; margin-top:16px;"></div>
+        <div class="pinyin" id="out5c-py" style="display:none;"></div>
+        <div class="ko" id="out5c-ko" style="display:none; font-size:22px;"></div>
+      `;
+      contentEl.appendChild(card);
 
-  const wrap = document.getElementById("wrap5c");
-  const tZh  = document.getElementById("t5c-zh");
-  const tKo  = document.getElementById("t5c-ko");
-  const oZh  = document.getElementById("out5c-zh");
-  const oPy  = document.getElementById("out5c-py");
-  const oKo  = document.getElementById("out5c-ko");
+      const wrap = document.getElementById("wrap5c");
+      const tZh  = document.getElementById("t5c-zh");
+      const tKo  = document.getElementById("t5c-ko");
+      const oZh  = document.getElementById("out5c-zh");
+      const oPy  = document.getElementById("out5c-py");
+      const oKo  = document.getElementById("out5c-ko");
 
-  words45Subject.forEach(w => {
-    const mc = document.createElement("div");
-    mc.className = "mini-card";
-    mc.innerHTML = `
-      <div class="mini-card-title">${w.kr}</div>
-      <div class="mini-card-zh">${w.zh}</div>
-      <div class="mini-card-sub">${w.pinyin} · ${w.meaning}</div>
-    `;
-    mc.onclick = () => {
-      const zhSentence = `${w.zh}是基督徒。`;
-      const koSentence = `${w.subjKo} 기독교인이다.`;
+      words45Subject.forEach(w => {
+        const mc = document.createElement("div");
+        mc.className = "mini-card";
+        mc.innerHTML = `
+          <div class="mini-card-title">${w.kr}</div>
+          <div class="mini-card-zh">${w.zh}</div>
+          <div class="mini-card-sub">${w.pinyin} · ${w.meaning}</div>
+        `;
+        mc.onclick = () => {
+          const zhSentence = `${w.zh}是基督徒。`;
+          const koSentence = `${w.subjKo} 기독교인이다.`;
 
-      // 상단 하이라이트 문장 갱신
-      tZh.innerHTML = `<span class="inline-highlight">${w.zh}</span>是基督徒。`;
-      tKo.innerHTML = `<span class="inline-highlight">${w.subjKo}</span> 기독교인이다.`;
+          tZh.innerHTML = `<span class="inline-highlight">${w.zh}</span>是基督徒。`;
+          tKo.innerHTML = `<span class="inline-highlight">${w.subjKo}</span> 기독교인이다.`;
 
-      // 아래 완성 문장 표시
-      oZh.style.display = "block";
-      oPy.style.display = "block";
-      oKo.style.display = "block";
+          oZh.style.display = "block";
+          oPy.style.display = "block";
+          oKo.style.display = "block";
 
-      oZh.textContent = zhSentence;
-      oPy.textContent = `${w.pinyin} shì jīdūtú`;
-      oKo.textContent = `“${w.subjKo} 기독교인이다.” 문장이에요.`;
+          oZh.textContent = zhSentence;
+          oPy.textContent = `${w.pinyin} shì jīdūtú`;
+          oKo.textContent = `“${w.subjKo} 기독교인이다.” 문장이에요.`;
 
-      speakChineseOnce(zhSentence);
-    };
-    wrap.appendChild(mc);
-  });
-}
-  /* ===== 탭 5: 나는 (   )입니다. 문장 만들기 ===== */
+          speakChineseOnce(zhSentence);
+        };
+        wrap.appendChild(mc);
+      });
+    }
+
+    /* ===== 탭 5: 나는 (   )입니다. 문장 만들기 ===== */
     function renderTab5() {
       clear(contentEl);
 
@@ -840,7 +888,6 @@ function renderTab5SubjectChristian() {
         wrap.appendChild(mc);
       });
 
-      // 예시 문장 (기독교인)
       const ex = document.createElement("div");
       ex.className = "card";
       ex.innerHTML = `
@@ -855,6 +902,7 @@ function renderTab5SubjectChristian() {
       `;
       contentEl.appendChild(ex);
     }
+
     /* ===== 탭 6: 찬양 복습 + 매칭 게임 ===== */
     function renderTab6() {
       clear(contentEl);
@@ -874,7 +922,6 @@ function renderTab5SubjectChristian() {
       `;
       contentEl.appendChild(songCard);
 
-      // 매칭 게임
       const matchCard = document.createElement("div");
       matchCard.className = "card";
       matchCard.innerHTML = `
@@ -901,14 +948,14 @@ function renderTab5SubjectChristian() {
         { key: "基督徒", label: "基督徒" },
         { key: "家", label: "家" },
         { key: "教会", label: "教会" },
-        { key: "学校", label: "学校" },
+        { key: "학교", label: "学校" },
         { key: "谁", label: "谁" },
         { key: "我", label: "我" },
         { key: "你", label: "你" }
       ];
 
       const rightWords = [
-        { key: "学校", label: "학교" },
+        { key: "학교", label: "학교" },
         { key: "教会", label: "교회" },
         { key: "个", label: "(양사: 개)" },
         { key: "天堂", label: "천국" },
@@ -1003,20 +1050,18 @@ function renderTab5SubjectChristian() {
       }
     }
 
-function renderCurrent() {
-  if (currentTab === 1) renderTab1();
-  else if (currentTab === 2) renderTab2();
-  else if (currentTab === 3) renderTab3();
-  else if (currentTab === 4) renderTab4();
-  else if (currentTab === 5) renderTab5SubjectChristian();  // 새 탭 5
-  else if (currentTab === 6) renderTab5();                  // 원래 5번: 나는 (   )입니다
-  else if (currentTab === 7) renderTab6();                  // 원래 6번: 복습 + 매칭 게임
-}
-
+    function renderCurrent() {
+      if (currentTab === 1) renderTab1();
+      else if (currentTab === 2) renderTab2();
+      else if (currentTab === 3) renderTab3();
+      else if (currentTab === 4) renderTab4();
+      else if (currentTab === 5) renderTab5SubjectChristian();
+      else if (currentTab === 6) renderTab5();
+      else if (currentTab === 7) renderTab6();
+    }
 
     renderTabs();
     renderCurrent();
   </script>
 </body>
 </html>
-
