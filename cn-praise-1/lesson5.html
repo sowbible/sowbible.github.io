@@ -369,7 +369,7 @@
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = "zh-CN";
-      u.rate = 0.8;
+      u.rate = 0.65;
       speechSynthesis.speak(u);
     }
 
@@ -383,7 +383,7 @@
       function play() {
         const u = new SpeechSynthesisUtterance(text);
         u.lang = "zh-CN";
-        u.rate = 0.8;
+        u.rate = 0.65;
         u.onend = () => {
           count++;
           if (count < 5) setTimeout(play, 300);
