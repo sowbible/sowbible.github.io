@@ -340,6 +340,37 @@
   <div id="content"></div>
 
   <script>
+
+
+function speakChineseOnce(text) {
+  speechSynthesis.cancel();
+
+  function loadVoicesAndSpeak() {
+    const voices = speechSynthesis.getVoices();
+    const zhVoice = voices.find(v =>
+      v.lang.startsWith("zh") || v.lang.includes("Hans")
+    );
+
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "zh-CN";
+    u.rate = 0.9;
+
+    if (zhVoice) {
+      u.voice = zhVoice;
+    } else {
+      console.warn("⚠️ 중국어 음성을 찾지 못했습니다.");
+    }
+
+    speechSynthesis.speak(u);
+  }
+
+  if (speechSynthesis.getVoices().length === 0) {
+    speechSynthesis.onvoiceschanged = loadVoicesAndSpeak;
+  } else {
+    loadVoicesAndSpeak();
+  }
+}
+
     /* ===== 1. 데이터 구성 ===== */
 
     const globalVerses = [
