@@ -263,6 +263,45 @@
   <div id="content"></div>
 
   <script>
+    /* ===== 중국어 음성(TTS) 설정 ===== */
+    let zhVoices = [];
+    let selectedZhVoice = null;
+
+    function loadZhVoices() {
+      if (!("speechSynthesis" in window)) return;
+      const voices = window.speechSynthesis.getVoices();
+      zhVoices = voices.filter(v =>
+        (v.lang && v.lang.toLowerCase().startsWith("zh")) ||
+        (v.lang && v.lang.toLowerCase().includes("hans")) ||
+        (v.name && v.name.toLowerCase().includes("chinese"))
+      );
+      selectedZhVoice =
+        zhVoices.find(v => v.lang && v.lang.toLowerCase() === "zh-cn") ||
+        zhVoices[0] ||
+        null;
+    }
+
+    if ("speechSynthesis" in window) {
+      loadZhVoices();
+      window.speechSynthesis.onvoiceschanged = loadZhVoices;
+    }
+
+    function ensureChineseVoice() {
+      if (!("speechSynthesis" in window)) {
+        alert("브라우저가 음성 재생을 지원하지 않아요.");
+        return false;
+      }
+      if (!selectedZhVoice) {
+        alert(
+          "기기에서 중국어 음성을 찾지 못했어요.\n" +
+          "휴대폰/컴퓨터 설정에서 '중국어(Chinese, China / 普通话)' 음성을 설치하고,\n" +
+          "텍스트 읽기(TTS) 기본 음성으로 설정해 주세요."
+        );
+        return false;
+      }
+      return true;
+    }
+
     /* ===== 3과 데이터 ===== */
     const lesson = {
       id: "lesson3",
@@ -490,33 +529,31 @@
     }
 
     function speakChineseOnce(text) {
-      if (!("speechSynthesis" in window)) {
-        alert("브라우저가 음성 재생을 지원하지 않아요.");
-        return;
-      }
-      speechSynthesis.cancel();
+      if (!ensureChineseVoice()) return;
+      window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = "zh-CN";
-      u.rate = 0.65;
-      speechSynthesis.speak(u);
+      u.lang  = "zh-CN";
+      u.voice = selectedZhVoice;
+      u.rate  = 0.65;
+      u.pitch = 1.0;
+      window.speechSynthesis.speak(u);
     }
 
     function speakChineseRepeated(text) {
-      if (!("speechSynthesis" in window)) {
-        alert("브라우저가 음성 재생을 지원하지 않아요.");
-        return;
-      }
-      speechSynthesis.cancel();
+      if (!ensureChineseVoice()) return;
+      window.speechSynthesis.cancel();
       let count = 0;
       function play() {
         const u = new SpeechSynthesisUtterance(text);
-        u.lang = "zh-CN";
-        u.rate = 0.65;
+        u.lang  = "zh-CN";
+        u.voice = selectedZhVoice;
+        u.rate  = 0.65
+        u.pitch = 1.0;
         u.onend = () => {
           count++;
           if (count < 5) setTimeout(play, 300);
         };
-        speechSynthesis.speak(u);
+        window.speechSynthesis.speak(u);
       }
       play();
     }
@@ -942,4 +979,3 @@
   </script>
 </body>
 </html>
-
