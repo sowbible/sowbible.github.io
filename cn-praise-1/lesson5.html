@@ -373,25 +373,26 @@
       speechSynthesis.speak(u);
     }
 
-    function speakChineseRepeated(text) {
-      if (!("speechSynthesis" in window)) {
-        alert("브라우저가 음성 재생을 지원하지 않아요.");
-        return;
-      }
-      speechSynthesis.cancel();
-      let count = 0;
-      function play() {
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "zh-CN";
-        u.rate = 0.65;
-        u.onend = () => {
-          count++;
-          if (count < 5) setTimeout(play, 300);
-        };
-        speechSynthesis.speak(u);
-      }
-      play();
-    }
+function speakCN(text) {
+  const synth = window.speechSynthesis;
+  const voices = synth.getVoices();
+
+  // 1) 중국어 목소리 찾기
+  let cnVoice = voices.find(v => v.lang.toLowerCase().startsWith("zh"));
+
+  // 2) 중국어 음성이 없다면 메시지 띄우기
+  if (!cnVoice) {
+    alert("중국어 음성이 기기에 설치되지 않았어요!");
+    return;
+  }
+
+  // 3) 중국어 음성으로 읽기
+  const u = new SpeechSynthesisUtterance(text);
+  u.voice = cnVoice;      // ★ 강제로 중국어 목소리 사용
+  u.lang = "zh-CN";       // ★ 언어도 중국어로 고정
+  u.rate = 0.9;
+  synth.speak(u);
+}
 
     async function recordSentence(id, statusEl) {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
