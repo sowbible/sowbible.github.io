@@ -252,6 +252,84 @@
     .match-btn.wrong {
       background: #fecaca;
     }
+
+    /* 플래시 카드 */
+    .flash-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .flashcard {
+      min-height: 220px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ffedd5, #fed7aa);
+      border-radius: 20px;
+      cursor: pointer;
+      text-align: center;
+      padding: 24px;
+      position: relative;
+      transition: background 0.25s ease;
+    }
+    .flashcard.back {
+      background: linear-gradient(135deg, #ecfdf5, #a5f3fc);
+    }
+    .flash-face {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    .flash-counter {
+      position: absolute;
+      top: 10px;
+      left: 14px;
+      font-size: 18px;
+      color: #374151;
+      background: rgba(255,255,255,0.8);
+      padding: 2px 10px;
+      border-radius: 999px;
+    }
+    .flash-front {
+      font-size: 72px;
+      font-weight: bold;
+      color: #b91c1c;
+    }
+    .flash-back-main {
+      font-size: 38px;
+      font-weight: bold;
+      color: #000;
+      margin-bottom: 6px;
+    }
+    .flash-back-sub {
+      font-size: 24px;
+      color: #333;
+    }
+    .idx-text {
+      font-size: 20px;
+      margin-top: 10px;
+      color: #444;
+      text-align: center;
+    }
+    .arrow-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: none;
+      background: #e5e7eb;
+      font-size: 26px;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -263,45 +341,6 @@
   <div id="content"></div>
 
   <script>
-    /* ===== 중국어 음성(TTS) 설정 ===== */
-    let zhVoices = [];
-    let selectedZhVoice = null;
-
-    function loadZhVoices() {
-      if (!("speechSynthesis" in window)) return;
-      const voices = window.speechSynthesis.getVoices();
-      zhVoices = voices.filter(v =>
-        (v.lang && v.lang.toLowerCase().startsWith("zh")) ||
-        (v.lang && v.lang.toLowerCase().includes("hans")) ||
-        (v.name && v.name.toLowerCase().includes("chinese"))
-      );
-      selectedZhVoice =
-        zhVoices.find(v => v.lang && v.lang.toLowerCase() === "zh-cn") ||
-        zhVoices[0] ||
-        null;
-    }
-
-    if ("speechSynthesis" in window) {
-      loadZhVoices();
-      window.speechSynthesis.onvoiceschanged = loadZhVoices;
-    }
-
-    function ensureChineseVoice() {
-      if (!("speechSynthesis" in window)) {
-        alert("브라우저가 음성 재생을 지원하지 않아요.");
-        return false;
-      }
-      if (!selectedZhVoice) {
-        alert(
-          "기기에서 중국어 음성을 찾지 못했어요.\n" +
-          "휴대폰/컴퓨터 설정에서 '중국어(Chinese, China / 普通话)' 음성을 설치하고,\n" +
-          "텍스트 읽기(TTS) 기본 음성으로 설정해 주세요."
-        );
-        return false;
-      }
-      return true;
-    }
-
     /* ===== 3과 데이터 ===== */
     const lesson = {
       id: "lesson3",
@@ -315,7 +354,7 @@
           label: "3-1 말씀 & 찬양",
           description:
             "찬양의 핵심 구절 ‘不要不要不要怕’를 배우며, 하나님이 함께하셔서 두려워하지 말라고 하신 말씀을 떠올려요.",
-          modes: ["study", "verse"],
+          modes: ["study", "verse", "flash"],
           sentences: [
             {
               id: "3-1-1",
@@ -343,7 +382,7 @@
           label: "3-2 찬양 배우기",
           description:
             "‘不要不要不要怕, 我要依靠神’을 찬양으로 배우며, 두려움 대신 하나님을 의지하는 고백을 연습해요.",
-          modes: ["song", "study", "verse"],
+          modes: ["song", "study", "flash", "verse"],
           sentences: [
             {
               id: "3-2-1",
@@ -367,7 +406,7 @@
           label: "3-3 나는 ~할 거예요!",
           description:
             "‘我要~’ 패턴으로 하나님께 드리는 고백 문장과 일상 문장을 함께 만들어 봐요.",
-          modes: ["builder"],
+          modes: ["builder", "flash", "verse"],
           builderBlocks: [
             {
               id: "toGod",
@@ -407,6 +446,19 @@
                 { zh: "丢掉", pinyin: "diūdiào", ko: "버릴", meaning: "버리다" }
               ]
             }
+          ],
+          // 3탭에도 말씀 카드가 보이도록, 1절 2절과 같은 말씀을 함께 둠
+          verses: [
+            {
+              ref: "시편 23:4",
+              textKo:
+                "내가 사망의 음침한 골짜기를 다닐지라도 해를 두려워하지 않을 것은 주께서 나와 함께 하심이라 주의 지팡이와 막대기가 나를 안위하시나이다."
+            },
+            {
+              ref: "이사야 41:10",
+              textKo:
+                "두려워하지 말라 내가 너와 함께 함이라 놀라지 말라 나는 네 하나님이 됨이라 내가 너를 굳세게 하리라 참으로 너를 도와 주리라 참으로 나의 의로운 오른손으로 너를 붙들리라."
+            }
           ]
         },
         {
@@ -414,52 +466,76 @@
           tabLabel: "4",
           label: "3-4 ~하지 마!",
           description: "‘不要~’ 패턴으로, 믿는 자로서 하지 말아야 할 행동을 정리해 봐요.",
-          modes: ["builder"],
-          builderBlocks: [
+          modes: ["builder", "flash", "verse"],
+          // 4탭 말씀 카드: 구절별로 네모 하나씩
+          verses: [
+          {
+              ref: "이사야 41:10",
+              textKo:
+                "두려워하지 말라 내가 너와 함께 함이라 놀라지 말라 나는 네 하나님이 됨이라 내가 너를 굳세게 하리라 참으로 너를 도와 주리라 참으로 나의 의로운 오른손으로 너를 붙들리라."
+            },
             {
-              id: "dontDo",
-              title: "하지 말아야 할 것 정리하기",
-              templateZhDisplay: "不要<span class=\"inline-highlight\">{{zh}}</span>！",
-              templateKoDisplay: "<span class=\"inline-highlight\">{{ko}}</span> 하지 마!",
-              templateZhSpeak: "不要{{zh}}！",
-              explainKoPrefix: "‘{{ko}}’(을/를) 넣어서 만든 결단 문장이에요.",
-              cards: [
-                { zh: "怕", pinyin: "pà", ko: "두려워", meaning: "무서워하다/두려워하다" },
-                { zh: "恨", pinyin: "hèn", ko: "미워", meaning: "미워하다" },
-                { zh: "生气", pinyin: "shēngqì", ko: "화내", meaning: "화내다" },
-                { zh: "打架", pinyin: "dǎjià", ko: "싸워", meaning: "싸우다" }
-              ],
-              verses: [
-                {
-                  ref: "이사야 41:10",
-                  textKo:
-                    "두려워하지 말라 내가 너와 함께 함이라 놀라지 말라 나는 네 하나님이 됨이라 내가 너를 굳세게 하리라 참으로 너를 도와 주리라 참으로 나의 의로운 오른손으로 너를 붙들리라."
-                },
-                {
-                  ref: "요한일서 2:9",
-                  textKo:
-                    "빛 가운데 있다 하면서 그의 형제를 미워하는 자는 지금까지 어둠에 있는 자요."
-                },
-                {
-                  ref: "에베소서 4:26–27",
-                  textKo:
-                    "분을 내어도 죄를 짓지 말며 해가 지도록 분을 품지 말고 마귀에게 틈을 주지 말라."
-                },
-                {
-                  ref: "마태복음 5:9",
-                  textKo:
-                    "화평하게 하는 자는 복이 있나니 그들이 하나님의 아들이라 일컬음을 받을 것임이요."
-                }
-              ]
+              ref: "요한일서 2:9",
+              textKo:
+                "빛 가운데 있다 하면서 그의 형제를 미워하는 자는 지금까지 어둠에 있는 자요."
+            },
+            {
+              ref: "에베소서 4:26–27",
+              textKo:
+                "분을 내어도 죄를 짓지 말며 해가 지도록 분을 품지 말고 마귀에게 틈을 주지 말라."
+            },
+            {
+              ref: "마태복음 5:9",
+              textKo:
+                "화평하게 하는 자는 복이 있나니 그들이 하나님의 아들이라 일컬음을 받을 것임이요."
             }
-          ]
+          ],
+       builderBlocks: [
+  {
+    id: "dontDo",
+    title: "하지 말아야 할 것 정리하기",
+    templateZhDisplay: "不要<span class=\"inline-highlight\">{{zh}}</span>！",
+    templateKoDisplay: "<span class=\"inline-highlight\">{{ko}}</span> 지마!",
+    templateZhSpeak: "不要{{zh}}！",
+    explainKoPrefix: "‘{{ko}}’(을/를) 넣어서 만든 결단 문장이에요.",
+    cards: [
+      { zh: "怕", pinyin: "pà", ko: "두려워하", meaning: "무서워하다/두려워하다" },
+      { zh: "恨", pinyin: "hèn", ko: "미워하", meaning: "미워하다" },
+      { zh: "生气", pinyin: "shēngqì", ko: "화내", meaning: "화내다" },
+      { zh: "打架", pinyin: "dǎjià", ko: "싸우", meaning: "싸우다" }
+    ]
+  },
+
+  /*  ⭐ 여기에 새로 추가되는 블록 ⭐ */
+  {
+    id: "dailyDont",
+    title: "일상생활에서 하지 말아야 할 것",
+    templateZhDisplay: "不要<span class=\"inline-highlight\">{{zh}}</span>！",
+    templateKoDisplay: "<span class=\"inline-highlight\">{{ko}}</span> 지 마!",
+    templateZhSpeak: "不要{{zh}}！",
+    explainKoPrefix: "‘{{ko}}’(을/를) 넣어서 만든 일상생활 결정 문장이에요.",
+    cards: [
+      { zh: "吃", pinyin: "chī", ko: "먹", meaning: "먹다" },
+      { zh: "喝", pinyin: "hē", ko: "마시", meaning: "마시다" },
+      { zh: "看", pinyin: "kàn", ko: "보", meaning: "보다" },
+      { zh: "听", pinyin: "tīng", ko: "듣", meaning: "듣다" },
+      { zh: "睡觉", pinyin: "shuìjiào", ko: "자", meaning: "자다" },
+      { zh: "去", pinyin: "qù", ko: "가", meaning: "가다" },
+      { zh: "来", pinyin: "lái", ko: "오", meaning: "오다" },
+      { zh: "找", pinyin: "zhǎo", ko: "찾", meaning: "찾다" },
+      { zh: "买", pinyin: "mǎi", ko: "사", meaning: "사다" },
+      { zh: "卖", pinyin: "mài", ko: "팔", meaning: "팔다" },
+      { zh: "丢掉", pinyin: "diūdiào", ko: "버리", meaning: "버리다" }
+    ]
+  }
+]
         },
         {
           id: "3-5",
           tabLabel: "5",
           label: "3-5 단어 & 뜻 연결",
           description: "찬양에 나오는 단어들을 뜻과 연결해 보며 한 번 더 정리해요.",
-          modes: ["quiz"],
+          modes: ["quiz", "flash"],
           matchGame: {
             leftTitle: "중국어 단어",
             rightTitle: "뜻",
@@ -481,7 +557,7 @@
           label: "3-6 찬양 복습",
           description:
             "중국어 가사를 한글 발음 없이 불러 보며, 오늘 배운 고백을 마음에 새겨요.",
-          modes: ["study", "song", "verse"],
+          modes: ["study", "flash", "song", "verse"],  // 플래시 카드 두 번째 탭
           sentences: [
             {
               id: "3-6-1",
@@ -506,19 +582,33 @@
       ]
     };
 
+    /* ===== 플래시 카드용 단어 (3과 공통) ===== */
+    const flashVocab = [
+      { hanzi: "不要", pinyin: "bú yào", meaning: "하지 마" },
+      { hanzi: "怕", pinyin: "pà", meaning: "두려워하다 / 무서워하다" },
+      { hanzi: "依靠", pinyin: "yīkào", meaning: "의지하다" },
+      { hanzi: "神", pinyin: "shén", meaning: "하나님" },
+      { hanzi: "我要", pinyin: "wǒ yào", meaning: "나는 ~할 거야" },
+      { hanzi: "爱", pinyin: "ài", meaning: "사랑하다" },
+      { hanzi: "感谢", pinyin: "gǎnxiè", meaning: "감사하다" },
+      { hanzi: "歌颂", pinyin: "gēsòng", meaning: "찬양하다" },
+      { hanzi: "生气", pinyin: "shēngqì", meaning: "화내다" },
+      { hanzi: "恨", pinyin: "hèn", meaning: "미워하다" },
+      { hanzi: "打架", pinyin: "dǎjià", meaning: "싸우다" }
+    ];
+
     /* ===== 공통 로직 ===== */
     const defaultModes = [
       { id: "study", label: "학습 문장" },
       { id: "builder", label: "문장 만들기" },
       { id: "quiz", label: "퀴즈 / 게임" },
+      { id: "flash", label: "플래시 카드" },
       { id: "verse", label: "말씀 카드" },
       { id: "song", label: "찬양 보기" }
     ];
 
     let currentStepId = lesson.steps[0].id;
     let currentModeId = lesson.steps[0].modes[0];
-
-    const recordings = {};
 
     function clear(el) {
       while (el.firstChild) el.removeChild(el.firstChild);
@@ -529,68 +619,35 @@
     }
 
     function speakChineseOnce(text) {
-      if (!ensureChineseVoice()) return;
-      window.speechSynthesis.cancel();
+      if (!("speechSynthesis" in window)) {
+        alert("브라우저가 음성 재생을 지원하지 않아요.");
+        return;
+      }
+      speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.lang  = "zh-CN";
-      u.voice = selectedZhVoice;
-      u.rate  = 0.65;
-      u.pitch = 1.0;
-      window.speechSynthesis.speak(u);
+      u.lang = "zh-CN";
+      u.rate = 0.65;
+      speechSynthesis.speak(u);
     }
 
     function speakChineseRepeated(text) {
-      if (!ensureChineseVoice()) return;
-      window.speechSynthesis.cancel();
+      if (!("speechSynthesis" in window)) {
+        alert("브라우저가 음성 재생을 지원하지 않아요.");
+        return;
+      }
+      speechSynthesis.cancel();
       let count = 0;
       function play() {
         const u = new SpeechSynthesisUtterance(text);
-        u.lang  = "zh-CN";
-        u.voice = selectedZhVoice;
-        u.rate  = 0.65
-        u.pitch = 1.0;
+        u.lang = "zh-CN";
+        u.rate = 0.65;
         u.onend = () => {
           count++;
           if (count < 5) setTimeout(play, 300);
         };
-        window.speechSynthesis.speak(u);
+        speechSynthesis.speak(u);
       }
       play();
-    }
-
-    async function recordSentence(id, statusEl) {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("이 브라우저에서는 녹음을 지원하지 않아요.");
-        return;
-      }
-      statusEl.textContent = "마이크 권한을 허용해 주세요. (브라우저 상단 확인)";
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const rec = new MediaRecorder(stream);
-        const chunks = [];
-        rec.ondataavailable = e => chunks.push(e.data);
-        rec.onstop = () => {
-          const blob = new Blob(chunks, { type: "audio/webm" });
-          recordings[id] = URL.createObjectURL(blob);
-          statusEl.textContent = "녹음 완료! '녹음 듣기 ▶'를 눌러 보세요.";
-          stream.getTracks().forEach(t => t.stop());
-        };
-        rec.start();
-        statusEl.textContent = "녹음 중... 따라 말해 보세요.";
-        setTimeout(() => {
-          if (rec.state !== "inactive") rec.stop();
-        }, 6000);
-      } catch (e) {
-        statusEl.textContent = "마이크 권한이 거절되었어요. 브라우저 설정을 확인해 주세요.";
-      }
-    }
-
-    function playRecording(id) {
-      if (!recordings[id]) {
-        alert("아직 녹음이 없어요.");
-        return;
-      }
-      new Audio(recordings[id]).play();
     }
 
     function renderStudy(step, c) {
@@ -615,20 +672,15 @@
           <div class="btn-row">
             <button id="once-${s.id}">한번 듣기 ▶</button>
             <button class="secondary" id="five-${s.id}">다섯 번 듣기 ▶▶</button>
-            <button class="secondary" id="rec-${s.id}">녹음하기 🎤</button>
-            <button class="ghost" id="play-${s.id}">녹음 듣기 ▶</button>
           </div>
-          <div class="hint" id="status-${s.id}">
-            문장을 듣고 5번 따라 말해 보세요.
+          <div class="hint">
+            문장을 들으며 입으로 5번 따라 말해 보세요.
           </div>
         `;
         c.appendChild(card);
 
         document.getElementById(`once-${s.id}`).onclick = () => speakChineseOnce(s.zh);
         document.getElementById(`five-${s.id}`).onclick = () => speakChineseRepeated(s.zh);
-        document.getElementById(`rec-${s.id}`).onclick = () =>
-          recordSentence(s.id, document.getElementById(`status-${s.id}`));
-        document.getElementById(`play-${s.id}`).onclick = () => playRecording(s.id);
       });
     }
 
@@ -657,28 +709,53 @@
         <div class="hint">영상을 보며 가사를 따라 불러 보세요.</div>
       `;
       c.appendChild(card);
+
+      if (step.sentences && step.sentences.length) {
+        const lyric = document.createElement("div");
+        lyric.className = "card";
+        lyric.innerHTML = `<div class="section-label">핵심 가사 & 표현</div>`;
+        step.sentences.forEach(s => {
+          const block = document.createElement("div");
+          block.style.marginBottom = "16px";
+          block.innerHTML = `
+            <div class="zh">${s.zh}</div>
+            <div class="pinyin">${s.pinyin}</div>
+            <div class="ko">${s.ko}</div>
+            <div class="btn-row">
+              <button>한번 듣기 ▶</button>
+              <button class="secondary">다섯 번 듣기 ▶▶</button>
+            </div>
+          `;
+          const [btnOnce, btnFive] = block.querySelectorAll("button");
+          btnOnce.onclick = () => speakChineseOnce(s.zh);
+          btnFive.onclick = () => speakChineseRepeated(s.zh);
+          lyric.appendChild(block);
+        });
+        c.appendChild(lyric);
+      }
     }
 
     function renderVerse(step, c) {
       const versesFromStep = step.verses || [];
+      const intro = document.createElement("div");
+      intro.className = "card";
+      intro.innerHTML = `
+        <div class="section-label">${step.label} · 말씀 카드</div>
+        <div class="ko">
+          찬양 가사와 연결된 성경 말씀을 한 구절씩 읽고 묵상해 보아요.
+        </div>
+      `;
+      c.appendChild(intro);
+
       if (!versesFromStep.length) {
         const empty = document.createElement("div");
         empty.className = "card";
         empty.innerHTML = `
-          <div class="section-label">${step.label} · 말씀 카드</div>
           <div class="hint">이 단계에는 연결된 말씀이 없어요.</div>
         `;
         c.appendChild(empty);
         return;
       }
-
-      const intro = document.createElement("div");
-      intro.className = "card";
-      intro.innerHTML = `
-        <div class="section-label">${step.label} · 말씀 카드</div>
-        <div class="ko">찬양 가사와 연결된 성경 말씀을 읽고 묵상해 보아요.</div>
-      `;
-      c.appendChild(intro);
 
       versesFromStep.forEach(v => {
         const card = document.createElement("div");
@@ -780,20 +857,6 @@
           };
           miniWrap.appendChild(mc);
         });
-
-        if (block.verses && block.verses.length) {
-          const vCard = document.createElement("div");
-          vCard.className = "card verse-card";
-          let html = `<div class="section-label">연결된 말씀</div>`;
-          block.verses.forEach(v => {
-            html += `
-              <div class="verse-ref">📖 ${v.ref}</div>
-              <div class="verse-text" style="margin-bottom:12px;">${v.textKo}</div>
-            `;
-          });
-          vCard.innerHTML = html;
-          c.appendChild(vCard);
-        }
       });
     }
 
@@ -909,6 +972,106 @@
       c.appendChild(placeholder);
     }
 
+    function renderFlash(step, c) {
+      const intro = document.createElement("div");
+      intro.className = "card";
+      intro.innerHTML = `
+        <div class="section-label">${step.label} · 플래시 카드</div>
+        <div class="ko">
+          3과에서 자주 나오는 중국어 단어들을 앞면·뒷면으로 보며 듣고 외워 보세요.
+        </div>
+      `;
+      c.appendChild(intro);
+
+      // 이 단계에 실제로 나온 단어 위주로 필터
+      let stepVocab = [];
+      const texts = [];
+
+      if (step.sentences) {
+        step.sentences.forEach(s => texts.push(s.zh));
+      }
+      if (step.builderBlocks) {
+        step.builderBlocks.forEach(b => {
+          (b.cards || []).forEach(card => texts.push(card.zh));
+        });
+      }
+      if (step.matchGame && step.matchGame.pairs) {
+        step.matchGame.pairs.forEach(p => texts.push(p.key));
+      }
+
+      if (texts.length) {
+        stepVocab = flashVocab.filter(v =>
+          texts.some(t => (t || "").includes(v.hanzi))
+        );
+      }
+      if (stepVocab.length === 0) stepVocab = flashVocab;
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="flash-wrapper">
+          <button class="arrow-btn" id="flash-prev">◀</button>
+          <div class="flashcard" id="flash-card">
+            <div class="flash-counter" id="flash-counter"></div>
+            <div class="flash-face" id="flash-face"></div>
+          </div>
+          <button class="arrow-btn" id="flash-next">▶</button>
+        </div>
+        <div class="idx-text" id="flash-idx"></div>
+        <div class="btn-row">
+          <button id="flash-speak">다시 듣기 ▶</button>
+        </div>
+        <div class="hint">카드를 눌러 앞/뒷면을 바꾸고, 발음을 들으며 여러 번 따라 말해 보세요.</div>
+      `;
+      c.appendChild(card);
+
+      let idx = 0;
+      let front = true;
+
+      function draw() {
+        const v = stepVocab[idx];
+        const face = document.getElementById("flash-face");
+        const counterEl = document.getElementById("flash-counter");
+        const cardEl = document.getElementById("flash-card");
+
+        counterEl.textContent = `${idx + 1} / ${stepVocab.length}`;
+        document.getElementById("flash-idx").innerText = `${idx + 1} / ${stepVocab.length}`;
+
+        if (front) {
+          cardEl.classList.remove("back");
+          face.innerHTML = `<div class="flash-front">${v.hanzi}</div>`;
+          speakChineseOnce(v.hanzi);
+        } else {
+          cardEl.classList.add("back");
+          face.innerHTML = `
+            <div class="flash-back-main">${v.meaning}</div>
+            <div class="flash-back-sub">${v.hanzi} · ${v.pinyin}</div>
+          `;
+        }
+      }
+
+      document.getElementById("flash-card").onclick = () => {
+        front = !front;
+        draw();
+      };
+      document.getElementById("flash-prev").onclick = () => {
+        idx = (idx - 1 + stepVocab.length) % stepVocab.length;
+        front = true;
+        draw();
+      };
+      document.getElementById("flash-next").onclick = () => {
+        idx = (idx + 1) % stepVocab.length;
+        front = true;
+        draw();
+      };
+      document.getElementById("flash-speak").onclick = () => {
+        const v = stepVocab[idx];
+        speakChineseOnce(v.hanzi);
+      };
+
+      draw();
+    }
+
     const titleEl = document.getElementById("lesson-title");
     const subtitleEl = document.getElementById("lesson-subtitle");
     const stepTabsEl = document.getElementById("step-tabs");
@@ -966,9 +1129,16 @@
       const step = getCurrentStep();
       if (!step) return;
 
+      const enabled = step.modes && step.modes.length ? step.modes : ["study"];
+      if (!enabled.includes(currentModeId)) {
+        currentModeId = enabled[0];
+        renderModeTabs();
+      }
+
       if (currentModeId === "study") renderStudy(step, contentEl);
       else if (currentModeId === "builder") renderBuilder(step, contentEl);
       else if (currentModeId === "quiz") renderQuiz(step, contentEl);
+      else if (currentModeId === "flash") renderFlash(step, contentEl);
       else if (currentModeId === "verse") renderVerse(step, contentEl);
       else if (currentModeId === "song") renderSong(step, contentEl);
     }
