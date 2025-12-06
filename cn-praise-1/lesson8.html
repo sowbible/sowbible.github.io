@@ -1,1 +1,1359 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>8과. 나는 예수님을 따르기로 결정했어요 · 我已经决定要跟从耶稣</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #f7f9fc;
+      font-size: 24px;
+      color: #111;
+    }
+    h1 {
+      font-size: 40px;
+      margin-bottom: 16px;
+      color: #000;
+    }
+
+    /* 상단 큰 탭 (1~6) */
+    .step-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .step-tab {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: #fed7aa;
+      font-size: 22px;
+      color: #7c2d12;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-tab.active {
+      background: #f97316;
+      color: #fff;
+      box-shadow: 0 0 0 2px #ffedd5 inset;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+    .section-label {
+      font-size: 20px;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+    h2 {
+      font-size: 30px;
+      margin-bottom: 10px;
+      color: #000;
+    }
+
+    .zh {
+      font-size: 40px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #b91c1c;
+    }
+    .pinyin {
+      font-size: 26px;
+      color: #444;
+      margin-bottom: 4px;
+    }
+    .ko {
+      font-size: 26px;
+      color: #222;
+      margin-bottom: 10px;
+      white-space: pre-line;
+    }
+    .hint {
+      font-size: 20px;
+      color: #555;
+      margin-top: 6px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 20px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      margin-right: 8px;
+      margin-top: 6px;
+      background: #2563eb;
+      color: white;
+    }
+    button.secondary { background: #10b981; }
+    button.ghost { background: #e5e7eb; color: #1f2937; }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    /* 말씀 카드 */
+    .verse-card {
+      background: linear-gradient(135deg, #fef3c7, #e0f2fe);
+      border-left: 6px solid #f97316;
+    }
+    .verse-ref {
+      font-size: 24px;
+      color: #555;
+      margin-bottom: 4px;
+    }
+    .verse-text {
+      font-size: 26px;
+      white-space: pre-line;
+      color: #111;
+    }
+
+    /* 소탭 (파란 버튼) */
+    .sub-mode-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 16px;
+    }
+    .sub-mode-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      background: #e5e7eb;
+      color: #111827;
+    }
+    .sub-mode-btn.active {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    /* 플래시 카드 */
+    .flash-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .flashcard {
+      min-height: 220px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ffedd5, #fed7aa);
+      border-radius: 20px;
+      cursor: pointer;
+      text-align: center;
+      padding: 24px;
+      position: relative;
+      transition: background 0.25s ease;
+    }
+    .flashcard.back {
+      background: linear-gradient(135deg, #ecfdf5, #a5f3fc);
+    }
+    .flash-face {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    .flash-counter {
+      position: absolute;
+      top: 10px;
+      left: 14px;
+      font-size: 18px;
+      color: #374151;
+      background: rgba(255,255,255,0.8);
+      padding: 2px 10px;
+      border-radius: 999px;
+    }
+    .flash-front {
+      font-size: 60px;
+      font-weight: bold;
+      color: #b91c1c;
+    }
+    .flash-back-main {
+      font-size: 34px;
+      font-weight: bold;
+      color: #000;
+      margin-bottom: 6px;
+    }
+    .flash-back-sub {
+      font-size: 24px;
+      color: #333;
+    }
+    .idx-text {
+      font-size: 20px;
+      margin-top: 6px;
+      color: #444;
+      text-align: center;
+    }
+    .arrow-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      border: none;
+      background: #e5e7eb;
+      font-size: 26px;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* 하이라이트 A/B */
+    .inline-a {
+      background: #fef08a;
+      padding: 0 4px;
+      border-radius: 6px;
+      box-shadow: 0 0 0 2px #fef08a inset;
+    }
+    .inline-b {
+      background: #bbf7d0;
+      padding: 0 4px;
+      border-radius: 6px;
+      box-shadow: 0 0 0 2px #86efac inset;
+    }
+
+    /* 미니 카드 (A/B 선택) */
+    .mini-card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .mini-card {
+      border-radius: 14px;
+      padding: 10px 14px;
+      min-width: 150px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(15,23,42,0.12);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+    .mini-card-a {
+      background: #fef08a;
+    }
+    .mini-card-b {
+      background: #dcfce7;
+    }
+    .mini-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(15,23,42,0.16);
+      filter: brightness(1.03);
+    }
+    .mini-card-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #111827;
+    }
+    .mini-card-zh {
+      font-size: 26px;
+      color: #b91c1c;
+      margin-bottom: 2px;
+    }
+    .mini-card-sub {
+      font-size: 18px;
+      color: #4b5563;
+    }
+
+    .template-box {
+      background:#e0f2fe;
+      padding:12px 16px;
+      border-radius:12px;
+      margin-bottom:8px;
+    }
+
+    /* 단어 매칭 게임 */
+    .match-layout {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .match-col {
+      flex: 1;
+      min-width: 180px;
+    }
+    .match-btn {
+      display: block;
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 8px 14px;
+      font-size: 22px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      background: #e5e7eb;
+      color: #111827;
+      transition: background 0.12s ease, transform 0.12s ease;
+    }
+    .match-btn:hover {
+      background: #d1d5db;
+      transform: translateY(-1px);
+    }
+    .match-btn.selected {
+      background: #fee2e2;
+    }
+    .match-btn.correct {
+      background: #bbf7d0;
+      cursor: default;
+    }
+    .match-btn.wrong {
+      background: #fecaca;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>8과. 나는 예수님을 따르기로 결정했어요 · 我已经决定要跟从耶稣</h1>
+
+  <div id="step-tabs" class="step-tabs"></div>
+  <div id="content"></div>
+
+  <script>
+    /* ===== 0. 공통 유틸 & 음성 재생 ===== */
+
+    function clear(el) {
+      while (el.firstChild) el.removeChild(el.firstChild);
+    }
+
+    // --- 중국어 음성(TTS) ---
+    let zhVoices = [];
+    let selectedZhVoice = null;
+
+    function loadZhVoices() {
+      if (!("speechSynthesis" in window)) return;
+      const voices = window.speechSynthesis.getVoices();
+      zhVoices = voices.filter(v =>
+        (v.lang && v.lang.toLowerCase().startsWith("zh")) ||
+        (v.lang && v.lang.toLowerCase().includes("hans")) ||
+        (v.name && v.name.toLowerCase().includes("chinese"))
+      );
+      selectedZhVoice =
+        zhVoices.find(v => v.lang && v.lang.toLowerCase() === "zh-cn") ||
+        zhVoices[0] ||
+        null;
+    }
+
+    if ("speechSynthesis" in window) {
+      loadZhVoices();
+      window.speechSynthesis.onvoiceschanged = loadZhVoices;
+    }
+
+    function ensureChineseVoice() {
+      if (!("speechSynthesis" in window)) {
+        alert("브라우저가 음성 재생을 지원하지 않아요.");
+        return false;
+      }
+      if (!selectedZhVoice) {
+        alert(
+          "중국어 음성을 찾지 못했어요.\n" +
+          "기기 설정에서 '중국어(Chinese, 普通话)' 음성을 추가해 주세요."
+        );
+        return false;
+      }
+      return true;
+    }
+
+    function speakChineseOnce(text) {
+      if (!ensureChineseVoice()) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang  = "zh-CN";
+      u.voice = selectedZhVoice;
+      u.rate  = 0.75;
+      u.pitch = 1.0;
+      window.speechSynthesis.speak(u);
+    }
+
+    function speakChineseFive(text) {
+      if (!ensureChineseVoice()) return;
+      window.speechSynthesis.cancel();
+      let count = 0;
+      function play() {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang  = "zh-CN";
+        u.voice = selectedZhVoice;
+        u.rate  = 0.75;
+        u.pitch = 1.0;
+        u.onend = () => {
+          count++;
+          if (count < 5) setTimeout(play, 250);
+        };
+        window.speechSynthesis.speak(u);
+      }
+      play();
+    }
+
+    /* ===== 1. pronouns8 & vocabDaily8 (동사 사전) ===== */
+
+    const pronouns8 = [
+      { id: "wo",    zh: "我",   pinyin: "wǒ",      koLabel: "나",    koTopic: "나는" },
+      { id: "ni",    zh: "你",   pinyin: "nǐ",      koLabel: "너",    koTopic: "너는" },
+      { id: "ta",    zh: "他",   pinyin: "tā",      koLabel: "그",    koTopic: "그는" },
+      { id: "taNv",  zh: "她",   pinyin: "tā",      koLabel: "그녀",  koTopic: "그녀는" },
+      { id: "women", zh: "我们", pinyin: "wǒmen",  koLabel: "우리",  koTopic: "우리는" },
+      { id: "nimen", zh: "你们", pinyin: "nǐmen",  koLabel: "너희",  koTopic: "너희는" },
+      { id: "tamen", zh: "他们", pinyin: "tāmen",  koLabel: "그들",  koTopic: "그들은" }
+    ];
+
+    // 일상 동사 + 시제/부정 한국어까지 포함
+    const vocabDaily8 = [
+      {
+        id: "chi",
+        hanzi: "吃",
+        pinyin: "chī",
+        koBase: "먹다",
+        koPresentAffirm: "먹어요",
+        koPastAffirm: "먹었어요",
+        koFutureAffirm: "먹을 거예요",
+        koPresentNeg: "안 먹어요",
+        koPastNeg: "안 먹었어요",
+        koFutureNeg: "안 먹을 거예요"
+      },
+      {
+        id: "he",
+        hanzi: "喝",
+        pinyin: "hē",
+        koBase: "마시다",
+        koPresentAffirm: "마셔요",
+        koPastAffirm: "마셨어요",
+        koFutureAffirm: "마실 거예요",
+        koPresentNeg: "안 마셔요",
+        koPastNeg: "안 마셨어요",
+        koFutureNeg: "안 마실 거예요"
+      },
+      {
+        id: "kan",
+        hanzi: "看",
+        pinyin: "kàn",
+        koBase: "보다",
+        koPresentAffirm: "봐요",
+        koPastAffirm: "봤어요",
+        koFutureAffirm: "볼 거예요",
+        koPresentNeg: "안 봐요",
+        koPastNeg: "안 봤어요",
+        koFutureNeg: "안 볼 거예요"
+      },
+      {
+        id: "ting",
+        hanzi: "听",
+        pinyin: "tīng",
+        koBase: "듣다",
+        koPresentAffirm: "들어요",
+        koPastAffirm: "들었어요",
+        koFutureAffirm: "들을 거예요",
+        koPresentNeg: "안 들어요",
+        koPastNeg: "안 들었어요",
+        koFutureNeg: "안 들을 거예요"
+      },
+      {
+        id: "shuo",
+        hanzi: "说",
+        pinyin: "shuō",
+        koBase: "말하다",
+        koPresentAffirm: "말해요",
+        koPastAffirm: "말했어요",
+        koFutureAffirm: "말할 거예요",
+        koPresentNeg: "안 말해요",
+        koPastNeg: "안 말했어요",
+        koFutureNeg: "안 말할 거예요"
+      },
+      {
+        id: "mo",
+        hanzi: "摸",
+        pinyin: "mō",
+        koBase: "만지다",
+        koPresentAffirm: "만져요",
+        koPastAffirm: "만졌어요",
+        koFutureAffirm: "만질 거예요",
+        koPresentNeg: "안 만져요",
+        koPastNeg: "안 만졌어요",
+        koFutureNeg: "안 만질 거예요"
+      }
+    ];
+
+    // 찬양 단어 플래시카드용
+    const flashWordsSong8 = [
+      { hanzi: "已经", pinyin: "yǐjīng", meaning: "이미" },
+      { hanzi: "决定", pinyin: "juédìng", meaning: "결정하다" },
+      { hanzi: "要", pinyin: "yào", meaning: "~하려 하다" },
+      { hanzi: "跟从", pinyin: "gēncóng", meaning: "따르다" },
+      { hanzi: "耶稣", pinyin: "yēsū", meaning: "예수님" },
+      { hanzi: "永", pinyin: "yǒng", meaning: "영원히" },
+      { hanzi: "不", pinyin: "bù", meaning: "~하지 않다" },
+      { hanzi: "回头", pinyin: "huítóu", meaning: "뒤돌아보다" }
+    ];
+
+    // “따르다/찬양하다/의지하다...” 단어
+    const followVerbs8 = [
+      { hanzi: "跟从", pinyin: "gēncóng", meaning: "따르다" },
+      { hanzi: "赞美", pinyin: "zànměi", meaning: "찬양하다" },
+      { hanzi: "依靠", pinyin: "yīkào", meaning: "의지하다" },
+      { hanzi: "歌颂", pinyin: "gēsòng", meaning: "찬양하다(노래하다)" },
+      { hanzi: "爱",   pinyin: "ài",     meaning: "사랑하다" },
+      { hanzi: "感谢", pinyin: "gǎnxiè", meaning: "감사하다" }
+    ];
+
+    /* ===== 2. 말씀 데이터 ===== */
+
+    const verses8 = [
+      {
+        ref: "요한복음 8:12",
+        textKo: "나는 세상의 빛이니 나를 따르는 자는 어두움에 다니지 아니하고\n생명의 빛을 얻으리라"
+      },
+      {
+        ref: "요한복음 10:27",
+        textKo: "내 양은 내 음성을 들으며 나는 그들을 알며 그들은 나를 따르느니라"
+      },
+      {
+        ref: "요한복음 12:26",
+        textKo: "사람이 나를 섬기려면 나를 따르라.\n나를 따르는 곳에 나를 섬기는 자도 거기 있으리니\n사람이 나를 섬기면 내 아버지께서 그를 귀히 여기시리라."
+      }
+    ];
+
+    /* ===== 3. 공통: 자연스러운 한국어 문장 빌더 ===== */
+
+    function buildKoSentenceAffirm(mode, subj, verb) {
+      const s = subj.koTopic;
+      if (mode === "present") {
+        return `${s} ${verb.koPresentAffirm}.`;
+      } else if (mode === "past") {
+        return `${s} ${verb.koPastAffirm}.`;
+      } else { // future
+        return `${s} ${verb.koFutureAffirm}.`;
+      }
+    }
+
+    function buildKoSentenceNeg(mode, subj, verb) {
+      const s = subj.koTopic;
+      if (mode === "presentNeg") {
+        return `${s} ${verb.koPresentNeg}.`;
+      } else if (mode === "pastNeg") {
+        return `${s} ${verb.koPastNeg}.`;
+      } else { // futureNeg
+        return `${s} ${verb.koFutureNeg}.`;
+      }
+    }
+
+    /* ===== 4. 플래시카드 렌더 공통 ===== */
+
+    function renderFlashCardBlock(parentEl, words, idPrefix) {
+      const block = document.createElement("div");
+      block.className = "card";
+      block.innerHTML = `
+        <div class="section-label">단어 플래시 카드</div>
+        <div class="ko">카드를 눌러 앞/뒷면을 바꾸고, 한자를 소리 내어 따라 읽어 보아요.</div>
+        <div class="flash-wrapper">
+          <button class="arrow-btn" id="${idPrefix}-prev">◀</button>
+          <div class="flashcard" id="${idPrefix}-card">
+            <div class="flash-counter" id="${idPrefix}-counter"></div>
+            <div class="flash-face" id="${idPrefix}-face"></div>
+          </div>
+          <button class="arrow-btn" id="${idPrefix}-next">▶</button>
+        </div>
+        <div class="idx-text" id="${idPrefix}-idx"></div>
+        <div class="btn-row">
+          <button id="${idPrefix}-speak">다시 듣기 ▶</button>
+        </div>
+      `;
+      parentEl.appendChild(block);
+
+      let idx = 0;
+      let front = true;
+
+      function draw() {
+        const v = words[idx];
+        const face = document.getElementById(`${idPrefix}-face`);
+        const cnt = document.getElementById(`${idPrefix}-counter`);
+        const idxEl = document.getElementById(`${idPrefix}-idx`);
+        const cardEl = document.getElementById(`${idPrefix}-card`);
+
+        cnt.textContent = `${idx + 1} / ${words.length}`;
+        idxEl.textContent = `${idx + 1} / ${words.length}`;
+
+        if (front) {
+          cardEl.classList.remove("back");
+          face.innerHTML = `<div class="flash-front">${v.hanzi}</div>`;
+          speakChineseOnce(v.hanzi);
+        } else {
+          cardEl.classList.add("back");
+          face.innerHTML = `
+            <div class="flash-back-main">${v.meaning}</div>
+            <div class="flash-back-sub">${v.hanzi} · ${v.pinyin}</div>
+          `;
+        }
+      }
+
+      document.getElementById(`${idPrefix}-card`).onclick = () => {
+        front = !front;
+        draw();
+      };
+      document.getElementById(`${idPrefix}-prev`).onclick = () => {
+        idx = (idx - 1 + words.length) % words.length;
+        front = true;
+        draw();
+      };
+      document.getElementById(`${idPrefix}-next`).onclick = () => {
+        idx = (idx + 1) % words.length;
+        front = true;
+        draw();
+      };
+      document.getElementById(`${idPrefix}-speak`).onclick = () => {
+        speakChineseOnce(words[idx].hanzi);
+      };
+
+      draw();
+    }
+
+    /* ===== 5. 탭1: 찬양 & 말씀 ===== */
+
+    function renderTab1(container) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "card";
+      wrapper.innerHTML = `
+        <div class="section-label">8-1 찬양과 말씀</div>
+        <div class="sub-mode-row">
+          <button class="sub-mode-btn active" id="t1-sent">학습 문장</button>
+          <button class="sub-mode-btn" id="t1-verse">말씀 카드</button>
+          <button class="sub-mode-btn" id="t1-flash">플래시 카드</button>
+        </div>
+        <div id="t1-body"></div>
+      `;
+      container.appendChild(wrapper);
+
+      const body = document.getElementById("t1-body");
+      const btnSent = document.getElementById("t1-sent");
+      const btnVerse = document.getElementById("t1-verse");
+      const btnFlash = document.getElementById("t1-flash");
+
+      function setActive(btn) {
+        [btnSent, btnVerse, btnFlash].forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
+
+      function renderSent() {
+        clear(body);
+        const card = document.createElement("div");
+        card.innerHTML = `
+          <div class="zh">我已经决定要跟从耶稣。</div>
+          <div class="pinyin">wǒ yǐjīng juédìng yào gēncóng yēsū</div>
+          <div class="ko">나는 이미 예수님을 따르기로 결정했어요!</div>
+          <div class="btn-row">
+            <button onclick="speakChineseOnce('我已经决定要跟从耶稣')">한번 듣기 ▶</button>
+            <button class="secondary" onclick="speakChineseFive('我已经决定要跟从耶稣')">다섯 번 듣기 ▶▶</button>
+          </div>
+          <div class="hint">아이와 함께, “나는 예수님을 따르기로 결심했어!” 라고 중국어와 한국어로 고백해 보아요.</div>
+        `;
+        body.appendChild(card);
+      }
+
+      function renderVerse() {
+        clear(body);
+        const intro = document.createElement("div");
+        intro.className = "card verse-card";
+        intro.innerHTML = `
+          <div class="verse-ref">📖 예수님을 따르는 기쁨</div>
+          <div class="verse-text">
+예수님을 따르겠다고 결정하는 것은
+‘빛’과 ‘생명의 길’을 선택하는 거예요.
+          </div>
+        `;
+        body.appendChild(intro);
+
+        verses8.forEach(v => {
+          const c = document.createElement("div");
+          c.className = "card verse-card";
+          c.innerHTML = `
+            <div class="verse-ref">📖 ${v.ref}</div>
+            <div class="verse-text">${v.textKo}</div>
+          `;
+          body.appendChild(c);
+        });
+      }
+
+      function renderFlash() {
+        clear(body);
+        renderFlashCardBlock(body, flashWordsSong8, "t1flash");
+      }
+
+      renderSent();
+
+      btnSent.onclick = () => { setActive(btnSent); renderSent(); };
+      btnVerse.onclick = () => { setActive(btnVerse); renderVerse(); };
+      btnFlash.onclick = () => { setActive(btnFlash); renderFlash(); };
+    }
+
+    /* ===== 6. 탭2: 찬양 가사 ===== */
+
+    function renderTab2(container) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "card";
+      wrapper.innerHTML = `
+        <div class="section-label">8-2 찬양 배우기</div>
+        <div class="sub-mode-row">
+          <button class="sub-mode-btn active" id="t2-sent">학습 문장</button>
+          <button class="sub-mode-btn" id="t2-flash">플래시 카드</button>
+          <button class="sub-mode-btn" id="t2-verse">말씀 카드</button>
+        </div>
+        <div id="t2-body"></div>
+      `;
+      container.appendChild(wrapper);
+
+      const body = document.getElementById("t2-body");
+      const btnSent = document.getElementById("t2-sent");
+      const btnFlash = document.getElementById("t2-flash");
+      const btnVerse = document.getElementById("t2-verse");
+
+      function setActive(btn) {
+        [btnSent, btnFlash, btnVerse].forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
+
+      function renderSent() {
+        clear(body);
+        const card = document.createElement("div");
+        card.innerHTML = `
+          <div class="section-label">찬양 가사 1</div>
+          <div class="zh">我已经决定要跟从耶稣。</div>
+          <div class="pinyin">wǒ yǐjīng juédìng yào gēncóng yēsū</div>
+          <div class="ko">나는 이미 예수님을 따르기로 결정했어요!</div>
+          <div class="btn-row">
+            <button onclick="speakChineseOnce('我已经决定要跟从耶稣')">한번 듣기 ▶</button>
+            <button class="secondary" onclick="speakChineseFive('我已经决定要跟从耶稣')">다섯 번 듣기 ▶▶</button>
+          </div>
+
+          <div class="section-label" style="margin-top:18px;">찬양 가사 2</div>
+          <div class="zh">永不回头。</div>
+          <div class="pinyin">yǒng bù huítóu</div>
+          <div class="ko">영원히 뒤돌아보지 않을 거예요.</div>
+          <div class="btn-row">
+            <button onclick="speakChineseOnce('永不回头')">한번 듣기 ▶</button>
+            <button class="secondary" onclick="speakChineseFive('永不回头')">다섯 번 듣기 ▶▶</button>
+          </div>
+
+          <div class="hint">“永不回头”는 한 번만 정확하게 익히고, 여러 번 반복해서 불러 보아요.</div>
+        `;
+        body.appendChild(card);
+      }
+
+      function renderFlash() {
+        clear(body);
+        renderFlashCardBlock(body, flashWordsSong8, "t2flash");
+      }
+
+      function renderVerse() {
+        clear(body);
+        const c = document.createElement("div");
+        c.className = "card verse-card";
+        c.innerHTML = `
+          <div class="verse-ref">📖 결심을 지켜 주시는 하나님</div>
+          <div class="verse-text">
+우리가 예수님을 따르기로 결심하면,
+하나님께서는 그 결심을 끝까지 붙들어 주시는 분이세요.
+          </div>
+        `;
+        body.appendChild(c);
+      }
+
+      renderSent();
+
+      btnSent.onclick = () => { setActive(btnSent); renderSent(); };
+      btnFlash.onclick = () => { setActive(btnFlash); renderFlash(); };
+      btnVerse.onclick = () => { setActive(btnVerse); renderVerse(); };
+    }
+
+    /* ===== 7. 공통: A/B 문장 만들기 빌더 ===== */
+
+    function renderSentenceBuilder(bodyEl, mode, prefix) {
+      clear(bodyEl);
+
+      const isNeg = mode.includes("Neg");
+
+      const box = document.createElement("div");
+      box.className = "card";
+      box.innerHTML = `
+        <div class="template-box">
+          <div class="zh" id="${prefix}-tmpl-zh" style="font-size:34px;"></div>
+          <div class="ko" id="${prefix}-tmpl-ko" style="font-size:24px; margin-top:4px;"></div>
+        </div>
+        <div class="hint">
+          <span class="inline-a">A (노랑 카드)</span> = 누가? (나, 너, 그, 우리, 너희, 그들...)<br>
+          <span class="inline-b">B (초록 카드)</span> = 무엇을 하니? (먹다, 마시다, 보다, 듣다, 말하다, 만지다)
+        </div>
+
+        <div class="card" style="margin-top:14px; background:#f9fafb;">
+          <div class="section-label">① A: 주어 선택</div>
+          <div class="mini-card-container" id="${prefix}-subj-wrap"></div>
+        </div>
+
+        <div class="card" style="margin-top:10px; background:#f9fafb;">
+          <div class="section-label">② B: 동사 선택</div>
+          <div class="mini-card-container" id="${prefix}-verb-wrap"></div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="section-label">완성된 문장</div>
+          <div class="zh" id="${prefix}-out-zh" style="display:none;"></div>
+          <div class="pinyin" id="${prefix}-out-py" style="display:none;"></div>
+          <div class="ko" id="${prefix}-out-ko" style="display:none; font-size:24px;"></div>
+          <div class="btn-row">
+            <button class="secondary" id="${prefix}-btn-read">중국어 다시 듣기 ▶</button>
+          </div>
+          <div class="hint" id="${prefix}-status">
+            A와 B를 모두 선택하면 문장이 완성되고, 중국어가 자동으로 재생돼요.
+          </div>
+        </div>
+      `;
+      bodyEl.appendChild(box);
+
+      const tmplZhEl = document.getElementById(`${prefix}-tmpl-zh`);
+      const tmplKoEl = document.getElementById(`${prefix}-tmpl-ko`);
+      const subjWrap = document.getElementById(`${prefix}-subj-wrap`);
+      const verbWrap = document.getElementById(`${prefix}-verb-wrap`);
+      const outZhEl = document.getElementById(`${prefix}-out-zh`);
+      const outPyEl = document.getElementById(`${prefix}-out-py`);
+      const outKoEl = document.getElementById(`${prefix}-out-ko`);
+      const statusEl = document.getElementById(`${prefix}-status`);
+
+      function setTemplatePlaceholders() {
+        if (!isNeg) {
+          if (mode === "present") {
+            tmplZhEl.innerHTML = `<span class="inline-a">( A )</span><span class="inline-b">( B )</span>。`;
+            tmplKoEl.innerHTML = `<span class="inline-a">( A )</span>는(은) <span class="inline-b">( B )</span> 해요.`;
+          } else if (mode === "past") {
+            tmplZhEl.innerHTML = `<span class="inline-a">( A )</span><span class="inline-b">( B )</span>了。`;
+            tmplKoEl.innerHTML = `<span class="inline-a">( A )</span>는(은) <span class="inline-b">( B )</span> 했어요.`;
+          } else {
+            tmplZhEl.innerHTML = `<span class="inline-a">( A )</span>要<span class="inline-b">( B )</span>。`;
+            tmplKoEl.innerHTML = `<span class="inline-a">( A )</span>는(은) <span class="inline-b">( B )</span> 할 거예요.`;
+          }
+        } else {
+          if (mode === "presentNeg") {
+            tmplZhEl.innerHTML = `<span class="inline-a">( A )</span>不<span class="inline-b">( B )</span>。`;
+            tmplKoEl.innerHTML = `<span class="inline-a">( A )</span>는(은) <span class="inline-b">( B )</span> 안 해요.`;
+          } else if (mode === "pastNeg") {
+            tmplZhEl.innerHTML = `<span class="inline-a">( A )</span>没<span class="inline-b">( B )</span>。`;
+            tmplKoEl.innerHTML = `<span class="inline-a">( A )</span>는(은) <span class="inline-b">( B )</span> 안 했어요.`;
+          } else {
+            tmplZhEl.innerHTML = `<span class="inline-a">( A )</span>不要<span class="inline-b">( B )</span>。`;
+            tmplKoEl.innerHTML = `<span class="inline-a">( A )</span>는(은) <span class="inline-b">( B )</span> 안 할 거예요.`;
+          }
+        }
+      }
+      setTemplatePlaceholders();
+
+      let selectedSubj = null;
+      let selectedVerb = null;
+      let lastZhSentence = "";
+
+      function updateOutput() {
+        let aZh = selectedSubj ? selectedSubj.zh : "( A )";
+        let aKo = selectedSubj ? selectedSubj.koTopic : "( A )";
+        let bZh = selectedVerb ? selectedVerb.hanzi : "( B )";
+        let bKo = selectedVerb ? selectedVerb.koBase : "( B )";
+
+        if (!isNeg) {
+          if (mode === "present") {
+            tmplZhEl.innerHTML =
+              `<span class="inline-a">${aZh}</span>` +
+              `<span class="inline-b">${bZh}</span>。`;
+            tmplKoEl.innerHTML =
+              `<span class="inline-a">${aKo}</span> ` +
+              `<span class="inline-b">${selectedVerb ? selectedVerb.koPresentAffirm : "( B )"}</span>`;
+          } else if (mode === "past") {
+            tmplZhEl.innerHTML =
+              `<span class="inline-a">${aZh}</span>` +
+              `<span class="inline-b">${bZh}</span>了。`;
+            tmplKoEl.innerHTML =
+              `<span class="inline-a">${aKo}</span> ` +
+              `<span class="inline-b">${selectedVerb ? selectedVerb.koPastAffirm : "( B )"}</span>`;
+          } else {
+            tmplZhEl.innerHTML =
+              `<span class="inline-a">${aZh}</span>要` +
+              `<span class="inline-b">${bZh}</span>。`;
+            tmplKoEl.innerHTML =
+              `<span class="inline-a">${aKo}</span> ` +
+              `<span class="inline-b">${selectedVerb ? selectedVerb.koFutureAffirm : "( B )"}</span>`;
+          }
+        } else {
+          if (mode === "presentNeg") {
+            tmplZhEl.innerHTML =
+              `<span class="inline-a">${aZh}</span>不` +
+              `<span class="inline-b">${bZh}</span>。`;
+            tmplKoEl.innerHTML =
+              `<span class="inline-a">${aKo}</span> ` +
+              `<span class="inline-b">${selectedVerb ? selectedVerb.koPresentNeg : "( B )"}</span>`;
+          } else if (mode === "pastNeg") {
+            tmplZhEl.innerHTML =
+              `<span class="inline-a">${aZh}</span>没` +
+              `<span class="inline-b">${bZh}</span>。`;
+            tmplKoEl.innerHTML =
+              `<span class="inline-a">${aKo}</span> ` +
+              `<span class="inline-b">${selectedVerb ? selectedVerb.koPastNeg : "( B )"}</span>`;
+          } else {
+            tmplZhEl.innerHTML =
+              `<span class="inline-a">${aZh}</span>不要` +
+              `<span class="inline-b">${bZh}</span>。`;
+            tmplKoEl.innerHTML =
+              `<span class="inline-a">${aKo}</span> ` +
+              `<span class="inline-b">${selectedVerb ? selectedVerb.koFutureNeg : "( B )"}</span>`;
+          }
+        }
+
+        if (!selectedSubj || !selectedVerb) {
+          outZhEl.style.display = "none";
+          outPyEl.style.display = "none";
+          outKoEl.style.display = "none";
+          lastZhSentence = "";
+          return;
+        }
+
+        let zhSentence = "";
+        let pySentence = "";
+
+        if (!isNeg) {
+          if (mode === "present") {
+            zhSentence = `${selectedSubj.zh}${selectedVerb.hanzi}。`;
+            pySentence = `${selectedSubj.pinyin} ${selectedVerb.pinyin}`;
+          } else if (mode === "past") {
+            zhSentence = `${selectedSubj.zh}${selectedVerb.hanzi}了。`;
+            pySentence = `${selectedSubj.pinyin} ${selectedVerb.pinyin} le`;
+          } else {
+            zhSentence = `${selectedSubj.zh}要${selectedVerb.hanzi}。`;
+            pySentence = `${selectedSubj.pinyin} yào ${selectedVerb.pinyin}`;
+          }
+        } else {
+          if (mode === "presentNeg") {
+            zhSentence = `${selectedSubj.zh}不${selectedVerb.hanzi}。`;
+            pySentence = `${selectedSubj.pinyin} bù ${selectedVerb.pinyin}`;
+          } else if (mode === "pastNeg") {
+            zhSentence = `${selectedSubj.zh}没${selectedVerb.hanzi}。`;
+            pySentence = `${selectedSubj.pinyin} méi ${selectedVerb.pinyin}`;
+          } else {
+            zhSentence = `${selectedSubj.zh}不要${selectedVerb.hanzi}。`;
+            pySentence = `${selectedSubj.pinyin} bú yào ${selectedVerb.pinyin}`;
+          }
+        }
+
+        const koSentence = !isNeg
+          ? buildKoSentenceAffirm(
+              mode === "present" ? "present" :
+              mode === "past" ? "past" : "future",
+              selectedSubj,
+              selectedVerb
+            )
+          : buildKoSentenceNeg(
+              mode,
+              selectedSubj,
+              selectedVerb
+            );
+
+        outZhEl.style.display = "block";
+        outPyEl.style.display = "block";
+        outKoEl.style.display = "block";
+
+        outZhEl.textContent = zhSentence;
+        outPyEl.textContent = pySentence;
+        outKoEl.textContent = koSentence;
+
+        lastZhSentence = zhSentence;
+        speakChineseOnce(zhSentence);
+      }
+
+      pronouns8.forEach(p => {
+        const c = document.createElement("div");
+        c.className = "mini-card mini-card-a";
+        c.innerHTML = `
+          <div class="mini-card-title">${p.koLabel}</div>
+          <div class="mini-card-zh">${p.zh}</div>
+          <div class="mini-card-sub">${p.pinyin}</div>
+        `;
+        c.onclick = () => {
+          selectedSubj = p;
+          subjWrap.querySelectorAll(".mini-card").forEach(el => {
+            el.style.outline = "none";
+          });
+          c.style.outline = "3px solid #2563eb";
+          updateOutput();
+        };
+        subjWrap.appendChild(c);
+      });
+
+      vocabDaily8.forEach(v => {
+        const c = document.createElement("div");
+        c.className = "mini-card mini-card-b";
+        c.innerHTML = `
+          <div class="mini-card-title">${v.koBase}</div>
+          <div class="mini-card-zh">${v.hanzi}</div>
+          <div class="mini-card-sub">${v.pinyin}</div>
+        `;
+        c.onclick = () => {
+          selectedVerb = v;
+          verbWrap.querySelectorAll(".mini-card").forEach(el => {
+            el.style.outline = "none";
+          });
+          c.style.outline = "3px solid #22c55e";
+          updateOutput();
+        };
+        verbWrap.appendChild(c);
+      });
+
+      document.getElementById(`${prefix}-btn-read`).onclick = () => {
+        if (!lastZhSentence) {
+          statusEl.textContent = "먼저 A와 B를 모두 골라서 문장을 만들어 보세요.";
+          return;
+        }
+        speakChineseOnce(lastZhSentence);
+      };
+    }
+
+    /* ===== 8. 탭3: 문장 만들기 (현재 / 과거 / 미래) ===== */
+
+    function renderTab3(container) {
+      const wrap = document.createElement("div");
+      wrap.className = "card";
+      wrap.innerHTML = `
+        <div class="section-label">8-3 문장 만들기 (현재 · 과거 · 미래)</div>
+        <div class="sub-mode-row">
+          <button class="sub-mode-btn active" id="t3-pres">문장만들기-현재</button>
+          <button class="sub-mode-btn" id="t3-past">문장만들기-과거</button>
+          <button class="sub-mode-btn" id="t3-fut">문장만들기-미래</button>
+        </div>
+        <div id="t3-body"></div>
+      `;
+      container.appendChild(wrap);
+
+      const body = document.getElementById("t3-body");
+      const bPres = document.getElementById("t3-pres");
+      const bPast = document.getElementById("t3-past");
+      const bFut  = document.getElementById("t3-fut");
+
+      function setActive(btn) {
+        [bPres, bPast, bFut].forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
+
+      function showPres() {
+        renderSentenceBuilder(body, "present", "t3-pres");
+      }
+      function showPast() {
+        renderSentenceBuilder(body, "past", "t3-past");
+      }
+      function showFut() {
+        renderSentenceBuilder(body, "future", "t3-fut");
+      }
+
+      showPres();
+
+      bPres.onclick = () => { setActive(bPres); showPres(); };
+      bPast.onclick = () => { setActive(bPast); showPast(); };
+      bFut.onclick  = () => { setActive(bFut);  showFut();  };
+    }
+
+    /* ===== 9. 탭4: 문장 만들기 (부정) ===== */
+
+    function renderTab4(container) {
+      const wrap = document.createElement("div");
+      wrap.className = "card";
+      wrap.innerHTML = `
+        <div class="section-label">8-4 문장 만들기 (현재 · 과거 · 미래 부정)</div>
+        <div class="sub-mode-row">
+          <button class="sub-mode-btn active" id="t4-presNeg">문장만들기-현재부정</button>
+          <button class="sub-mode-btn" id="t4-pastNeg">문장만들기-과거부정</button>
+          <button class="sub-mode-btn" id="t4-futNeg">문장만들기-미래부정</button>
+        </div>
+        <div id="t4-body"></div>
+      `;
+      container.appendChild(wrap);
+
+      const body = document.getElementById("t4-body");
+      const bPres = document.getElementById("t4-presNeg");
+      const bPast = document.getElementById("t4-pastNeg");
+      const bFut  = document.getElementById("t4-futNeg");
+
+      function setActive(btn) {
+        [bPres, bPast, bFut].forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
+
+      function showPresNeg() {
+        renderSentenceBuilder(body, "presentNeg", "t4-presNeg");
+      }
+      function showPastNeg() {
+        renderSentenceBuilder(body, "pastNeg", "t4-pastNeg");
+      }
+      function showFutNeg() {
+        renderSentenceBuilder(body, "futureNeg", "t4-futNeg");
+      }
+
+      showPresNeg();
+
+      bPres.onclick = () => { setActive(bPres); showPresNeg(); };
+      bPast.onclick = () => { setActive(bPast); showPastNeg(); };
+      bFut.onclick  = () => { setActive(bFut);  showFutNeg();  };
+    }
+
+    /* ===== 10. 탭5: 동사 바꿔 부르기 ===== */
+
+    function renderTab5(container) {
+      const c = document.createElement("div");
+      c.className = "card";
+      c.innerHTML = `
+        <div class="section-label">8-5 찬양 안의 동사 바꿔 부르기</div>
+        <div class="ko">
+          초록색 부분의 동사를 바꿔 넣어, 같은 멜로디로 여러 고백을 만들어 보아요.
+        </div>
+        <div class="template-box">
+          <div class="zh">
+            我已经决定要
+            <span class="inline-b" id="t5-verb-zh">跟从</span>
+            耶稣，永不回头。
+          </div>
+          <div class="pinyin" id="t5-verb-py">
+            wǒ yǐjīng juédìng yào gēncóng yēsū, yǒng bù huítóu
+          </div>
+          <div class="ko" id="t5-verb-ko">
+            나는 이미 예수님을 <span class="inline-b">따르기로</span> 결정했어요. 절대 뒤돌아보지 않을 거예요.
+          </div>
+        </div>
+        <div class="section-label">동사 바꾸어 보기</div>
+        <div class="mini-card-container" id="t5-verb-wrap"></div>
+        <div class="btn-row" style="margin-top:12px;">
+          <button onclick="speakChineseOnce('我已经决定要跟从耶稣，永不回头')">원래 가사 듣기 ▶</button>
+        </div>
+      `;
+      container.appendChild(c);
+
+      const verbZhEl = document.getElementById("t5-verb-zh");
+      const verbPyEl = document.getElementById("t5-verb-py");
+      const verbKoEl = document.getElementById("t5-verb-ko");
+      const wrap = document.getElementById("t5-verb-wrap");
+
+      function getKoPhrase(v) {
+        if (v.hanzi === "跟从") return "따르기로";
+        if (v.hanzi === "赞美") return "찬양하기로";
+        if (v.hanzi === "依靠") return "의지하기로";
+        if (v.hanzi === "歌颂") return "찬양하기로";
+        if (v.hanzi === "爱")   return "사랑하기로";
+        if (v.hanzi === "感谢") return "감사하기로";
+        return v.meaning + "하기로";
+      }
+
+      followVerbs8.forEach(v => {
+        const card = document.createElement("div");
+        card.className = "mini-card mini-card-b";
+        card.innerHTML = `
+          <div class="mini-card-title">${v.meaning}</div>
+          <div class="mini-card-zh">${v.hanzi}</div>
+          <div class="mini-card-sub">${v.pinyin}</div>
+        `;
+        card.onclick = () => {
+          wrap.querySelectorAll(".mini-card").forEach(el => {
+            el.style.outline = "none";
+          });
+          card.style.outline = "3px solid #22c55e";
+
+          verbZhEl.textContent = v.hanzi;
+          verbPyEl.textContent =
+            `wǒ yǐjīng juédìng yào ${v.pinyin} yēsū, yǒng bù huítóu`;
+          verbKoEl.innerHTML =
+            `나는 이미 예수님을 <span class="inline-b">${getKoPhrase(v)}</span> 결정했어요. 절대 뒤돌아보지 않을 거예요.`;
+
+          speakChineseOnce(`我已经决定要${v.hanzi}耶稣，永不回头`);
+        };
+        wrap.appendChild(card);
+      });
+    }
+
+    /* ===== 11. 탭6: 찬양 복습 + 단어 매칭 게임 ===== */
+
+    function renderTab6(container) {
+      // 1) 찬양 복습 카드
+      const c = document.createElement("div");
+      c.className = "card";
+      c.innerHTML = `
+        <div class="section-label">8-6 찬양 복습 & 기도</div>
+        <div class="zh">我已经决定要跟从耶稣，永不回头。</div>
+        <div class="pinyin">wǒ yǐjīng juédìng yào gēncóng yēsū, yǒng bù huítóu</div>
+        <div class="ko">
+나는 이미 예수님을 따르기로 결정했어요.
+절대 뒤돌아보지 않을 거예요.
+        </div>
+        <div class="btn-row">
+          <button onclick="speakChineseOnce('我已经决定要跟从耶稣，永不回头')">한번 듣기 ▶</button>
+          <button class="secondary" onclick="speakChineseFive('我已经决定要跟从耶稣，永不回头')">다섯 번 듣기 ▶▶</button>
+        </div>
+        <div class="hint" style="margin-top:14px;">
+          [감사 & 기도]<br>
+          “예수님, 제가 예수님을 따르기로 한 결심을 지켜 주세요.<br>
+          뒤돌아보지 않고 끝까지 예수님을 따라가게 해 주세요.”
+        </div>
+      `;
+      container.appendChild(c);
+
+      // 2) 단어 · 뜻 매칭 게임 카드
+      const quizCard = document.createElement("div");
+      quizCard.className = "card";
+      quizCard.innerHTML = `
+        <div class="section-label">8-6 단어 · 뜻 매칭 게임</div>
+        <div class="ko">
+          왼쪽의 중국어 단어와 오른쪽의 우리말 뜻을 차례대로 눌러 짝을 맞춰 보세요.<br>
+          정답이면 초록색으로 바뀌고, 발음도 들려 줄게요.
+        </div>
+        <div class="match-layout">
+          <div class="match-col" id="match-left-8"></div>
+          <div class="match-col" id="match-right-8"></div>
+        </div>
+        <div class="hint" id="match-status-8" style="margin-top:12px;"></div>
+      `;
+      container.appendChild(quizCard);
+
+      const leftEl = document.getElementById("match-left-8");
+      const rightEl = document.getElementById("match-right-8");
+      const statusEl = document.getElementById("match-status-8");
+
+      // 왼쪽: 한자 / 오른쪽: 뜻 (섞어서)
+      const leftItems = flashWordsSong8.map(w => ({
+        key: w.hanzi,
+        label: w.hanzi
+      }));
+
+      // 오른쪽은 섞어서
+      const rightItemsSource = [...flashWordsSong8];
+      rightItemsSource.sort(() => Math.random() - 0.5);
+      const rightItems = rightItemsSource.map(w => ({
+        key: w.hanzi,
+        label: w.meaning
+      }));
+
+      let completed = 0;
+      const total = leftItems.length;
+
+      leftItems.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "match-btn";
+        btn.textContent = item.label;
+        btn.dataset.key = item.key;
+        btn.onclick = () => {
+          if (btn.classList.contains("correct")) return;
+          document.querySelectorAll("#match-left-8 .match-btn").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          statusEl.textContent = "이제 오른쪽에서 뜻을 골라 보세요.";
+        };
+        leftEl.appendChild(btn);
+      });
+
+      rightItems.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "match-btn";
+        btn.textContent = item.label;
+        btn.dataset.key = item.key;
+        btn.onclick = () => {
+          if (btn.classList.contains("correct")) return;
+
+          const leftSelectedBtn = document.querySelector("#match-left-8 .match-btn.selected");
+          if (!leftSelectedBtn) {
+            statusEl.textContent = "먼저 왼쪽 단어를 선택해 주세요.";
+            return;
+          }
+          const leftKey = leftSelectedBtn.dataset.key;
+          const rightKey = item.key;
+
+          if (leftKey === rightKey) {
+            leftSelectedBtn.classList.remove("selected");
+            leftSelectedBtn.classList.add("correct");
+            btn.classList.add("correct");
+            completed++;
+            statusEl.textContent = "정답이에요! 👍";
+
+            speakChineseOnce(leftKey);
+
+            if (completed === total) {
+              statusEl.textContent = "모든 단어를 다 맞췄어요! 너무 잘했어요 🎉";
+            }
+          } else {
+            btn.classList.add("wrong");
+            statusEl.textContent = "조금 아쉬워요. 다시 한 번 도전해 보자!";
+            setTimeout(() => {
+              btn.classList.remove("wrong");
+              if (leftSelectedBtn) leftSelectedBtn.classList.remove("selected");
+            }, 600);
+          }
+        };
+        rightEl.appendChild(btn);
+      });
+    }
+
+    /* ===== 12. 상단 탭 관리 ===== */
+
+    const steps8 = [
+      { id: "8-1", label: "1" },
+      { id: "8-2", label: "2" },
+      { id: "8-3", label: "3" },
+      { id: "8-4", label: "4" },
+      { id: "8-5", label: "5" },
+      { id: "8-6", label: "6" }
+    ];
+
+    let currentStepId = "8-1";
+    const stepTabsEl = document.getElementById("step-tabs");
+    const contentEl = document.getElementById("content");
+
+    function renderStepTabs() {
+      clear(stepTabsEl);
+      steps8.forEach(s => {
+        const b = document.createElement("button");
+        b.className = "step-tab";
+        if (s.id === currentStepId) b.classList.add("active");
+        b.textContent = s.label;
+        b.onclick = () => {
+          currentStepId = s.id;
+          renderStepTabs();
+          renderContent();
+        };
+        stepTabsEl.appendChild(b);
+      });
+    }
+
+    function renderContent() {
+      clear(contentEl);
+      if (currentStepId === "8-1") renderTab1(contentEl);
+      else if (currentStepId === "8-2") renderTab2(contentEl);
+      else if (currentStepId === "8-3") renderTab3(contentEl);
+      else if (currentStepId === "8-4") renderTab4(contentEl);
+      else if (currentStepId === "8-5") renderTab5(contentEl);
+      else if (currentStepId === "8-6") renderTab6(contentEl);
+    }
+
+    renderStepTabs();
+    renderContent();
+  </script>
+</body>
+</html>
 
