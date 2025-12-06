@@ -1,1 +1,1356 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>6과. 진짜 신은 한 분이세요 · 只有一位真神</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #f7f9fc;
+      font-size: 24px;
+      color: #111;
+    }
+    h1 {
+      font-size: 40px;
+      margin-bottom: 16px;
+      color: #000;
+    }
+
+    /* 상단 큰 탭 (1~6) */
+    .step-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .step-tab {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: #fed7aa;
+      font-size: 22px;
+      color: #7c2d12;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-tab.active {
+      background: #f97316;
+      color: #fff;
+      box-shadow: 0 0 0 2px #ffedd5 inset;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+    .section-label {
+      font-size: 20px;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+    h2 {
+      font-size: 30px;
+      margin-bottom: 10px;
+      color: #000;
+    }
+
+    .zh {
+      font-size: 40px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #b91c1c;
+    }
+    .pinyin {
+      font-size: 26px;
+      color: #444;
+      margin-bottom: 4px;
+    }
+    .ko {
+      font-size: 26px;
+      color: #222;
+      margin-bottom: 10px;
+      white-space: pre-line;
+    }
+    .hint {
+      font-size: 20px;
+      color: #555;
+      margin-top: 6px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 20px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      margin-right: 8px;
+      margin-top: 6px;
+      background: #2563eb;
+      color: white;
+    }
+    button.secondary { background: #10b981; }
+    button.ghost { background: #e5e7eb; color: #1f2937; }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    /* 말씀 카드 */
+    .verse-card {
+      background: linear-gradient(135deg, #fef3c7, #e0f2fe);
+      border-left: 6px solid #f97316;
+    }
+    .verse-ref {
+      font-size: 24px;
+      color: #555;
+      margin-bottom: 4px;
+    }
+    .verse-text {
+      font-size: 26px;
+      white-space: pre-line;
+      color: #111;
+    }
+
+    /* 소탭 (파란 버튼) */
+    .sub-mode-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 16px;
+    }
+    .sub-mode-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      background: #e5e7eb;
+      color: #111827;
+    }
+    .sub-mode-btn.active {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    /* 플래시 카드 */
+    .flash-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .flashcard {
+      min-height: 220px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ffedd5, #fed7aa);
+      border-radius: 20px;
+      cursor: pointer;
+      text-align: center;
+      padding: 24px;
+      position: relative;
+      transition: background 0.25s ease;
+    }
+    .flashcard.back {
+      background: linear-gradient(135deg, #ecfdf5, #a5f3fc);
+    }
+    .flash-face {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    .flash-counter {
+      position: absolute;
+      top: 10px;
+      left: 14px;
+      font-size: 18px;
+      color: #374151;
+      background: rgba(255,255,255,0.8);
+      padding: 2px 10px;
+      border-radius: 999px;
+    }
+    .flash-front {
+      font-size: 60px;
+      font-weight: bold;
+      color: #b91c1c;
+    }
+    .flash-back-main {
+      font-size: 34px;
+      font-weight: bold;
+      color: #000;
+      margin-bottom: 6px;
+    }
+    .flash-back-sub {
+      font-size: 24px;
+      color: #333;
+    }
+    .idx-text {
+      font-size: 20px;
+      margin-top: 6px;
+      color: #444;
+      text-align: center;
+    }
+    .arrow-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      border: none;
+      background: #e5e7eb;
+      font-size: 26px;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* 하이라이트 A/B */
+    .inline-a {
+      background: #fef08a;
+      padding: 0 4px;
+      border-radius: 6px;
+      box-shadow: 0 0 0 2px #fef08a inset;
+    }
+    .inline-b {
+      background: #bbf7d0;
+      padding: 0 4px;
+      border-radius: 6px;
+      box-shadow: 0 0 0 2px #86efac inset;
+    }
+
+    /* 미니 카드 (선택 카드) */
+    .mini-card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .mini-card {
+      border-radius: 14px;
+      padding: 10px 14px;
+      min-width: 150px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(15,23,42,0.12);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+    .mini-card-a {
+      background: #fef08a;
+    }
+    .mini-card-b {
+      background: #dcfce7;
+    }
+    .mini-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(15,23,42,0.16);
+      filter: brightness(1.03);
+    }
+    .mini-card-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #111827;
+    }
+    .mini-card-zh {
+      font-size: 26px;
+      color: #b91c1c;
+      margin-bottom: 2px;
+    }
+    .mini-card-sub {
+      font-size: 18px;
+      color: #4b5563;
+    }
+
+    .template-box {
+      background:#e0f2fe;
+      padding:12px 16px;
+      border-radius:12px;
+      margin-bottom:8px;
+    }
+
+    /* 단어 매칭 게임 */
+    .match-layout {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .match-col {
+      flex: 1;
+      min-width: 180px;
+    }
+    .match-btn {
+      display: block;
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 8px 14px;
+      font-size: 22px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      background: #e5e7eb;
+      color: #111827;
+      transition: background 0.12s ease, transform 0.12s ease;
+    }
+    .match-btn:hover {
+      background: #d1d5db;
+      transform: translateY(-1px);
+    }
+    .match-btn.selected {
+      background: #fee2e2;
+    }
+    .match-btn.correct {
+      background: #bbf7d0;
+      cursor: default;
+    }
+    .match-btn.wrong {
+      background: #fecaca;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 20px;
+    }
+    th, td {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 6px 4px;
+      text-align: left;
+    }
+    th {
+      background: #f9fafb;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>6과. 진짜 신은 한 분이세요 · 只有一位真神</h1>
+
+  <div id="step-tabs" class="step-tabs"></div>
+  <div id="content"></div>
+
+  <script>
+    /* ===== 0. 공통 유틸 & 중국어 TTS ===== */
+
+    function clear(el) {
+      while (el.firstChild) el.removeChild(el.firstChild);
+    }
+
+    let zhVoices = [];
+    let selectedZhVoice = null;
+
+    function loadZhVoices() {
+      if (!("speechSynthesis" in window)) return;
+      const voices = window.speechSynthesis.getVoices();
+      zhVoices = voices.filter(v =>
+        (v.lang && v.lang.toLowerCase().startsWith("zh")) ||
+        (v.lang && v.lang.toLowerCase().includes("hans")) ||
+        (v.name && v.name.toLowerCase().includes("chinese"))
+      );
+      selectedZhVoice =
+        zhVoices.find(v => v.lang && v.lang.toLowerCase() === "zh-cn") ||
+        zhVoices[0] ||
+        null;
+    }
+
+    if ("speechSynthesis" in window) {
+      loadZhVoices();
+      window.speechSynthesis.onvoiceschanged = loadZhVoices;
+    }
+
+    function ensureChineseVoice() {
+      if (!("speechSynthesis" in window)) {
+        alert("브라우저가 음성 재생을 지원하지 않아요.");
+        return false;
+      }
+      if (!selectedZhVoice) {
+        alert(
+          "중국어 음성을 찾지 못했어요.\n" +
+          "기기 설정에서 '중국어(Chinese, 普通话)' 음성을 추가해 주세요."
+        );
+        return false;
+      }
+      return true;
+    }
+
+    function speakChineseOnce(text) {
+      if (!ensureChineseVoice()) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang  = "zh-CN";
+      u.voice = selectedZhVoice;
+      u.rate  = 0.8;
+      u.pitch = 1.0;
+      window.speechSynthesis.speak(u);
+    }
+
+    function speakChineseFive(text) {
+      if (!ensureChineseVoice()) return;
+      window.speechSynthesis.cancel();
+      let count = 0;
+      function play() {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang  = "zh-CN";
+        u.voice = selectedZhVoice;
+        u.rate  = 0.8;
+        u.pitch = 1.0;
+        u.onend = () => {
+          count++;
+          if (count < 5) setTimeout(play, 250);
+        };
+        window.speechSynthesis.speak(u);
+      }
+      play();
+    }
+
+    /* ===== 1. 데이터 정리 ===== */
+
+    const verses6 = [
+      {
+        ref: "요한복음 14:6",
+        textKo: "예수께서 이르시되 내가 곧 길이요 진리요 생명이니\n나로 말미암지 않고는 아버지께로 올 자가 없느니라"
+      },
+      {
+        ref: "신명기 6:4",
+        textKo: "이스라엘아 들으라 우리 하나님 여호와는 오직 유일한 여호와시니"
+      },
+      {
+        ref: "이사야 45:5",
+        textKo: "나는 여호와라 나 외에 다른 이가 없나니 나 밖에 신이 없느니라."
+      }
+    ];
+
+    const vocabLine1_6 = [
+      { hanzi: "只有",   pinyin: "zhǐyǒu",    meaning: "오직 ~만 있다" },
+      { hanzi: "一位",   pinyin: "yí wèi",    meaning: "한 분" },
+      { hanzi: "真神",   pinyin: "zhēnshén",  meaning: "참 하나님" },
+      { hanzi: "就是",   pinyin: "jiùshì",    meaning: "바로 …이다" },
+      { hanzi: "造化主", pinyin: "zàohuàzhǔ", meaning: "창조주" }
+    ];
+
+    const vocabLine2_6 = [
+      { hanzi: "给",     pinyin: "gěi",       meaning: "…에게 주다" },
+      { hanzi: "我",     pinyin: "wǒ",        meaning: "나, 나를" },
+      { hanzi: "吃",     pinyin: "chī",       meaning: "먹다" },
+      { hanzi: "穿",     pinyin: "chuān",     meaning: "입다" },
+      { hanzi: "常常",   pinyin: "chángcháng",meaning: "자주, 항상" },
+      { hanzi: "保护",   pinyin: "bǎohù",     meaning: "보호하다" }
+    ];
+
+    const godTitles6 = [
+      {
+        hanzi: "造化主",
+        pinyin: "zàohuàzhǔ",
+        meaning: "창조주 (세상을 지으신 주님)",
+        koName: "창조주"
+      },
+      {
+        hanzi: "天父",
+        pinyin: "tiānfù",
+        meaning: "하늘 아버지",
+        koName: "하늘 아버지 하나님"
+      },
+      {
+        hanzi: "上帝",
+        pinyin: "shàngdì",
+        meaning: "하나님 (높은 분, 하늘의 왕)",
+        koName: "하나님"
+      },
+      {
+        hanzi: "耶稣",
+        pinyin: "yēsū",
+        meaning: "예수님",
+        koName: "예수님"
+      }
+    ];
+
+    const identityWords6 = [
+      { hanzi: "孩子", pinyin: "háizi",  meaning: "자녀", ko: "자녀" },
+      { hanzi: "儿子", pinyin: "érzi",  meaning: "아들", ko: "아들" },
+      { hanzi: "女儿", pinyin: "nǚ’ér", meaning: "딸",   ko: "딸" }
+    ];
+
+    const giftFromGod6 = [
+      { hanzi: "耶稣",  pinyin: "yēsū",    meaning: "예수님", ko: "예수님" },
+      { hanzi: "快乐",  pinyin: "kuàilè",  meaning: "기쁨, 즐거움", ko: "기쁨" },
+      { hanzi: "爱",    pinyin: "ài",      meaning: "사랑", ko: "사랑" },
+      { hanzi: "信心",  pinyin: "xìnxīn",  meaning: "믿음(자신감)", ko: "믿음" }
+    ];
+
+    const myGiftToGod6 = [
+      { hanzi: "我的爱",  pinyin: "wǒ de ài",  meaning: "나의 사랑" },
+      { hanzi: "我的心",  pinyin: "wǒ de xīn", meaning: "나의 마음" },
+      { hanzi: "感谢",    pinyin: "gǎnxiè",    meaning: "감사" }
+    ];
+
+    const myGiftToOthers6 = [
+      { hanzi: "爱",   pinyin: "ài",      meaning: "사랑" },
+      { hanzi: "帮助", pinyin: "bāngzhù", meaning: "도움" },
+      { hanzi: "吃",   pinyin: "chī",     meaning: "먹을 것" },
+      { hanzi: "穿",   pinyin: "chuān",   meaning: "입을 것" }
+    ];
+
+    /* ===== 2. 공통: 플래시 카드 렌더 ===== */
+
+    function renderFlashCardBlock(parentEl, words, idPrefix) {
+      const block = document.createElement("div");
+      block.className = "card";
+      block.innerHTML = `
+        <div class="section-label">단어 플래시 카드</div>
+        <div class="ko">카드를 눌러 앞/뒷면을 바꾸고, 한자를 소리 내어 따라 읽어 보아요.</div>
+        <div class="flash-wrapper">
+          <button class="arrow-btn" id="${idPrefix}-prev">◀</button>
+          <div class="flashcard" id="${idPrefix}-card">
+            <div class="flash-counter" id="${idPrefix}-counter"></div>
+            <div class="flash-face" id="${idPrefix}-face"></div>
+          </div>
+          <button class="arrow-btn" id="${idPrefix}-next">▶</button>
+        </div>
+        <div class="idx-text" id="${idPrefix}-idx"></div>
+        <div class="btn-row">
+          <button id="${idPrefix}-speak">다시 듣기 ▶</button>
+        </div>
+      `;
+      parentEl.appendChild(block);
+
+      let idx = 0;
+      let front = true;
+
+      function draw() {
+        const v = words[idx];
+        const face = document.getElementById(`${idPrefix}-face`);
+        const cnt = document.getElementById(`${idPrefix}-counter`);
+        const idxEl = document.getElementById(`${idPrefix}-idx`);
+        const cardEl = document.getElementById(`${idPrefix}-card`);
+
+        cnt.textContent = `${idx + 1} / ${words.length}`;
+        idxEl.textContent = `${idx + 1} / ${words.length}`;
+
+        if (front) {
+          cardEl.classList.remove("back");
+          face.innerHTML = `<div class="flash-front">${v.hanzi}</div>`;
+          speakChineseOnce(v.hanzi);
+        } else {
+          cardEl.classList.add("back");
+          face.innerHTML = `
+            <div class="flash-back-main">${v.meaning}</div>
+            <div class="flash-back-sub">${v.hanzi} · ${v.pinyin}</div>
+          `;
+        }
+      }
+
+      document.getElementById(`${idPrefix}-card`).onclick = () => {
+        front = !front;
+        draw();
+      };
+      document.getElementById(`${idPrefix}-prev`).onclick = () => {
+        idx = (idx - 1 + words.length) % words.length;
+        front = true;
+        draw();
+      };
+      document.getElementById(`${idPrefix}-next`).onclick = () => {
+        idx = (idx + 1) % words.length;
+        front = true;
+        draw();
+      };
+      document.getElementById(`${idPrefix}-speak`).onclick = () => {
+        speakChineseOnce(words[idx].hanzi);
+      };
+
+      draw();
+    }
+
+    /* ===== 3. 탭1: 말씀과 찬양 ===== */
+
+    function renderTab1(container) {
+      const c = document.createElement("div");
+      c.className = "card";
+      c.innerHTML = `
+        <div class="section-label">6-1 말씀과 찬양</div>
+        <div class="zh">只有一位真神。</div>
+        <div class="pinyin">zhǐ yǒu yí wèi zhēn shén</div>
+        <div class="ko">진짜 신은 한 분이세요!</div>
+        <div class="btn-row">
+          <button onclick="speakChineseOnce('只有一位真神')">한번 듣기 ▶</button>
+          <button class="secondary" onclick="speakChineseFive('只有一位真神')">다섯 번 듣기 ▶▶</button>
+        </div>
+        <div class="hint">아이와 함께 “진짜 신은 한 분이세요!”를 중국어와 한국어로 크게 고백해 보세요.</div>
+      `;
+      container.appendChild(c);
+
+      const verseIntro = document.createElement("div");
+      verseIntro.className = "card verse-card";
+      verseIntro.innerHTML = `
+        <div class="verse-ref">📖 오직 한 분이신 하나님</div>
+        <div class="verse-text">
+예수님은 길이요 진리요 생명이에요.
+우리가 믿는 하나님은 오직 한 분, 참 하나님이세요.
+        </div>
+      `;
+      container.appendChild(verseIntro);
+
+      verses6.forEach(v => {
+        const card = document.createElement("div");
+        card.className = "card verse-card";
+        card.innerHTML = `
+          <div class="verse-ref">📖 ${v.ref}</div>
+          <div class="verse-text">${v.textKo}</div>
+        `;
+        container.appendChild(card);
+      });
+
+      const prayer = document.createElement("div");
+      prayer.className = "card";
+      prayer.innerHTML = `
+        <div class="section-label">[ 하나님 성품 찾기 & 한줄 기도 ]</div>
+        <div class="ko">
+하나님은 어떤 분이신지 한 단어로 찾아보고,
+“하나님, 저는 오늘 ‘〇〇이신 하나님’을 찬양합니다.”라고 한 줄 기도해 보아요.
+        </div>
+      `;
+      container.appendChild(prayer);
+    }
+
+    /* ===== 4. 탭2: 찬양 가사 듣기 ===== */
+
+    function renderTab2(container) {
+      const c = document.createElement("div");
+      c.className = "card";
+      c.innerHTML = `
+        <div class="section-label">6-2 찬양 · 只有一位真神</div>
+
+        <div style="margin-bottom:18px;">
+          <div class="zh">只有一位真神，就是造化主。</div>
+          <div class="pinyin">zhǐ yǒu yí wèi zhēn shén, jiù shì zàohuàzhǔ</div>
+          <div class="ko">진짜 신은 한 분이세요! 바로 창조주예요.</div>
+          <div class="btn-row">
+            <button onclick="speakChineseOnce('只有一位真神，就是造化主')">한번 듣기 ▶</button>
+            <button class="secondary" onclick="speakChineseFive('只有一位真神，就是造化主')">다섯 번 듣기 ▶▶</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="zh">给我吃，给我穿，常常保护我。</div>
+          <div class="pinyin">gěi wǒ chī, gěi wǒ chuān, chángcháng bǎohù wǒ</div>
+          <div class="ko">
+나에게 먹을 것을 주시고, 입을 것을 주세요,
+항상 나를 보호하세요.
+          </div>
+          <div class="btn-row">
+            <button onclick="speakChineseOnce('给我吃，给我穿，常常保护我')">한번 듣기 ▶</button>
+            <button class="secondary" onclick="speakChineseFive('给我吃，给我穿，常常保护我')">다섯 번 듣기 ▶▶</button>
+          </div>
+        </div>
+
+        <div class="hint">
+찬양 전체를 3~5번 반복해서 들으며,
+“어떤 분이 나를 먹이시고 입히시고 보호하실까?”를 함께 나눠 보세요.
+        </div>
+      `;
+      container.appendChild(c);
+    }
+
+    /* ===== 5. 탭3: 찬양 단어 (1,2) + 플래시 카드 ===== */
+
+    function renderTab3(container) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "card";
+      wrapper.innerHTML = `
+        <div class="section-label">6-3 찬양 단어 배우기</div>
+        <div class="sub-mode-row">
+          <button class="sub-mode-btn active" id="t3-line1">찬양1 단어</button>
+          <button class="sub-mode-btn" id="t3-line2">찬양2 단어</button>
+        </div>
+        <div id="t3-body"></div>
+      `;
+      container.appendChild(wrapper);
+
+      const body = document.getElementById("t3-body");
+      const b1 = document.getElementById("t3-line1");
+      const b2 = document.getElementById("t3-line2");
+
+      function setActive(btn) {
+        [b1, b2].forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
+
+      function renderLine1() {
+        clear(body);
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="section-label">찬양 1줄 · 只有一位真神，就是造化主。</div>
+          <div class="zh">只有一位真神，就是造化主。</div>
+          <div class="pinyin">zhǐ yǒu yí wèi zhēn shén, jiù shì zàohuàzhǔ</div>
+          <div class="ko">진짜 신은 한 분이세요! 바로 창조주예요.</div>
+        `;
+        body.appendChild(card);
+
+        renderFlashCardBlock(body, vocabLine1_6, "t3-line1-flash");
+
+        const tableCard = document.createElement("div");
+        tableCard.className = "card";
+        tableCard.innerHTML = `
+          <div class="section-label">단어 정리</div>
+          <table>
+            <thead>
+              <tr>
+                <th>중국어</th>
+                <th>병음</th>
+                <th>뜻</th>
+              </tr>
+            </thead>
+            <tbody id="t3-line1-table"></tbody>
+          </table>
+        `;
+        body.appendChild(tableCard);
+
+        const tbody = document.getElementById("t3-line1-table");
+        vocabLine1_6.forEach(v => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${v.hanzi}</td>
+            <td>${v.pinyin}</td>
+            <td>${v.meaning}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function renderLine2() {
+        clear(body);
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="section-label">찬양 2줄 · 给我吃，给我穿，常常保护我。</div>
+          <div class="zh">给我吃，给我穿，常常保护我。</div>
+          <div class="pinyin">gěi wǒ chī, gěi wǒ chuān, chángcháng bǎohù wǒ</div>
+          <div class="ko">
+나에게 먹을 것을 주시고, 입을 것을 주세요,
+항상 나를 보호하세요.
+          </div>
+        `;
+        body.appendChild(card);
+
+        renderFlashCardBlock(body, vocabLine2_6, "t3-line2-flash");
+
+        const tableCard = document.createElement("div");
+        tableCard.className = "card";
+        tableCard.innerHTML = `
+          <div class="section-label">단어 정리</div>
+          <table>
+            <thead>
+              <tr>
+                <th>중국어</th>
+                <th>병음</th>
+                <th>뜻</th>
+              </tr>
+            </thead>
+            <tbody id="t3-line2-table"></tbody>
+          </table>
+        `;
+        body.appendChild(tableCard);
+
+        const tbody = document.getElementById("t3-line2-table");
+        vocabLine2_6.forEach(v => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${v.hanzi}</td>
+            <td>${v.pinyin}</td>
+            <td>${v.meaning}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      renderLine1();
+
+      b1.onclick = () => { setActive(b1); renderLine1(); };
+      b2.onclick = () => { setActive(b2); renderLine2(); };
+    }
+
+    /* ===== 6. 탭4: 하나님은 누구? & 보호하시는 하나님 ===== */
+
+    function renderTab4(container) {
+      const wrap = document.createElement("div");
+      wrap.className = "card";
+      wrap.innerHTML = `
+        <div class="section-label">6-4 하나님은 누구신가요?</div>
+        <div class="sub-mode-row">
+          <button class="sub-mode-btn active" id="t4-whoGod">하나님은 누구?</button>
+          <button class="sub-mode-btn" id="t4-protect">보호하시는 하나님</button>
+        </div>
+        <div id="t4-body"></div>
+      `;
+      container.appendChild(wrap);
+
+      const body = document.getElementById("t4-body");
+      const bWho = document.getElementById("t4-whoGod");
+      const bPro = document.getElementById("t4-protect");
+
+      function setActive(btn) {
+        [bWho, bPro].forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
+
+      function renderWhoGod() {
+        clear(body);
+        const box = document.createElement("div");
+        box.className = "card";
+        box.innerHTML = `
+          <div class="template-box">
+            <div class="zh">
+              只有一位真神，就是
+              <span class="inline-b" id="t4-god-zh">造化主</span>。
+            </div>
+            <div class="pinyin" id="t4-god-py">
+              zhǐ yǒu yí wèi zhēn shén, jiù shì zàohuàzhǔ
+            </div>
+            <div class="ko" id="t4-god-ko">
+              진짜 신은 한 분이세요! 바로 <span class="inline-b">창조주</span>예요.
+            </div>
+          </div>
+          <div class="section-label">하나님을 나타내는 표현을 골라 보아요.</div>
+          <div class="mini-card-container" id="t4-god-wrap"></div>
+          <div class="hint">
+            “오늘은 나는 어떤 하나님을 더 깊이 알고 싶을까?”를 아이와 같이 나누어 보세요.
+          </div>
+        `;
+        body.appendChild(box);
+
+        const zhEl = document.getElementById("t4-god-zh");
+        const pyEl = document.getElementById("t4-god-py");
+        const koEl = document.getElementById("t4-god-ko");
+        const wrapCards = document.getElementById("t4-god-wrap");
+
+        godTitles6.forEach(v => {
+          const card = document.createElement("div");
+          card.className = "mini-card mini-card-b";
+          card.innerHTML = `
+            <div class="mini-card-title">${v.koName}</div>
+            <div class="mini-card-zh">${v.hanzi}</div>
+            <div class="mini-card-sub">${v.pinyin}</div>
+          `;
+          card.onclick = () => {
+            wrapCards.querySelectorAll(".mini-card").forEach(el => {
+              el.style.outline = "none";
+            });
+            card.style.outline = "3px solid #22c55e";
+
+            zhEl.textContent = v.hanzi;
+            pyEl.textContent =
+              `zhǐ yǒu yí wèi zhēn shén, jiù shì ${v.pinyin}`;
+            koEl.innerHTML =
+              `진짜 신은 한 분이세요! 바로 <span class="inline-b">${v.koName}</span>예요.`;
+
+            speakChineseOnce(`只有一位真神，就是${v.hanzi}`);
+          };
+          wrapCards.appendChild(card);
+        });
+      }
+
+      function renderProtect() {
+        clear(body);
+        const box = document.createElement("div");
+        box.className = "card";
+        box.innerHTML = `
+          <div class="template-box">
+            <div class="zh">
+              <span class="inline-b" id="t4-pro-zh">造化主</span>保护我。
+            </div>
+            <div class="pinyin" id="t4-pro-py">
+              zàohuàzhǔ bǎohù wǒ
+            </div>
+            <div class="ko" id="t4-pro-ko">
+              <span class="inline-b">창조주 하나님</span>이 나를 보호하세요.
+            </div>
+          </div>
+          <div class="section-label">누가 나를 보호하실까요?</div>
+          <div class="mini-card-container" id="t4-pro-wrap"></div>
+          <div class="btn-row">
+            <button onclick="speakChineseOnce('造化主保护我')">예문 듣기 ▶</button>
+          </div>
+          <div class="hint">
+            “(〇〇)保护我.” 문장을 여러 번 바꿔 보며,
+            내가 누구의 보호 속에 있는지 마음에 새겨 보아요.
+          </div>
+        `;
+        body.appendChild(box);
+
+        const zhEl = document.getElementById("t4-pro-zh");
+        const pyEl = document.getElementById("t4-pro-py");
+        const koEl = document.getElementById("t4-pro-ko");
+        const wrapCards = document.getElementById("t4-pro-wrap");
+
+        godTitles6.forEach(v => {
+          const card = document.createElement("div");
+          card.className = "mini-card mini-card-b";
+          card.innerHTML = `
+            <div class="mini-card-title">${v.koName}</div>
+            <div class="mini-card-zh">${v.hanzi}</div>
+            <div class="mini-card-sub">${v.pinyin}</div>
+          `;
+          card.onclick = () => {
+            wrapCards.querySelectorAll(".mini-card").forEach(el => {
+              el.style.outline = "none";
+            });
+            card.style.outline = "3px solid #22c55e";
+
+            zhEl.textContent = v.hanzi;
+            pyEl.textContent = `${v.pinyin} bǎohù wǒ`;
+            koEl.innerHTML =
+              `<span class="inline-b">${v.koName}</span>이/가 나를 보호하세요.`;
+
+            speakChineseOnce(`${v.hanzi}保护我`);
+          };
+          wrapCards.appendChild(card);
+        });
+      }
+
+      renderWhoGod();
+
+      bWho.onclick = () => { setActive(bWho); renderWhoGod(); };
+      bPro.onclick  = () => { setActive(bPro);  renderProtect();  };
+    }
+
+    /* ===== 7. 탭5: 나는 누구? / 주고 받기 ===== */
+
+    function renderTab5(container) {
+      const wrap = document.createElement("div");
+      wrap.className = "card";
+      wrap.innerHTML = `
+        <div class="section-label">6-5 나는 누구? · 하나님과 주고받기</div>
+        <div class="sub-mode-row">
+          <button class="sub-mode-btn active" id="t5-whoAmI">나는 누구?</button>
+          <button class="sub-mode-btn" id="t5-godGive">하나님이 주시는 것</button>
+          <button class="sub-mode-btn" id="t5-iGive">내가 드리는 것</button>
+        </div>
+        <div id="t5-body"></div>
+      `;
+      container.appendChild(wrap);
+
+      const body = document.getElementById("t5-body");
+      const bMe   = document.getElementById("t5-whoAmI");
+      const bGod  = document.getElementById("t5-godGive");
+      const bIGive= document.getElementById("t5-iGive");
+
+      function setActive(btn) {
+        [bMe, bGod, bIGive].forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
+
+      function renderWhoAmI() {
+        clear(body);
+        const box = document.createElement("div");
+        box.className = "card";
+        box.innerHTML = `
+          <div class="template-box">
+            <div class="zh">
+              我是神的<span class="inline-b" id="t5-me-zh">孩子</span>。
+            </div>
+            <div class="pinyin" id="t5-me-py">
+              wǒ shì shén de háizi
+            </div>
+            <div class="ko" id="t5-me-ko">
+              나는 하나님의 <span class="inline-b">자녀</span>입니다.
+            </div>
+          </div>
+          <div class="section-label">나는 누구일까요?</div>
+          <div class="mini-card-container" id="t5-me-wrap"></div>
+          <div class="btn-row">
+            <button onclick="speakChineseOnce('我是神的孩子')">예문 듣기 ▶</button>
+          </div>
+          <div class="hint">
+            孩子(자녀), 儿子(아들), 女儿(딸)을 골라서,
+            자기 이름을 넣어 선언해 보게 해 주세요.
+          </div>
+        `;
+        body.appendChild(box);
+
+        const zhEl = document.getElementById("t5-me-zh");
+        const pyEl = document.getElementById("t5-me-py");
+        const koEl = document.getElementById("t5-me-ko");
+        const wrapCards = document.getElementById("t5-me-wrap");
+
+        identityWords6.forEach(v => {
+          const card = document.createElement("div");
+          card.className = "mini-card mini-card-b";
+          card.innerHTML = `
+            <div class="mini-card-title">${v.ko}</div>
+            <div class="mini-card-zh">${v.hanzi}</div>
+            <div class="mini-card-sub">${v.pinyin}</div>
+          `;
+          card.onclick = () => {
+            wrapCards.querySelectorAll(".mini-card").forEach(el => {
+              el.style.outline = "none";
+            });
+            card.style.outline = "3px solid #22c55e";
+
+            zhEl.textContent = v.hanzi;
+            pyEl.textContent = `wǒ shì shén de ${v.pinyin}`;
+            koEl.innerHTML =
+              `나는 하나님의 <span class="inline-b">${v.ko}</span>입니다.`;
+
+            speakChineseOnce(`我是神的${v.hanzi}`);
+          };
+          wrapCards.appendChild(card);
+        });
+      }
+
+      function renderGodGive() {
+        clear(body);
+        const box = document.createElement("div");
+        box.className = "card";
+        box.innerHTML = `
+          <div class="template-box">
+            <div class="zh">
+              神给我<span class="inline-b" id="t5-god-zh">耶稣</span>。
+            </div>
+            <div class="pinyin" id="t5-god-py">
+              shén gěi wǒ yēsū
+            </div>
+            <div class="ko" id="t5-god-ko">
+              하나님께서 나에게 <span class="inline-b">예수님</span>을 주세요.
+            </div>
+          </div>
+          <div class="section-label">하나님이 나에게 주시는 것은?</div>
+          <div class="mini-card-container" id="t5-god-wrap"></div>
+          <div class="btn-row">
+            <button onclick="speakChineseOnce('神给我什么？')">“神给我什么？” 듣기 ▶</button>
+          </div>
+          <div class="hint">
+            “神给我什么？(하나님께서 나에게 무엇을 주세요?)” 질문을 먼저 읽고,
+            그 다음 “神给我〇〇。” 문장을 만들어 보세요.
+          </div>
+        `;
+        body.appendChild(box);
+
+        const zhEl = document.getElementById("t5-god-zh");
+        const pyEl = document.getElementById("t5-god-py");
+        const koEl = document.getElementById("t5-god-ko");
+        const wrapCards = document.getElementById("t5-god-wrap");
+
+        giftFromGod6.forEach(v => {
+          const card = document.createElement("div");
+          card.className = "mini-card mini-card-b";
+          card.innerHTML = `
+            <div class="mini-card-title">${v.ko}</div>
+            <div class="mini-card-zh">${v.hanzi}</div>
+            <div class="mini-card-sub">${v.pinyin}</div>
+          `;
+          card.onclick = () => {
+            wrapCards.querySelectorAll(".mini-card").forEach(el => {
+              el.style.outline = "none";
+            });
+            card.style.outline = "3px solid #22c55e";
+
+            zhEl.textContent = v.hanzi;
+            pyEl.textContent = `shén gěi wǒ ${v.pinyin}`;
+            koEl.innerHTML =
+              `하나님께서 나에게 <span class="inline-b">${v.ko}</span>을/를 주세요.`;
+
+            speakChineseOnce(`神给我${v.hanzi}`);
+          };
+          wrapCards.appendChild(card);
+        });
+      }
+
+      function renderIGive() {
+        clear(body);
+        const box = document.createElement("div");
+        box.className = "card";
+        box.innerHTML = `
+          <div class="template-box">
+            <div class="zh">
+              我给神<span class="inline-b" id="t5-iGod-zh">我的爱</span>。
+            </div>
+            <div class="pinyin" id="t5-iGod-py">
+              wǒ gěi shén wǒ de ài
+            </div>
+            <div class="ko" id="t5-iGod-ko">
+              나는 하나님께 <span class="inline-b">나의 사랑</span>을 드려요.
+            </div>
+          </div>
+          <div class="section-label">나는 하나님께 무엇을 드릴까요?</div>
+          <div class="mini-card-container" id="t5-iGod-wrap"></div>
+
+          <div class="template-box" style="margin-top:20px;">
+            <div class="zh">
+              我给别人<span class="inline-b" id="t5-iOther-zh">爱</span>。
+            </div>
+            <div class="pinyin" id="t5-iOther-py">
+              wǒ gěi biérén ài
+            </div>
+            <div class="ko" id="t5-iOther-ko">
+              나는 다른 사람에게 <span class="inline-b">사랑</span>을 줘요.
+            </div>
+          </div>
+          <div class="section-label">나는 다른 사람에게 무엇을 줄까요?</div>
+          <div class="mini-card-container" id="t5-iOther-wrap"></div>
+
+          <div class="hint">
+            “하나님께 드리는 것”과 “이웃에게 나누는 것”을 함께 묶어서,
+            복음적인 ‘주고받기’ 삶을 정리할 수 있어요.
+          </div>
+        `;
+        body.appendChild(box);
+
+        const zhGod = document.getElementById("t5-iGod-zh");
+        const pyGod = document.getElementById("t5-iGod-py");
+        const koGod = document.getElementById("t5-iGod-ko");
+        const wrapGod = document.getElementById("t5-iGod-wrap");
+
+        myGiftToGod6.forEach(v => {
+          const card = document.createElement("div");
+          card.className = "mini-card mini-card-b";
+          card.innerHTML = `
+            <div class="mini-card-title">${v.meaning}</div>
+            <div class="mini-card-zh">${v.hanzi}</div>
+            <div class="mini-card-sub">${v.pinyin}</div>
+          `;
+          card.onclick = () => {
+            wrapGod.querySelectorAll(".mini-card").forEach(el => {
+              el.style.outline = "none";
+            });
+            card.style.outline = "3px solid #22c55e";
+
+            zhGod.textContent = v.hanzi;
+            pyGod.textContent = `wǒ gěi shén ${v.pinyin}`;
+            koGod.innerHTML =
+              `나는 하나님께 <span class="inline-b">${v.meaning}</span>을/를 드려요.`;
+
+            speakChineseOnce(`我给神${v.hanzi}`);
+          };
+          wrapGod.appendChild(card);
+        });
+
+        const zhO = document.getElementById("t5-iOther-zh");
+        const pyO = document.getElementById("t5-iOther-py");
+        const koO = document.getElementById("t5-iOther-ko");
+        const wrapO = document.getElementById("t5-iOther-wrap");
+
+        myGiftToOthers6.forEach(v => {
+          const card = document.createElement("div");
+          card.className = "mini-card mini-card-b";
+          card.innerHTML = `
+            <div class="mini-card-title">${v.meaning}</div>
+            <div class="mini-card-zh">${v.hanzi}</div>
+            <div class="mini-card-sub">${v.pinyin}</div>
+          `;
+          card.onclick = () => {
+            wrapO.querySelectorAll(".mini-card").forEach(el => {
+              el.style.outline = "none";
+            });
+            card.style.outline = "3px solid #22c55e";
+
+            zhO.textContent = v.hanzi;
+            pyO.textContent = `wǒ gěi biérén ${v.pinyin}`;
+            koO.innerHTML =
+              `나는 다른 사람에게 <span class="inline-b">${v.meaning}</span>을/를 줘요.`;
+
+            speakChineseOnce(`我给别人${v.hanzi}`);
+          };
+          wrapO.appendChild(card);
+        });
+      }
+
+      renderWhoAmI();
+
+      bMe.onclick    = () => { setActive(bMe);    renderWhoAmI(); };
+      bGod.onclick   = () => { setActive(bGod);   renderGodGive(); };
+      bIGive.onclick = () => { setActive(bIGive); renderIGive(); };
+    }
+
+    /* ===== 8. 탭6: 찬양 복습 + 단어 매칭 게임 ===== */
+
+    function renderTab6(container) {
+      const c = document.createElement("div");
+      c.className = "card";
+      c.innerHTML = `
+        <div class="section-label">6-6 찬양 복습</div>
+        <div class="zh">只有一位真神，就是造化主。</div>
+        <div class="pinyin">zhǐ yǒu yí wèi zhēn shén, jiù shì zàohuàzhǔ</div>
+        <div class="ko">진짜 신은 오직 한 분이세요! 바로 창조주예요.</div>
+
+        <div class="zh" style="margin-top:14px;">给我吃，给我穿，常常保护我。</div>
+        <div class="pinyin">gěi wǒ chī, gěi wǒ chuān, chángcháng bǎohù wǒ</div>
+        <div class="ko">
+나에게 먹을 것을 주시고, 입을 것을 주세요,
+항상 나를 보호하세요.
+        </div>
+
+        <div class="btn-row">
+          <button onclick="speakChineseOnce('只有一位真神，就是造化主')">1줄 듣기 ▶</button>
+          <button onclick="speakChineseOnce('给我吃，给我穿，常常保护我')">2줄 듣기 ▶</button>
+          <button class="secondary" onclick="speakChineseFive('只有一位真神，就是造化主。给我吃，给我穿，常常保护我')">전체 다섯 번 ▶▶</button>
+        </div>
+
+        <div class="hint">
+찬양 가사를 한글 없이도 읽고 부를 수 있을 때까지
+아이와 번갈아 가며 읽어 보세요.
+        </div>
+      `;
+      container.appendChild(c);
+
+      const quizCard = document.createElement("div");
+      quizCard.className = "card";
+      quizCard.innerHTML = `
+        <div class="section-label">6-6 단어 · 뜻 매칭 게임</div>
+        <div class="ko">
+          왼쪽의 중국어 단어와 오른쪽의 우리말 뜻을 차례대로 눌러 짝을 맞춰 보세요.<br>
+          정답이면 초록색으로 바뀌고, 발음도 들려 줄게요.
+        </div>
+        <div class="match-layout">
+          <div class="match-col" id="match-left-6"></div>
+          <div class="match-col" id="match-right-6"></div>
+        </div>
+        <div class="hint" id="match-status-6" style="margin-top:12px;"></div>
+      `;
+      container.appendChild(quizCard);
+
+      const leftEl = document.getElementById("match-left-6");
+      const rightEl = document.getElementById("match-right-6");
+      const statusEl = document.getElementById("match-status-6");
+
+      // 매칭용 단어: 찬양 1,2의 핵심 단어들
+      const allWords = [...vocabLine1_6, ...vocabLine2_6];
+
+      const leftItems = allWords.map(w => ({
+        key: w.hanzi,
+        label: w.hanzi
+      }));
+
+      const rightSource = [...allWords];
+      rightSource.sort(() => Math.random() - 0.5);
+      const rightItems = rightSource.map(w => ({
+        key: w.hanzi,
+        label: w.meaning
+      }));
+
+      let completed = 0;
+      const total = leftItems.length;
+
+      leftItems.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "match-btn";
+        btn.textContent = item.label;
+        btn.dataset.key = item.key;
+        btn.onclick = () => {
+          if (btn.classList.contains("correct")) return;
+          document.querySelectorAll("#match-left-6 .match-btn").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          statusEl.textContent = "이제 오른쪽에서 뜻을 골라 보세요.";
+        };
+        leftEl.appendChild(btn);
+      });
+
+      rightItems.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "match-btn";
+        btn.textContent = item.label;
+        btn.dataset.key = item.key;
+        btn.onclick = () => {
+          if (btn.classList.contains("correct")) return;
+
+          const leftSelectedBtn = document.querySelector("#match-left-6 .match-btn.selected");
+          if (!leftSelectedBtn) {
+            statusEl.textContent = "먼저 왼쪽 단어를 선택해 주세요.";
+            return;
+          }
+          const leftKey = leftSelectedBtn.dataset.key;
+          const rightKey = item.key;
+
+          if (leftKey === rightKey) {
+            leftSelectedBtn.classList.remove("selected");
+            leftSelectedBtn.classList.add("correct");
+            btn.classList.add("correct");
+            completed++;
+            statusEl.textContent = "정답이에요! 👍";
+
+            speakChineseOnce(leftKey);
+
+            if (completed === total) {
+              statusEl.textContent = "모든 단어를 다 맞췄어요! 너무 잘했어요 🎉";
+            }
+          } else {
+            btn.classList.add("wrong");
+            statusEl.textContent = "조금 아쉬워요. 다시 한 번 도전해 보자!";
+            setTimeout(() => {
+              btn.classList.remove("wrong");
+              if (leftSelectedBtn) leftSelectedBtn.classList.remove("selected");
+            }, 600);
+          }
+        };
+        rightEl.appendChild(btn);
+      });
+    }
+
+    /* ===== 9. 상단 탭 관리 ===== */
+
+    const steps6 = [
+      { id: "6-1", label: "1" },
+      { id: "6-2", label: "2" },
+      { id: "6-3", label: "3" },
+      { id: "6-4", label: "4" },
+      { id: "6-5", label: "5" },
+      { id: "6-6", label: "6" }
+    ];
+
+    let currentStepId = "6-1";
+    const stepTabsEl = document.getElementById("step-tabs");
+    const contentEl = document.getElementById("content");
+
+    function renderStepTabs() {
+      clear(stepTabsEl);
+      steps6.forEach(s => {
+        const b = document.createElement("button");
+        b.className = "step-tab";
+        if (s.id === currentStepId) b.classList.add("active");
+        b.textContent = s.label;
+        b.onclick = () => {
+          currentStepId = s.id;
+          renderStepTabs();
+          renderContent();
+        };
+        stepTabsEl.appendChild(b);
+      });
+    }
+
+    function renderContent() {
+      clear(contentEl);
+      if (currentStepId === "6-1") renderTab1(contentEl);
+      else if (currentStepId === "6-2") renderTab2(contentEl);
+      else if (currentStepId === "6-3") renderTab3(contentEl);
+      else if (currentStepId === "6-4") renderTab4(contentEl);
+      else if (currentStepId === "6-5") renderTab5(contentEl);
+      else if (currentStepId === "6-6") renderTab6(contentEl);
+    }
+
+    renderStepTabs();
+    renderContent();
+  </script>
+</body>
+</html>
 
