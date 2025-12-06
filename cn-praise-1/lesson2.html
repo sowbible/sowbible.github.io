@@ -24,12 +24,45 @@
       margin-bottom: 16px;
     }
 
+    /* 상단 레이아웃: 탭(왼쪽) + 이미지(오른쪽) */
+    .top-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .top-left {
+      flex: 1;
+    }
+    .top-right {
+      width: 220px;
+      flex-shrink: 0;
+    }
+
+    /* 2과 이미지 카드 (깔끔, 감성) */
+    .lesson2-image-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 10px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lesson2-image {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      object-fit: cover;
+    }
+
     /* 단계 탭 */
     .step-tabs {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
     .step-tab {
       min-width: 52px;
@@ -57,7 +90,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 0;
       border-bottom: 2px solid #e5e7eb;
       padding-bottom: 12px;
     }
@@ -253,7 +286,7 @@
       background: #fecaca;
     }
 
-    /* 플래시 카드 */
+    /* 플래시 카드 공통 */
     .flash-wrapper {
       display: flex;
       align-items: center;
@@ -330,14 +363,39 @@
       justify-content: center;
       cursor: pointer;
     }
+
+    /* 학습문장 전용 플래시카드는 약간 더 콤팩트하게 */
+    .study-flash-card .flashcard {
+      min-height: 200px;
+    }
+    .study-flash-card .flash-front {
+      font-size: 60px;
+    }
+    .study-flash-card .flash-back-main {
+      font-size: 32px;
+    }
+    .study-flash-card .flash-back-sub {
+      font-size: 22px;
+    }
   </style>
 </head>
 <body>
   <h1 id="lesson-title"></h1>
   <div id="lesson-subtitle" class="sub-title"></div>
 
-  <div id="step-tabs" class="step-tabs"></div>
-  <div id="mode-tabs" class="mode-tabs"></div>
+  <div class="top-layout">
+    <div class="top-left">
+      <div id="step-tabs" class="step-tabs"></div>
+      <div id="mode-tabs" class="mode-tabs"></div>
+    </div>
+    <div class="top-right">
+      <div class="lesson2-image-card">
+        <!-- 같은 폴더에 lesson2-side.png 넣기 -->
+        <img src="lesson2-side.png" alt="2과 표지" class="lesson2-image" />
+      </div>
+    </div>
+  </div>
+
   <div id="content"></div>
 
   <script>
@@ -446,13 +504,13 @@
               explainKoPrefix:
                 "‘{{ko}}’(을/를) 넣어서 만든 하나님께 드리는 찬양 고백이에요.",
               cards: [
-                { zh: "我神",   pinyin: "wǒ shén",     ko: "나의 하나님",     meaning: "나의 하나님" },
-                { zh: "神",    pinyin: "shén",        ko: "하나님",           meaning: "하나님" },
-                { zh: "上帝",  pinyin: "Shàngdì",     ko: "하나님(상제님)",   meaning: "하나님(상제님)" },
-                { zh: "耶稣",  pinyin: "Yēsū",        ko: "예수님",           meaning: "예수님" },
-                { zh: "主",    pinyin: "Zhǔ",         ko: "주님",             meaning: "주님" },
-                { zh: "创造主", pinyin: "chuàngzào zhǔ", ko: "창조주 하나님", meaning: "창조주 하나님" },
-                { zh: "天父",  pinyin: "Tiānfù",      ko: "하늘 아버지",     meaning: "하늘 아버지" }
+                { zh: "我神",   pinyin: "wǒ shén",       ko: "나의 하나님",     meaning: "나의 하나님" },
+                { zh: "神",    pinyin: "shén",          ko: "하나님",           meaning: "하나님" },
+                { zh: "上帝",  pinyin: "Shàngdì",       ko: "하나님(상제님)",   meaning: "하나님(상제님)" },
+                { zh: "耶稣",  pinyin: "Yēsū",          ko: "예수님",           meaning: "예수님" },
+                { zh: "主",    pinyin: "Zhǔ",           ko: "주님",             meaning: "주님" },
+                { zh: "创造主", pinyin: "chuàngzào zhǔ", ko: "창조주 하나님",   meaning: "창조주 하나님" },
+                { zh: "天父",  pinyin: "Tiānfù",        ko: "하늘 아버지",     meaning: "하늘 아버지" }
               ]
             }
           ],
@@ -492,11 +550,8 @@
               templateZhSpeak: "我要爱{{zh}}。",
               explainKoPrefix: "‘{{ko}}’(을/를) 넣어서 만든 사랑 고백이에요.",
               cards: [
-                // 하나님 / 예수님
                 { zh: "神",    pinyin: "shén",      ko: "하나님",       meaning: "하나님" },
                 { zh: "耶稣",  pinyin: "Yēsū",      ko: "예수님",       meaning: "예수님" },
-
-                // 인칭대명사: 나, 너, 그, 그녀, 우리, 너희, 그들
                 { zh: "我",    pinyin: "wǒ",        ko: "나",           meaning: "나" },
                 { zh: "你",    pinyin: "nǐ",        ko: "너",           meaning: "너" },
                 { zh: "他",    pinyin: "tā",        ko: "그",           meaning: "그" },
@@ -504,8 +559,6 @@
                 { zh: "我们",  pinyin: "wǒmen",     ko: "우리",         meaning: "우리" },
                 { zh: "你们",  pinyin: "nǐmen",     ko: "너희",         meaning: "너희" },
                 { zh: "他们",  pinyin: "tāmen",     ko: "그들",         meaning: "그들" },
-
-                // 가족
                 { zh: "妈妈",  pinyin: "māma",      ko: "엄마",         meaning: "엄마" },
                 { zh: "爸爸",  pinyin: "bàba",      ko: "아빠",         meaning: "아빠" },
                 { zh: "哥哥",  pinyin: "gēge",      ko: "형",           meaning: "형" },
@@ -551,11 +604,8 @@
               templateZhSpeak: "谢谢{{zh}}！",
               explainKoPrefix: "‘{{ko}}’에게 고마운 마음을 전해요.",
               cards: [
-                // 하나님 / 예수님
                 { zh: "神",    pinyin: "shén",      ko: "하나님",       meaning: "하나님" },
                 { zh: "耶稣",  pinyin: "Yēsū",      ko: "예수님",       meaning: "예수님" },
-
-                // 인칭대명사
                 { zh: "我",    pinyin: "wǒ",        ko: "나",           meaning: "나" },
                 { zh: "你",    pinyin: "nǐ",        ko: "너",           meaning: "너" },
                 { zh: "他",    pinyin: "tā",        ko: "그",           meaning: "그" },
@@ -563,8 +613,6 @@
                 { zh: "我们",  pinyin: "wǒmen",     ko: "우리",         meaning: "우리" },
                 { zh: "你们",  pinyin: "nǐmen",     ko: "너희",         meaning: "너희" },
                 { zh: "他们",  pinyin: "tāmen",     ko: "그들",         meaning: "그들" },
-
-                // 가족
                 { zh: "妈妈",  pinyin: "māma",      ko: "엄마",         meaning: "엄마" },
                 { zh: "爸爸",  pinyin: "bàba",      ko: "아빠",         meaning: "아빠" },
                 { zh: "哥哥",  pinyin: "gēge",      ko: "형",           meaning: "형" },
@@ -612,14 +660,12 @@
               cards: [
                 { zh: "神",    pinyin: "shén",      ko: "하나님",       meaning: "하나님" },
                 { zh: "耶稣",  pinyin: "Yēsū",      ko: "예수님",       meaning: "예수님" },
-
                 { zh: "你",    pinyin: "nǐ",        ko: "너",           meaning: "너" },
                 { zh: "他",    pinyin: "tā",        ko: "그",           meaning: "그" },
                 { zh: "她",    pinyin: "tā",        ko: "그녀",         meaning: "그녀" },
                 { zh: "我们",  pinyin: "wǒmen",     ko: "우리",         meaning: "우리" },
                 { zh: "你们",  pinyin: "nǐmen",     ko: "너희",         meaning: "너희" },
                 { zh: "他们",  pinyin: "tāmen",     ko: "그들",         meaning: "그들" },
-
                 { zh: "妈妈",  pinyin: "māma",      ko: "엄마",         meaning: "엄마" },
                 { zh: "爸爸",  pinyin: "bàba",      ko: "아빠",         meaning: "아빠" },
                 { zh: "哥哥",  pinyin: "gēge",      ko: "형",           meaning: "형" },
@@ -761,6 +807,7 @@
       play();
     }
 
+    /* ========= 학습 문장 + 그 아래 전용 플래시 카드 ========= */
     function renderStudy(step, c) {
       const intro = document.createElement("div");
       intro.className = "card";
@@ -793,6 +840,98 @@
         document.getElementById(`once-${s.id}`).onclick = () => speakChineseOnce(s.zh);
         document.getElementById(`five-${s.id}`).onclick = () => speakChineseRepeated(s.zh);
       });
+
+      /* --- 이 과(해당 탭)에서 쓰인 단어로 플래시 카드 추가 --- */
+      const texts = [];
+      step.sentences.forEach(s => texts.push(s.zh));
+      if (step.builderBlocks) {
+        step.builderBlocks.forEach(b => {
+          (b.cards || []).forEach(card => texts.push(card.zh));
+        });
+      }
+      if (step.matchGame && step.matchGame.pairs) {
+        step.matchGame.pairs.forEach(p => texts.push(p.key));
+      }
+
+      let stepVocab = [];
+      if (texts.length) {
+        stepVocab = flashVocab.filter(v =>
+          texts.some(t => (t || "").includes(v.hanzi))
+        );
+      }
+      if (stepVocab.length === 0) stepVocab = flashVocab;
+
+      const flashCard = document.createElement("div");
+      flashCard.className = "card study-flash-card";
+      flashCard.innerHTML = `
+        <div class="section-label">${step.label} · 이 과 단어 플래시 카드</div>
+        <div class="ko">
+          방금 배운 문장에 나오는 단어들을 카드로 복습해요.
+        </div>
+        <div class="flash-wrapper">
+          <button class="arrow-btn" id="study-flash-prev">◀</button>
+          <div class="flashcard" id="study-flash-card">
+            <div class="flash-counter" id="study-flash-counter"></div>
+            <div class="flash-face" id="study-flash-face"></div>
+          </div>
+          <button class="arrow-btn" id="study-flash-next">▶</button>
+        </div>
+        <div class="idx-text" id="study-flash-idx"></div>
+        <div class="btn-row">
+          <button id="study-flash-speak">다시 듣기 ▶</button>
+        </div>
+        <div class="hint">
+          카드를 눌러 앞/뒷면을 바꾸고, 한자를 보고 뜻을 맞춰 보세요.
+        </div>
+      `;
+      c.appendChild(flashCard);
+
+      let idx = 0;
+      let front = true;
+
+      function drawStudyFlash() {
+        const v = stepVocab[idx];
+        const face = document.getElementById("study-flash-face");
+        const counterEl = document.getElementById("study-flash-counter");
+        const cardEl = document.getElementById("study-flash-card");
+
+        counterEl.textContent = `${idx + 1} / ${stepVocab.length}`;
+        document.getElementById("study-flash-idx").innerText =
+          `${idx + 1} / ${stepVocab.length}`;
+
+        if (front) {
+          cardEl.classList.remove("back");
+          face.innerHTML = `<div class="flash-front">${v.hanzi}</div>`;
+          speakChineseOnce(v.hanzi);
+        } else {
+          cardEl.classList.add("back");
+          face.innerHTML = `
+            <div class="flash-back-main">${v.meaning}</div>
+            <div class="flash-back-sub">${v.hanzi} · ${v.pinyin}</div>
+          `;
+        }
+      }
+
+      document.getElementById("study-flash-card").onclick = () => {
+        front = !front;
+        drawStudyFlash();
+      };
+      document.getElementById("study-flash-prev").onclick = () => {
+        idx = (idx - 1 + stepVocab.length) % stepVocab.length;
+        front = true;
+        drawStudyFlash();
+      };
+      document.getElementById("study-flash-next").onclick = () => {
+        idx = (idx + 1) % stepVocab.length;
+        front = true;
+        drawStudyFlash();
+      };
+      document.getElementById("study-flash-speak").onclick = () => {
+        const v = stepVocab[idx];
+        speakChineseOnce(v.hanzi);
+      };
+
+      drawStudyFlash();
     }
 
     function renderSong(step, c) {
@@ -971,137 +1110,132 @@
       });
     }
 
-   function renderQuiz(step, c) {
-  if (step.matchGame) {
-    const m = step.matchGame;
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <div class="section-label">${step.label} · 단어 & 뜻 맞추기 게임</div>
-      <div class="ko">
-        왼쪽 중국어 단어와 오른쪽 뜻을 <b>순서대로 눌러서</b> 짝을 맞춰 보세요.
-      </div>
-      <div class="match-layout">
-        <div class="match-col">
-          <div class="section-label">${m.leftTitle || "중국어 단어"}</div>
-          <div id="match-left"></div>
-        </div>
-        <div class="match-col">
-          <div class="section-label">${m.rightTitle || "뜻"}</div>
-          <div id="match-right"></div>
-        </div>
-      </div>
-      <div class="hint" id="match-status" style="margin-top:12px;"></div>
-    `;
-    c.appendChild(card);
+    function renderQuiz(step, c) {
+      if (step.matchGame) {
+        const m = step.matchGame;
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="section-label">${step.label} · 단어 & 뜻 맞추기 게임</div>
+          <div class="ko">
+            왼쪽 중국어 단어와 오른쪽 뜻을 <b>순서대로 눌러서</b> 짝을 맞춰 보세요.
+          </div>
+          <div class="match-layout">
+            <div class="match-col">
+              <div class="section-label">${m.leftTitle || "중국어 단어"}</div>
+              <div id="match-left"></div>
+            </div>
+            <div class="match-col">
+              <div class="section-label">${m.rightTitle || "뜻"}</div>
+              <div id="match-right"></div>
+            </div>
+          </div>
+          <div class="hint" id="match-status" style="margin-top:12px;"></div>
+        `;
+        c.appendChild(card);
 
-    const leftEl = card.querySelector("#match-left");
-    const rightEl = card.querySelector("#match-right");
-    const statusEl = card.querySelector("#match-status");
+        const leftEl = card.querySelector("#match-left");
+        const rightEl = card.querySelector("#match-right");
+        const statusEl = card.querySelector("#match-status");
 
-    const pairs = m.pairs || [];
+        const pairs = m.pairs || [];
 
-    // 왼쪽: 원래 순서
-    const leftItems = pairs.map(p => ({
-      key: p.key,
-      label: p.leftLabel || p.key
-    }));
+        const leftItems = pairs.map(p => ({
+          key: p.key,
+          label: p.leftLabel || p.key
+        }));
 
-    // 오른쪽: 같은 데이터지만 순서를 랜덤으로 섞기
-    let rightItems = pairs.map(p => ({
-      key: p.key,
-      label: p.rightLabel || ""
-    }));
+        let rightItems = pairs.map(p => ({
+          key: p.key,
+          label: p.rightLabel || ""
+        }));
 
-    // 🔹 이 부분이 "섞기" 핵심 (Fisher–Yates shuffle)
-    for (let i = rightItems.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [rightItems[i], rightItems[j]] = [rightItems[j], rightItems[i]];
-    }
-
-    // 버튼 만들기
-    leftItems.forEach(item => {
-      const btn = document.createElement("button");
-      btn.className = "match-btn";
-      btn.dataset.key = item.key;
-      btn.textContent = item.label;
-      leftEl.appendChild(btn);
-    });
-
-    rightItems.forEach(item => {
-      const btn = document.createElement("button");
-      btn.className = "match-btn";
-      btn.dataset.key = item.key;
-      btn.textContent = item.label;
-      rightEl.appendChild(btn);
-    });
-
-    let selectedLeft = null;
-    let solvedCount = 0;
-    const total = pairs.length;
-
-    function clearSelectedLeft() {
-      leftEl.querySelectorAll(".match-btn").forEach(b => b.classList.remove("selected"));
-    }
-
-    leftEl.querySelectorAll(".match-btn").forEach(btn => {
-      btn.onclick = () => {
-        if (btn.classList.contains("correct")) return;
-        clearSelectedLeft();
-        btn.classList.add("selected");
-        selectedLeft = btn.dataset.key;
-        statusEl.textContent = "이제 오른쪽에서 짝이 되는 뜻을 골라 보세요.";
-      };
-    });
-
-    rightEl.querySelectorAll(".match-btn").forEach(btn => {
-      btn.onclick = () => {
-        if (btn.classList.contains("correct")) return;
-        if (!selectedLeft) {
-          statusEl.textContent = "먼저 왼쪽에서 단어를 하나 고르세요.";
-          return;
+        for (let i = rightItems.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [rightItems[i], rightItems[j]] = [rightItems[j], rightItems[i]];
         }
-        const rightKey = btn.dataset.key;
-        const leftBtn = leftEl.querySelector(`.match-btn[data-key="${selectedLeft}"]`);
-        if (!leftBtn) return;
 
-        if (rightKey === selectedLeft) {
-          leftBtn.classList.remove("selected");
-          leftBtn.classList.add("correct");
-          btn.classList.add("correct");
-          solvedCount++;
-          statusEl.textContent = "정답이에요! 잘했어요 👍";
-          speakChineseOnce(selectedLeft);
-          selectedLeft = null;
-          if (solvedCount === total) {
-            statusEl.textContent = "모든 단어를 다 맞췄어요! 정말 잘했어요 🎉";
-          }
-        } else {
-          btn.classList.add("wrong");
-          statusEl.textContent = "조금 아쉬워요. 다시 한 번 생각해 볼까?";
-          setTimeout(() => {
-            btn.classList.remove("wrong");
+        leftItems.forEach(item => {
+          const btn = document.createElement("button");
+          btn.className = "match-btn";
+          btn.dataset.key = item.key;
+          btn.textContent = item.label;
+          leftEl.appendChild(btn);
+        });
+
+        rightItems.forEach(item => {
+          const btn = document.createElement("button");
+          btn.className = "match-btn";
+          btn.dataset.key = item.key;
+          btn.textContent = item.label;
+          rightEl.appendChild(btn);
+        });
+
+        let selectedLeft = null;
+        let solvedCount = 0;
+        const total = pairs.length;
+
+        function clearSelectedLeft() {
+          leftEl.querySelectorAll(".match-btn").forEach(b => b.classList.remove("selected"));
+        }
+
+        leftEl.querySelectorAll(".match-btn").forEach(btn => {
+          btn.onclick = () => {
+            if (btn.classList.contains("correct")) return;
             clearSelectedLeft();
-            selectedLeft = null;
-          }, 600);
-        }
-      };
-    });
+            btn.classList.add("selected");
+            selectedLeft = btn.dataset.key;
+            statusEl.textContent = "이제 오른쪽에서 짝이 되는 뜻을 골라 보세요.";
+          };
+        });
 
-    return;
-  }
+        rightEl.querySelectorAll(".match-btn").forEach(btn => {
+          btn.onclick = () => {
+            if (btn.classList.contains("correct")) return;
+            if (!selectedLeft) {
+              statusEl.textContent = "먼저 왼쪽에서 단어를 하나 고르세요.";
+              return;
+            }
+            const rightKey = btn.dataset.key;
+            const leftBtn = leftEl.querySelector(`.match-btn[data-key="${selectedLeft}"]`);
+            if (!leftBtn) return;
 
-  // matchGame이 없는 단계용 기본 퀴즈 카드
-  const placeholder = document.createElement("div");
-  placeholder.className = "card";
-  placeholder.innerHTML = `
-    <div class="section-label">${step.label} · 퀴즈 / 게임</div>
-    <div class="hint">이 단계에는 아직 별도 퀴즈가 없어요.</div>
-  `;
-  c.appendChild(placeholder);
+            if (rightKey === selectedLeft) {
+              leftBtn.classList.remove("selected");
+              leftBtn.classList.add("correct");
+              btn.classList.add("correct");
+              solvedCount++;
+              statusEl.textContent = "정답이에요! 잘했어요 👍";
+              speakChineseOnce(selectedLeft);
+              selectedLeft = null;
+              if (solvedCount === total) {
+                statusEl.textContent = "모든 단어를 다 맞췄어요! 정말 잘했어요 🎉";
+              }
+            } else {
+              btn.classList.add("wrong");
+              statusEl.textContent = "조금 아쉬워요. 다시 한 번 생각해 볼까?";
+              setTimeout(() => {
+                btn.classList.remove("wrong");
+                clearSelectedLeft();
+                selectedLeft = null;
+              }, 600);
+            }
+          };
+        });
 
+        return;
+      }
+
+      const placeholder = document.createElement("div");
+      placeholder.className = "card";
+      placeholder.innerHTML = `
+        <div class="section-label">${step.label} · 퀴즈 / 게임</div>
+        <div class="hint">이 단계에는 아직 별도 퀴즈가 없어요.</div>
+      `;
+      c.appendChild(placeholder);
     }
 
+    /* 전체 플래시 모드 (탭마다 공통 단어) */
     function renderFlash(step, c) {
       const intro = document.createElement("div");
       intro.className = "card";
