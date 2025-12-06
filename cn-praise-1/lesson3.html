@@ -412,7 +412,7 @@
               id: "toGod",
               title: "하나님께 드리는 고백 문장 만들기",
               templateZhDisplay: "我要<span class=\"inline-highlight\">{{zh}}</span>神。",
-              templateKoDisplay: "나는 <span class=\"inline-highlight\">{{ko}}</span> 하나님을 할 거예요.",
+              templateKoDisplay: "나는 하나님을 <span class=\"inline-highlight\">{{ko}}</span> 거예요.",
               templateZhSpeak: "我要{{zh}}神。",
               explainKoPrefix: "‘{{ko}}’(을/를) 넣어서 만든 하나님께 드리는 고백이에요.",
               cards: [
@@ -429,7 +429,7 @@
               id: "daily",
               title: "일상 행동 문장 만들기",
               templateZhDisplay: "我要<span class=\"inline-highlight\">{{zh}}</span>。",
-              templateKoDisplay: "나는 <span class=\"inline-highlight\">{{ko}}</span> 할 거예요.",
+              templateKoDisplay: "나는 <span class=\"inline-highlight\">{{ko}}</span> 거예요.",
               templateZhSpeak: "我要{{zh}}。",
               explainKoPrefix: "‘{{ko}}’(을/를) 넣어서 만든 일상 문장이에요.",
               cards: [
@@ -860,117 +860,136 @@
       });
     }
 
-    function renderQuiz(step, c) {
-      if (step.matchGame) {
-        const m = step.matchGame;
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <div class="section-label">${step.label} · 단어 & 뜻 맞추기 게임</div>
-          <div class="ko">
-            왼쪽 중국어 단어와 오른쪽 뜻을 <b>순서대로 눌러서</b> 짝을 맞춰 보세요.
-          </div>
-          <div class="match-layout">
-            <div class="match-col">
-              <div class="section-label">${m.leftTitle || "중국어 단어"}</div>
-              <div id="match-left"></div>
-            </div>
-            <div class="match-col">
-              <div class="section-label">${m.rightTitle || "뜻"}</div>
-              <div id="match-right"></div>
-            </div>
-          </div>
-          <div class="hint" id="match-status" style="margin-top:12px;"></div>
-        `;
-        c.appendChild(card);
+   function renderQuiz(step, c) {
+  if (step.matchGame) {
+    const m = step.matchGame;
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="section-label">${step.label} · 단어 & 뜻 맞추기 게임</div>
+      <div class="ko">
+        왼쪽 중국어 단어와 오른쪽 뜻을 <b>순서대로 눌러서</b> 짝을 맞춰 보세요.
+      </div>
+      <div class="match-layout">
+        <div class="match-col">
+          <div class="section-label">${m.leftTitle || "중국어 단어"}</div>
+          <div id="match-left"></div>
+        </div>
+        <div class="match-col">
+          <div class="section-label">${m.rightTitle || "뜻"}</div>
+          <div id="match-right"></div>
+        </div>
+      </div>
+      <div class="hint" id="match-status" style="margin-top:12px;"></div>
+    `;
+    c.appendChild(card);
 
-        const leftEl = card.querySelector("#match-left");
-        const rightEl = card.querySelector("#match-right");
-        const statusEl = card.querySelector("#match-status");
+    const leftEl = card.querySelector("#match-left");
+    const rightEl = card.querySelector("#match-right");
+    const statusEl = card.querySelector("#match-status");
 
-        const pairs = m.pairs || [];
-        const leftItems = pairs.map(p => ({ key: p.key, label: p.leftLabel || p.key }));
-        const rightItems = pairs.map(p => ({ key: p.key, label: p.rightLabel || "" }));
+    const pairs = m.pairs || [];
 
-        leftItems.forEach(item => {
-          const btn = document.createElement("button");
-          btn.className = "match-btn";
-          btn.dataset.key = item.key;
-          btn.textContent = item.label;
-          leftEl.appendChild(btn);
-        });
+    // 왼쪽: 원래 순서
+    const leftItems = pairs.map(p => ({
+      key: p.key,
+      label: p.leftLabel || p.key
+    }));
 
-        rightItems.forEach(item => {
-          const btn = document.createElement("button");
-          btn.className = "match-btn";
-          btn.dataset.key = item.key;
-          btn.textContent = item.label;
-          rightEl.appendChild(btn);
-        });
+    // 오른쪽: 같은 데이터지만 순서를 랜덤으로 섞기
+    let rightItems = pairs.map(p => ({
+      key: p.key,
+      label: p.rightLabel || ""
+    }));
 
-        let selectedLeft = null;
-        let solvedCount = 0;
-        const total = pairs.length;
-
-        function clearSelectedLeft() {
-          leftEl.querySelectorAll(".match-btn").forEach(b => b.classList.remove("selected"));
-        }
-
-        leftEl.querySelectorAll(".match-btn").forEach(btn => {
-          btn.onclick = () => {
-            if (btn.classList.contains("correct")) return;
-            clearSelectedLeft();
-            btn.classList.add("selected");
-            selectedLeft = btn.dataset.key;
-            statusEl.textContent = "이제 오른쪽에서 짝이 되는 뜻을 골라 보세요.";
-          };
-        });
-
-        rightEl.querySelectorAll(".match-btn").forEach(btn => {
-          btn.onclick = () => {
-            if (btn.classList.contains("correct")) return;
-            if (!selectedLeft) {
-              statusEl.textContent = "먼저 왼쪽에서 단어를 하나 고르세요.";
-              return;
-            }
-            const rightKey = btn.dataset.key;
-            const leftBtn = leftEl.querySelector(`.match-btn[data-key="${selectedLeft}"]`);
-            if (!leftBtn) return;
-
-            if (rightKey === selectedLeft) {
-              leftBtn.classList.remove("selected");
-              leftBtn.classList.add("correct");
-              btn.classList.add("correct");
-              solvedCount++;
-              statusEl.textContent = "정답이에요! 잘했어요 👍";
-              speakChineseOnce(selectedLeft);
-              selectedLeft = null;
-              if (solvedCount === total) {
-                statusEl.textContent = "모든 단어를 다 맞췄어요! 정말 잘했어요 🎉";
-              }
-            } else {
-              btn.classList.add("wrong");
-              statusEl.textContent = "조금 아쉬워요. 다시 한 번 생각해 볼까?";
-              setTimeout(() => {
-                btn.classList.remove("wrong");
-                clearSelectedLeft();
-                selectedLeft = null;
-              }, 600);
-            }
-          };
-        });
-
-        return;
-      }
-
-      const placeholder = document.createElement("div");
-      placeholder.className = "card";
-      placeholder.innerHTML = `
-        <div class="section-label">${step.label} · 퀴즈 / 게임</div>
-        <div class="hint">이 단계에는 아직 별도 퀴즈가 없어요.</div>
-      `;
-      c.appendChild(placeholder);
+    // 🔹 이 부분이 "섞기" 핵심 (Fisher–Yates shuffle)
+    for (let i = rightItems.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [rightItems[i], rightItems[j]] = [rightItems[j], rightItems[i]];
     }
+
+    // 버튼 만들기
+    leftItems.forEach(item => {
+      const btn = document.createElement("button");
+      btn.className = "match-btn";
+      btn.dataset.key = item.key;
+      btn.textContent = item.label;
+      leftEl.appendChild(btn);
+    });
+
+    rightItems.forEach(item => {
+      const btn = document.createElement("button");
+      btn.className = "match-btn";
+      btn.dataset.key = item.key;
+      btn.textContent = item.label;
+      rightEl.appendChild(btn);
+    });
+
+    let selectedLeft = null;
+    let solvedCount = 0;
+    const total = pairs.length;
+
+    function clearSelectedLeft() {
+      leftEl.querySelectorAll(".match-btn").forEach(b => b.classList.remove("selected"));
+    }
+
+    leftEl.querySelectorAll(".match-btn").forEach(btn => {
+      btn.onclick = () => {
+        if (btn.classList.contains("correct")) return;
+        clearSelectedLeft();
+        btn.classList.add("selected");
+        selectedLeft = btn.dataset.key;
+        statusEl.textContent = "이제 오른쪽에서 짝이 되는 뜻을 골라 보세요.";
+      };
+    });
+
+    rightEl.querySelectorAll(".match-btn").forEach(btn => {
+      btn.onclick = () => {
+        if (btn.classList.contains("correct")) return;
+        if (!selectedLeft) {
+          statusEl.textContent = "먼저 왼쪽에서 단어를 하나 고르세요.";
+          return;
+        }
+        const rightKey = btn.dataset.key;
+        const leftBtn = leftEl.querySelector(`.match-btn[data-key="${selectedLeft}"]`);
+        if (!leftBtn) return;
+
+        if (rightKey === selectedLeft) {
+          leftBtn.classList.remove("selected");
+          leftBtn.classList.add("correct");
+          btn.classList.add("correct");
+          solvedCount++;
+          statusEl.textContent = "정답이에요! 잘했어요 👍";
+          speakChineseOnce(selectedLeft);
+          selectedLeft = null;
+          if (solvedCount === total) {
+            statusEl.textContent = "모든 단어를 다 맞췄어요! 정말 잘했어요 🎉";
+          }
+        } else {
+          btn.classList.add("wrong");
+          statusEl.textContent = "조금 아쉬워요. 다시 한 번 생각해 볼까?";
+          setTimeout(() => {
+            btn.classList.remove("wrong");
+            clearSelectedLeft();
+            selectedLeft = null;
+          }, 600);
+        }
+      };
+    });
+
+    return;
+  }
+
+  // matchGame이 없는 단계용 기본 퀴즈 카드
+  const placeholder = document.createElement("div");
+  placeholder.className = "card";
+  placeholder.innerHTML = `
+    <div class="section-label">${step.label} · 퀴즈 / 게임</div>
+    <div class="hint">이 단계에는 아직 별도 퀴즈가 없어요.</div>
+  `;
+  c.appendChild(placeholder);
+}
+
 
     function renderFlash(step, c) {
       const intro = document.createElement("div");
