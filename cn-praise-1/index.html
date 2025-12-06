@@ -1,160 +1,425 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>중국어 찬양 1권 – 과 선택</title>
+  <meta charset="UTF-8" />
+  <title>찬양으로 배우는 첫 중국어 · 중국어 찬양 1권</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
       padding: 0;
-      background: #eef2ff;
-      min-height: 100vh;
+      background: #fff7ed;
+      color: #111827;
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-height: 100vh;
     }
+
+    .page {
+      width: 100%;
+      max-width: 1100px;
+      padding: 24px 18px 40px;
+    }
+
     header {
-      text-align: center;
-      margin-top: 32px;
-      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
     }
-    h1 {
-      margin: 0;
-      font-size: 24px;
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
-    p {
-      margin: 4px 0;
-      color: #555;
+
+    .title-main {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .title-sub {
       font-size: 14px;
+      color: #6b7280;
     }
-    .back-link {
-      margin-top: 8px;
+
+    .back-btn {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: none;
+      background: #e0e7ff;
+      color: #4338ca;
       font-size: 13px;
-    }
-    .back-link a {
-      color: #4f46e5;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       text-decoration: none;
     }
+
+    .back-btn:hover {
+      background: #c7d2fe;
+    }
+
+    .hero {
+      display: flex;
+      gap: 24px;
+      align-items: stretch;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .hero-image {
+      flex: 1 1 260px;
+      min-width: 260px;
+      max-width: 420px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+      background: #fff;
+    }
+
+    .hero-image img {
+      width: 100%;
+      display: block;
+    }
+
+    .hero-info {
+      flex: 1 1 260px;
+      min-width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 16px 18px;
+      border-radius: 24px;
+      background: #fffbeb;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+
+    .hero-tag {
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #f97316;
+      color: white;
+      width: fit-content;
+    }
+
+    .hero-info h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .hero-info p {
+      margin: 0;
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+
+    .hero-note {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    .lesson-section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lesson-section-title span.badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #fed7aa;
+      font-size: 13px;
+      color: #7c2d12;
+    }
+
     .lesson-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-      width: 100%;
-      max-width: 600px;
-      padding: 20px;
-      box-sizing: border-box;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 6px;
     }
+
     .lesson-card {
-      background: white;
-      border-radius: 14px;
-      padding: 14px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.06);
-      text-align: center;
+      background: #fff;
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      display: flex;
+      gap: 10px;
+      align-items: center;
     }
-    .lesson-title {
+
+    .lesson-number {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: #fed7aa;
+      color: #7c2d12;
+      font-weight: 800;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lesson-texts {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .lesson-zh {
+      font-size: 15px;
       font-weight: 600;
-      margin-bottom: 4px;
+      color: #111827;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .lesson-sub {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 8px;
+
+    .lesson-ko {
+      font-size: 13px;
+      color: #4b5563;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .btn {
-      display: inline-block;
-      padding: 6px 12px;
+
+    .lesson-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-left: 4px;
+    }
+
+    .btn-open {
+      padding: 6px 10px;
       border-radius: 999px;
       border: none;
       font-size: 12px;
-      text-decoration: none;
       cursor: pointer;
-      background: #4f46e5;
+      background: #f97316;
       color: white;
+      text-decoration: none;
+      white-space: nowrap;
     }
-    .btn.disabled {
-      background: #cbd5f5;
-      cursor: default;
+
+    .btn-open:hover {
+      background: #ea580c;
     }
+
+    .btn-sub {
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: none;
+      font-size: 11px;
+      cursor: pointer;
+      background: #e5e7eb;
+      color: #374151;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
     footer {
       margin-top: auto;
-      margin-bottom: 16px;
+      padding: 14px 0 20px;
       font-size: 11px;
-      color: #999;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    @media (max-width: 720px) {
+      .title-main {
+        font-size: 22px;
+      }
+      .hero-info {
+        padding: 14px;
+      }
+      .hero-image {
+        max-width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>중국어 찬양 1권</h1>
-    <p>하나님의 사랑을 찬양하며, 중국어로 말씀을 배우는 첫 번째 책</p>
-    <div class="back-link">
-      <a href="../index.html">⬅ 언어 선택으로 돌아가기</a>
-    </div>
-  </header>
+  <div class="page">
+    <header>
+      <div class="title-block">
+        <div class="title-main">찬양으로 배우는 첫 중국어 · 1권</div>
+        <div class="title-sub">중국어 찬양으로 말씀과 한어를 함께 배우는 어린이 워크북</div>
+      </div>
+      <!-- 전 단계로 가기 버튼 -->
+      <a class="back-btn" href="../index.html">
+        ⬅ 이전 단계로 가기
+      </a>
+    </header>
 
-  <div class="lesson-grid">
+    <main>
+      <section class="hero">
+        <!-- 표지 그림: 파일 이름을 네가 저장한 이름으로 바꿔도 돼 -->
+        <div class="hero-image">
+          <!-- 예: cover-main.jpg -->
+          <img src="cover-main.jpg" alt="찬양으로 배우는 첫 중국어 표지">
+        </div>
 
-    <!-- 1과 -->
-    <div class="lesson-card">
-      <div class="lesson-title">1과. 하나님은 사랑이에요</div>
-      <div class="lesson-sub">요한일서 4:8 중심</div>
-      <a class="btn" href="lesson1.html">1과 열기</a>
-    </div>
+        <div class="hero-info">
+          <div class="hero-tag">🎵 SOWBIBLE · 중국어 찬양 1권</div>
+          <h2>예수님과 함께 부르며 배우는 중국어 찬양 교재</h2>
+          <p>
+찬양 가사를 통해 자연스럽게 중국어를 듣고 따라 말하며,
+말씀과 하나님 성품까지 함께 배우는 8과 구성의 워크북입니다.
 
-    <!-- 2과 -->
-    <div class="lesson-card">
-      <div class="lesson-title">2과</div>
-      <div class="lesson-sub">중국어 찬양 1권 2과</div>
-      <a class="btn" href="lesson2.html">2과 열기</a>
-    </div>
+각 과는
+- 찬양과 말씀
+- 핵심 학습 문장
+- 단어 플래시 카드
+- 문장 만들기 & 퀴즈
+로 구성되어 있어 스스로, 혹은 엄마표로 함께 공부하기 좋아요.
+          </p>
+          <p class="hero-note">
+📌 아래에서 1과~8과를 선택하면 바로 학습 페이지로 이동해요.
+          </p>
+        </div>
+      </section>
 
-    <!-- 3과 -->
-    <div class="lesson-card">
-      <div class="lesson-title">3과</div>
-      <div class="lesson-sub">중국어 찬양 1권 3과</div>
-      <a class="btn" href="lesson3.html">3과 열기</a>
-    </div>
+      <!-- 필요하면 목차 이미지를 한 번 더 보여주기 -->
+      <!-- 파일명은 저장한 이름으로 교체: 예) toc-8lessons.png -->
+      <!--
+      <section style="margin-bottom:22px;">
+        <img src="toc-8lessons.png" alt="중국어 찬양 1권 8과 목차" style="width:100%;max-width:600px;display:block;margin:0 auto;border-radius:18px;box-shadow:0 6px 16px rgba(0,0,0,0.06);">
+      </section>
+      -->
 
-    <!-- 4과 -->
-    <div class="lesson-card">
-      <div class="lesson-title">4과</div>
-      <div class="lesson-sub">중국어 찬양 1권 4과</div>
-      <a class="btn" href="lesson4.html">4과 열기</a>
-    </div>
+      <section>
+        <h3 class="lesson-section-title">
+          <span class="badge">8</span> 찬양으로 배우는 첫 중국어 · 과별 바로 가기
+        </h3>
 
-    <!-- 5과 -->
-    <div class="lesson-card">
-      <div class="lesson-title">5과</div>
-      <div class="lesson-sub">중국어 찬양 1권 5과</div>
-      <a class="btn" href="lesson5.html">5과 열기</a>
-    </div>
+        <div class="lesson-grid">
+          <!-- 1과 -->
+          <article class="lesson-card">
+            <div class="lesson-number">01</div>
+            <div class="lesson-texts">
+              <div class="lesson-zh">神就是爱</div>
+              <div class="lesson-ko">하나님은 사랑이에요</div>
+            </div>
+            <div class="lesson-actions">
+              <a class="btn-open" href="lesson1.html">1과 열기</a>
+            </div>
+          </article>
 
-    <!-- 6과 -->
-    <div class="lesson-card">
-      <div class="lesson-title">6과</div>
-      <div class="lesson-sub">중국어 찬양 1권 6과</div>
-      <a class="btn" href="lesson6.html">6과 열기</a>
-    </div>
-    
-    <!-- 7과 -->
-    <div class="lesson-card">
-      <div class="lesson-title">7과</div>
-      <div class="lesson-sub">중국어 찬양 1권 7과</div>
-      <a class="btn" href="lesson7.html">7과 열기</a>
-    </div>
+          <!-- 2과 -->
+          <article class="lesson-card">
+            <div class="lesson-number">02</div>
+            <div class="lesson-texts">
+              <div class="lesson-zh">我要歌颂我神</div>
+              <div class="lesson-ko">하나님을 찬양할 거예요</div>
+            </div>
+            <div class="lesson-actions">
+              <a class="btn-open" href="lesson2.html">2과 열기</a>
+            </div>
+          </article>
 
-     <!-- 8과 -->
-    <div class="lesson-card">
-      <div class="lesson-title">8과</div>
-      <div class="lesson-sub">중국어 찬양 1권 8과</div>
-      <a class="btn" href="lesson8.html">8과 열기</a>
-    </div>
+          <!-- 3과 -->
+          <article class="lesson-card">
+            <div class="lesson-number">03</div>
+            <div class="lesson-texts">
+              <div class="lesson-zh">不要不要不要怕</div>
+              <div class="lesson-ko">두려워 하지마!</div>
+            </div>
+            <div class="lesson-actions">
+              <a class="btn-open" href="lesson3.html">3과 열기</a>
+            </div>
+          </article>
 
+          <!-- 4과 -->
+          <article class="lesson-card">
+            <div class="lesson-number">04</div>
+            <div class="lesson-texts">
+              <div class="lesson-zh">天堂是个快乐处</div>
+              <div class="lesson-ko">천국은 즐거운 곳</div>
+            </div>
+            <div class="lesson-actions">
+              <a class="btn-open" href="lesson4.html">4과 열기</a>
+            </div>
+          </article>
+
+          <!-- 5과 -->
+          <article class="lesson-card">
+            <div class="lesson-number">05</div>
+            <div class="lesson-texts">
+              <div class="lesson-zh">今我有快乐</div>
+              <div class="lesson-ko">지금 내게 기쁨이 있어요!</div>
+            </div>
+            <div class="lesson-actions">
+              <a class="btn-open" href="lesson5.html">5과 열기</a>
+            </div>
+          </article>
+
+          <!-- 6과 -->
+          <article class="lesson-card">
+            <div class="lesson-number">06</div>
+            <div class="lesson-texts">
+              <div class="lesson-zh">只有一位真神</div>
+              <div class="lesson-ko">진짜 신은 한 분이세요!</div>
+            </div>
+            <div class="lesson-actions">
+              <a class="btn-open" href="lesson6.html">6과 열기</a>
+            </div>
+          </article>
+
+          <!-- 7과 -->
+          <article class="lesson-card">
+            <div class="lesson-number">07</div>
+            <div class="lesson-texts">
+              <div class="lesson-zh">赞美，赞美</div>
+              <div class="lesson-ko">찬양해, 찬양해</div>
+            </div>
+            <div class="lesson-actions">
+              <a class="btn-open" href="lesson7.html">7과 열기</a>
+            </div>
+          </article>
+
+          <!-- 8과 -->
+          <article class="lesson-card">
+            <div class="lesson-number">08</div>
+            <div class="lesson-texts">
+              <div class="lesson-zh">我已经决定要跟从耶稣</div>
+              <div class="lesson-ko">나는 이미 예수님을 따르기로 결정했어요!</div>
+            </div>
+            <div class="lesson-actions">
+              <a class="btn-open" href="lesson8.html">8과 열기</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      SOWBIBLE · 찬양으로 배우는 첫 중국어 · 중국어 찬양 1권
+    </footer>
   </div>
-
-  <footer>
-    SOWBIBLE · 중국어 찬양 1권
-  </footer>
 </body>
 </html>
