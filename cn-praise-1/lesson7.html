@@ -642,7 +642,7 @@
 
     const modesBase7 = [
       { id: "study", label: "학습 문장" },
-      { id: "attr",  label: "하나님 성품 찾기" },
+      { id: "attr",  label: "말씀 카드" },
       { id: "flash", label: "플래시 카드" },
       { id: "quiz",  label: "퀴즈" },
       { id: "verse", label: "말씀 카드" }
@@ -650,7 +650,7 @@
 
     function getStepModes(step) {
       if (!step) return ["study"];
-      if (step.id === "7-1") return ["study", "attr", "flash"]; // 1탭: 학습문장 / 성품 / 플래시
+      if (step.id === "7-1") return ["study", "attr", "flash"]; // 1탭: 학습문장 / 말씀 카드 / 플래시
       if (step.id === "7-2") return ["study", "flash", "verse"];
       if (step.id === "7-3") return ["study", "flash", "verse"];
       if (step.id === "7-4") return ["study", "flash", "verse"];
@@ -1159,20 +1159,6 @@
         return;
       }
 
-      const attrCard = document.createElement("div");
-      attrCard.className = "card";
-      attrCard.innerHTML = `
-        <div class="section-label">하나님 성품 찾기 & 기도</div>
-        <div class="ko">
-에베소서 1장, 시편 150:6, 34:1을 읽으며<br/>
-<strong>하나님은 어떤 분이신지</strong> 단어로 찾아 적어 보아요.<br/><br/>
-예) 선택하시는 하나님, 은혜 주시는 하나님, 찬양 받으시기 합당하신 하나님…<br/><br/>
-찾아낸 성품을 넣어 이렇게 기도해 보아요.<br/>
-“(하나님은 ___ 이십니다.) 그래서 저는 하나님을 찬양합니다.”
-        </div>
-      `;
-      container.appendChild(attrCard);
-
       (step.verses || verses7).forEach(v => {
         const card = document.createElement("div");
         card.className = "card verse-card";
@@ -1541,4 +1527,3 @@
   </script>
 </body>
 </html>
-
