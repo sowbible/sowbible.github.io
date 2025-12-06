@@ -19,12 +19,12 @@
       color: #000;
     }
 
-     /* 단계 탭: 1,2,3... */
+    /* 상단 단계 탭: 1,2,3... */
     .step-tabs {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
     .step-tab {
       min-width: 52px;
@@ -46,6 +46,29 @@
       background: #f97316;
       color: #fff;
       box-shadow: 0 0 0 2px #ffedd5 inset;
+    }
+
+    /* 파란색 소탭 (모드 탭) */
+    .mode-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 10px;
+    }
+    .mode-tab {
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: #e0e7ff;
+      font-size: 20px;
+      color: #111827;
+    }
+    .mode-tab.active {
+      background: #2563eb;
+      color: #fff;
     }
 
     .card {
@@ -315,31 +338,26 @@
   <h1>4과. 천국은 즐거운 곳 · 天堂是个快乐处</h1>
 
   <div id="step-tabs" class="step-tabs"></div>
+  <div id="mode-tabs" class="mode-tabs"></div>
   <div id="content"></div>
 
   <script>
-    /* ===== 공통: 중국어 음성 (TTS) 설정 ===== */
-
+    /* ===== 1. 중국어 음성 설정 ===== */
     let zhVoices = [];
     let selectedZhVoice = null;
 
     function loadZhVoices() {
       if (!("speechSynthesis" in window)) return;
-
       const voices = window.speechSynthesis.getVoices();
       zhVoices = voices.filter(v =>
         (v.lang && v.lang.toLowerCase().startsWith("zh")) ||
         (v.lang && v.lang.toLowerCase().includes("hans")) ||
         (v.name && v.name.toLowerCase().includes("chinese"))
       );
-
-      // 우선순위: zh-CN -> 그 외 중국어
       selectedZhVoice =
         zhVoices.find(v => v.lang && v.lang.toLowerCase() === "zh-cn") ||
-        zhVoices[0] ||
-        null;
+        zhVoices[0] || null;
     }
-
     if ("speechSynthesis" in window) {
       loadZhVoices();
       window.speechSynthesis.onvoiceschanged = loadZhVoices;
@@ -363,53 +381,47 @@
 
     function speakChineseOnce(text) {
       if (!ensureChineseVoice()) return;
-
       window.speechSynthesis.cancel();
-
       const u = new SpeechSynthesisUtterance(text);
       u.lang  = "zh-CN";
       u.voice = selectedZhVoice;
-      u.rate  = 0.65;
+      u.rate  = 0.9;
       u.pitch = 1.0;
-
       window.speechSynthesis.speak(u);
     }
 
     function speakChineseFive(text) {
       if (!ensureChineseVoice()) return;
-
       window.speechSynthesis.cancel();
       let count = 0;
-
       function play() {
         const u = new SpeechSynthesisUtterance(text);
         u.lang  = "zh-CN";
         u.voice = selectedZhVoice;
-        u.rate  = 0.65;
+        u.rate  = 0.9;
         u.pitch = 1.0;
-
         u.onend = () => {
           count++;
-          if (count < 5) {
-            setTimeout(play, 300);
-          }
+          if (count < 5) setTimeout(play, 300);
         };
-
         window.speechSynthesis.speak(u);
       }
-
       play();
     }
 
     function clear(el) {
       while (el.firstChild) el.removeChild(el.firstChild);
     }
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
 
-    const contentEl = document.getElementById("content");
-    const tabsEl = document.getElementById("step-tabs");
-    let currentTab = 1;
-
-    /* ===== 말씀 데이터 (4과) ===== */
+    /* ===== 2. 데이터 ===== */
     const verses4 = [
       {
         ref: "마태복음 13:44",
@@ -437,7 +449,8 @@
       }
     ];
 
-    /* ===== 탭 2용 어휘 (플래시카드) ===== */
+    const songVideoId4 = "OXUiNrHGoKI";
+
     const vocab4 = [
       { hanzi: "天堂", pinyin: "tiāntáng", meaning: "천국" },
       { hanzi: "是", pinyin: "shì", meaning: "~이다" },
@@ -447,9 +460,7 @@
       { hanzi: "哈利路亚", pinyin: "hālìlùyà", meaning: "할렐루야" }
     ];
 
-    /* ===== 문장 만들기용 단어 세트 ===== */
-
-    // 4-3: (    )은 즐거운 곳이에요
+    // 4-3 장소
     const words43 = [
       { kr: "천국", zh: "天堂", pinyin: "tiāntáng", meaning: "천국" },
       { kr: "교회", zh: "教会", pinyin: "jiàohuì", meaning: "교회" },
@@ -463,7 +474,7 @@
       { kr: "마트", zh: "超市", pinyin: "chāoshì", meaning: "마트/슈퍼" }
     ];
 
-    // 4-4: (   )是谁？
+    // 4-4: 나, 너, 그, 그녀, 우리, 너희, 그들 + 엄마, 아빠, 형, 누나, 남동생, 여동생
     const words44 = [
       { kr: "나", zh: "我", pinyin: "wǒ", meaning: "나" },
       { kr: "너", zh: "你", pinyin: "nǐ", meaning: "너" },
@@ -471,10 +482,16 @@
       { kr: "그녀", zh: "她", pinyin: "tā", meaning: "그녀" },
       { kr: "우리", zh: "我们", pinyin: "wǒmen", meaning: "우리" },
       { kr: "너희", zh: "你们", pinyin: "nǐmen", meaning: "너희" },
-      { kr: "그들", zh: "他们", pinyin: "tāmen", meaning: "그들" }
+      { kr: "그들", zh: "他们", pinyin: "tāmen", meaning: "그들" },
+      { kr: "엄마", zh: "妈妈", pinyin: "māma", meaning: "엄마" },
+      { kr: "아빠", zh: "爸爸", pinyin: "bàba", meaning: "아빠" },
+      { kr: "형", zh: "哥哥", pinyin: "gēge", meaning: "형" },
+      { kr: "누나/언니", zh: "姐姐", pinyin: "jiějie", meaning: "누나/언니" },
+      { kr: "남동생", zh: "弟弟", pinyin: "dìdi", meaning: "남동생" },
+      { kr: "여동생", zh: "妹妹", pinyin: "mèimei", meaning: "여동생" }
     ];
 
-    // 4-5:   "나는 (   )입니다."
+    // 4-6: 나는 (    )입니다.
     const words45 = [
       { kr: "기독교인", zh: "基督徒", pinyin: "jīdūtú", meaning: "기독교인" },
       { kr: "아들", zh: "儿子", pinyin: "érzi", meaning: "아들" },
@@ -488,97 +505,284 @@
       { kr: "형", zh: "哥哥", pinyin: "gēge", meaning: "형" },
       { kr: "누나", zh: "姐姐", pinyin: "jiějie", meaning: "누나/언니" },
       { kr: "남동생", zh: "弟弟", pinyin: "dìdi", meaning: "남동생" },
-      { kr: "여동생", zh: "妹妹", pinyin: "mèimei", meaning: "여동생" },
-      { kr: "할아버지", zh: "爷爷", pinyin: "yéye", meaning: "할아버지" },
-      { kr: "할머니", zh: "奶奶", pinyin: "nǎinai", meaning: "할머니" },
-      { kr: "외할머니", zh: "外婆", pinyin: "wàipó", meaning: "외할머니" },
-      { kr: "외할아버지", zh: "外公", pinyin: "wàigōng", meaning: "외할아버지" }
+      { kr: "여동생", zh: "妹妹", pinyin: "mèimei", meaning: "여동생" }
     ];
 
-    // 새 탭 5: (    )는(은) 기독교인이다.
+    // 4-5: (    ) 기독교인이다. (주어 형태)
     const words45Subject = [
-      { kr: "나",    subjKo: "나는",    zh: "我",   pinyin: "wǒ",     meaning: "나" },
-      { kr: "너",    subjKo: "너는",    zh: "你",   pinyin: "nǐ",     meaning: "너" },
-      { kr: "그",    subjKo: "그는",    zh: "他",   pinyin: "tā",     meaning: "그" },
-      { kr: "그녀",  subjKo: "그녀는",  zh: "她",   pinyin: "tā",     meaning: "그녀" },
-      { kr: "우리",  subjKo: "우리는",  zh: "我们", pinyin: "wǒmen", meaning: "우리" },
-      { kr: "너희",  subjKo: "너희는",  zh: "你们", pinyin: "nǐmen", meaning: "너희" },
-      { kr: "그들",  subjKo: "그들은",  zh: "他们", pinyin: "tāmen", meaning: "그들" }
+      { kr: "나", subjKo: "나는", zh: "我", pinyin: "wǒ", meaning: "나" },
+      { kr: "너", subjKo: "너는", zh: "你", pinyin: "nǐ", meaning: "너" },
+      { kr: "그", subjKo: "그는", zh: "他", pinyin: "tā", meaning: "그" },
+      { kr: "그녀", subjKo: "그녀는", zh: "她", pinyin: "tā", meaning: "그녀" },
+      { kr: "우리", subjKo: "우리는", zh: "我们", pinyin: "wǒmen", meaning: "우리" },
+      { kr: "너희", subjKo: "너희는", zh: "你们", pinyin: "nǐmen", meaning: "너희" },
+      { kr: "그들", subjKo: "그들은", zh: "他们", pinyin: "tāmen", meaning: "그들" },
+      { kr: "엄마", subjKo: "엄마는", zh: "妈妈", pinyin: "māma", meaning: "엄마" },
+      { kr: "아빠", subjKo: "아빠는", zh: "爸爸", pinyin: "bàba", meaning: "아빠" },
+      { kr: "형", subjKo: "형은", zh: "哥哥", pinyin: "gēge", meaning: "형" },
+      { kr: "누나", subjKo: "누나는", zh: "姐姐", pinyin: "jiějie", meaning: "누나/언니" },
+      { kr: "남동생", subjKo: "남동생은", zh: "弟弟", pinyin: "dìdi", meaning: "남동생" },
+      { kr: "여동생", subjKo: "여동생은", zh: "妹妹", pinyin: "mèimei", meaning: "여동생" }
     ];
 
-    /* ===== 탭 1: 말씀 카드 ===== */
-    function renderTab1() {
-      clear(contentEl);
+    const lesson4 = {
+      steps: [
+        {
+          id: "4-1",
+          label: "4-1 말씀과 천국 그림",
+          description: "천국이 어떤 곳인지 말씀으로 먼저 마음에 그려 봐요.",
+          sentences: [],
+          verses: [verses4[0], verses4[1], verses4[2]]
+        },
+        {
+          id: "4-2",
+          label: "4-2 찬양 - 天堂是个快乐处",
+          description: "찬양을 들으며 “天堂是个快乐处”를 따라 불러 보아요.",
+          sentences: [
+            {
+              id: "4-2-1",
+              zh: "天堂是个快乐处。",
+              pinyin: "tiāntáng shì gè kuàilè chù",
+              ko: "천국은 즐거운 곳이에요."
+            },
+            {
+              id: "4-2-2",
+              zh: "天堂是个快乐处，哈利路亚。",
+              pinyin: "tiāntáng shì gè kuàilè chù, hālìlùyà",
+              ko: "천국은 즐거운 곳, 할렐루야."
+            }
+          ],
+          verses: [verses4[0], verses4[3]],
+          songVideoId: songVideoId4
+        },
+        {
+          id: "4-3",
+          label: "4-3 (   )은 즐거운 곳이에요",
+          description: "장소 단어를 넣어서 ‘즐거운 곳’ 문장을 만들어 보아요.",
+          sentences: [
+            {
+              id: "4-3-1",
+              zh: "天堂是个快乐处。",
+              pinyin: "tiāntáng shì gè kuàilè chù",
+              ko: "천국은 즐거운 곳이에요."
+            },
+            {
+              id: "4-3-2",
+              zh: "教会是个快乐处。",
+              pinyin: "jiàohuì shì gè kuàilè chù",
+              ko: "교회는 즐거운 곳이에요."
+            }
+          ],
+          verses: [verses4[0], verses4[3]]
+        },
+        {
+          id: "4-4",
+          label: "4-4 (   )는 누구예요?",
+          description: "사람을 가리키는 말을 넣어서 ‘누구예요?’ 문장을 만들어 보아요.",
+          sentences: [
+            {
+              id: "4-4-1",
+              zh: "你是谁？",
+              pinyin: "nǐ shì shéi?",
+              ko: "너는 누구니?"
+            },
+            {
+              id: "4-4-2",
+              zh: "他是谁？",
+              pinyin: "tā shì shéi?",
+              ko: "그는 누구예요?"
+            }
+          ],
+          verses: [verses4[2], verses4[5]]
+        },
+        {
+          id: "4-5",
+          label: "4-5 (   )는 기독교인이다",
+          description: "사람을 넣어서 ‘(   )는 기독교인이다’ 문장을 만들어 보아요.",
+          sentences: [
+            {
+              id: "4-5-1",
+              zh: "我是基督徒。",
+              pinyin: "wǒ shì jīdūtú",
+              ko: "나는 기독교인이에요."
+            }
+          ],
+          verses: [verses4[4], verses4[5]]
+        },
+        {
+          id: "4-6",
+          label: "4-6 나는 (   )입니다",
+          description: "내 정체성을 넣어 ‘나는 (   )입니다’ 고백해 보아요.",
+          sentences: [
+            {
+              id: "4-6-1",
+              zh: "我是神的儿子。",
+              pinyin: "wǒ shì shén de érzi",
+              ko: "나는 하나님의 아들이에요."
+            },
+            {
+              id: "4-6-2",
+              zh: "我是神的女儿。",
+              pinyin: "wǒ shì shén de nǚ'ér",
+              ko: "나는 하나님의 딸이에요."
+            }
+          ],
+          verses: [verses4[4], verses4[5]]
+        },
+        {
+          id: "4-7",
+          label: "4-7 찬양 복습 & 단어 퀴즈",
+          description: "찬양을 다시 고백하고 단어·뜻 맞추기 게임을 해요.",
+          sentences: [
+            {
+              id: "4-7-1",
+              zh: "天堂是个快乐处，哈利路亚。",
+              pinyin: "tiāntáng shì gè kuàilè chù, hālìlùyà",
+              ko: "천국은 즐거운 곳, 할렐루야."
+            }
+          ],
+          verses: [verses4[0], verses4[1], verses4[3]]
+        }
+      ]
+    };
 
+    const modesBase4 = [
+      { id: "study", label: "학습 문장" },
+      { id: "flash", label: "플래시 카드" },
+      { id: "quiz",  label: "퀴즈" },
+      { id: "verse", label: "말씀 카드" },
+      { id: "song",  label: "찬양 배우기" }
+    ];
+
+    function getStepModes(step) {
+      if (!step) return ["study"];
+      if (step.id === "4-1") return ["verse"];
+      if (step.id === "4-2") return ["song", "study", "flash"];
+      return ["study", "flash", "quiz", "verse"];
+    }
+
+    function getFlashVocab(step) {
+      if (!step) return vocab4;
+      if (step.id === "4-2" || step.id === "4-7") return vocab4;
+      if (step.id === "4-3") return words43.map(w => ({ hanzi: w.zh, pinyin: w.pinyin, meaning: w.kr }));
+      if (step.id === "4-4") return words44.map(w => ({ hanzi: w.zh, pinyin: w.pinyin, meaning: w.kr }));
+      if (step.id === "4-5") return words45Subject.map(w => ({ hanzi: w.zh, pinyin: w.pinyin, meaning: w.kr }));
+      if (step.id === "4-6") return words45.map(w => ({ hanzi: w.zh, pinyin: w.pinyin, meaning: w.kr }));
+      return vocab4;
+    }
+
+    const builderMaps4 = {
+      "4-3": {
+        title: "(    )은 즐거운 곳이에요 · 문장 만들기",
+        zhTemplate: '<span class="inline-highlight">（      ）</span>是个快乐处。',
+        koTemplate: '<span class="inline-highlight">(      )</span>은(는) 즐거운 곳이에요.',
+        zhPrefix: "",
+        zhSuffix: "是个快乐处。",
+        words: words43.map(w => ({
+          labelKo: w.kr, zh: w.zh, pinyin: w.pinyin, meaning: w.meaning
+        })),
+        buildKo: (label) => `${label}은(는) 즐거운 곳이에요.`
+      },
+      "4-4": {
+        title: "(    )는 누구예요? · 문장 만들기",
+        zhTemplate: '<span class="inline-highlight">（      ）</span>是谁？',
+        koTemplate: '<span class="inline-highlight">(      )</span>는(은) 누구예요?',
+        zhPrefix: "",
+        zhSuffix: "是谁？",
+        words: words44.map(w => ({
+          labelKo: w.kr, zh: w.zh, pinyin: w.pinyin, meaning: w.meaning
+        })),
+        buildKo: (label) => `${label}는(은) 누구예요?`
+      },
+      "4-5": {
+        title: "(    )는(은) 기독교인이다 · 문장 만들기",
+        zhTemplate: '<span class="inline-highlight">（      ）</span>是基督徒。',
+        koTemplate: '<span class="inline-highlight">(      )</span> 기독교인이다.',
+        zhPrefix: "",
+        zhSuffix: "是基督徒。",
+        words: words45Subject.map(w => ({
+          labelKo: w.subjKo, zh: w.zh, pinyin: w.pinyin, meaning: w.meaning
+        })),
+        buildKo: (labelSubj) => `${labelSubj} 기독교인이다.`
+      },
+      "4-6": {
+        title: "나는 (    )입니다 · 문장 만들기",
+        zhTemplate: '我是<span class="inline-highlight">（      ）</span>。',
+        koTemplate: '나는 <span class="inline-highlight">(      )</span>입니다.',
+        zhPrefix: "我是",
+        zhSuffix: "。",
+        words: words45.map(w => ({
+          labelKo: w.kr, zh: w.zh, pinyin: w.pinyin, meaning: w.meaning
+        })),
+        buildKo: (label) => `나는 ${label}입니다.`
+      }
+    };
+
+    /* ===== 3. DOM & 상태 ===== */
+    const stepTabsEl = document.getElementById("step-tabs");
+    const modeTabsEl = document.getElementById("mode-tabs");
+    const contentEl  = document.getElementById("content");
+
+    let currentStepId = "4-1";
+    let currentModeId = "verse";
+
+    function getCurrentStep() {
+      return lesson4.steps.find(s => s.id === currentStepId);
+    }
+
+    /* ===== 4. 모드별 렌더링 ===== */
+
+    function renderStudy(step, c) {
       const intro = document.createElement("div");
       intro.className = "card";
       intro.innerHTML = `
-        <div class="section-label">4-1 · 말씀 & 찬양</div>
-        <div class="ko">천국이 어떤 곳인지, 말씀으로 먼저 마음에 그려 보아요.</div>
+        <div class="section-label">${step.label} · 학습 문장</div>
+        <div class="ko">${step.description || ""}</div>
       `;
-      contentEl.appendChild(intro);
+      c.appendChild(intro);
 
-      verses4.forEach(v => {
+      if (!step.sentences || !step.sentences.length) return;
+
+      step.sentences.forEach((s, i) => {
         const card = document.createElement("div");
-        card.className = "card verse-card";
+        card.className = "card";
         card.innerHTML = `
-          <div class="verse-ref">📖 ${v.ref}</div>
-          <div class="verse-text">${v.text}</div>
+          <div class="section-label">학습 문장 ${i + 1}</div>
+          <div class="zh">${s.zh}</div>
+          <div class="pinyin">${s.pinyin}</div>
+          <div class="ko">${s.ko}</div>
+          <div class="btn-row">
+            <button id="study-once-${s.id}">한번 듣기 ▶</button>
+            <button class="secondary" id="study-five-${s.id}">다섯 번 듣기 ▶▶</button>
+          </div>
         `;
-        contentEl.appendChild(card);
+        c.appendChild(card);
+        document.getElementById(`study-once-${s.id}`).onclick = () => speakChineseOnce(s.zh);
+        document.getElementById(`study-five-${s.id}`).onclick = () => speakChineseFive(s.zh);
       });
     }
 
-    /* ===== 탭 2: 찬양 + 주요 문장 + 플래시카드 ===== */
-    function renderTab2() {
-      clear(contentEl);
-
-      // 찬양 동영상
-      const songCard = document.createElement("div");
-      songCard.className = "card";
-      songCard.innerHTML = `
-        <div class="section-label">4-2 · 찬양 - 天堂是个快乐处</div>
-        <h2>천국은 즐거운 곳 · 天堂是个快乐处</h2>
-        <div class="video-wrapper">
-          <iframe
-            src="https://www.youtube.com/embed/OXUiNrHGoKI"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen>
-          </iframe>
-        </div>
-        <div class="hint">찬양을 들으면서 “天堂是个快乐处”를 입으로, 마음으로 따라 불러 봐요.</div>
+    function renderFlash(step, c) {
+      const vocab = getFlashVocab(step);
+      const intro = document.createElement("div");
+      intro.className = "card";
+      intro.innerHTML = `
+        <div class="section-label">${step.label} · 플래시 카드</div>
+        <div class="ko">카드를 눌러 앞/뒷면을 바꾸고, 단어를 소리 내어 따라 말해 보아요.</div>
       `;
-      contentEl.appendChild(songCard);
+      c.appendChild(intro);
 
-      // 주요 문장
-      const keyCard = document.createElement("div");
-      keyCard.className = "card";
-      keyCard.innerHTML = `
-        <div class="section-label">주요 문장 따라 말하기</div>
-        <div class="zh">天堂是个快乐处。</div>
-        <div class="pinyin">tiāntáng shì gè kuàilè chù</div>
-        <div class="ko">천국은 즐거운 곳이에요.</div>
-        <div class="btn-row">
-          <button onclick="speakChineseOnce('天堂是个快乐处')">한번 듣기 ▶</button>
-          <button class="secondary" onclick="speakChineseFive('天堂是个快乐处')">다섯 번 듣기 ▶▶</button>
-        </div>
-        <div class="zh" style="margin-top:14px;">天堂是个快乐处，哈利路亚。</div>
-        <div class="pinyin">tiāntáng shì gè kuàilè chù, hālìlùyà</div>
-        <div class="ko">천국은 즐거운 곳, 할렐루야.</div>
-        <div class="btn-row">
-          <button onclick="speakChineseOnce('天堂是个快乐处，哈利路亚')">한번 듣기 ▶</button>
-          <button class="secondary" onclick="speakChineseFive('天堂是个快乐处，哈利路亚')">다섯 번 듣기 ▶▶</button>
-        </div>
-      `;
-      contentEl.appendChild(keyCard);
+      if (!vocab || !vocab.length) {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `<div class="ko">이 단계에는 플래시 카드 단어가 없어요.</div>`;
+        c.appendChild(card);
+        return;
+      }
 
-      // 플래시카드
       const flashCard = document.createElement("div");
       flashCard.className = "card";
       flashCard.innerHTML = `
-        <div class="section-label">단어 플래시카드</div>
-        <div class="ko">카드를 눌러 앞/뒷면을 바꾸고, 한 번씩 발음을 들어 보아요.</div>
         <div class="flash-wrapper">
           <button class="arrow-btn" id="f-prev">◀</button>
           <div class="flashcard" id="f-card">
@@ -592,20 +796,20 @@
           <button id="f-speak">다시 듣기 ▶</button>
         </div>
       `;
-      contentEl.appendChild(flashCard);
+      c.appendChild(flashCard);
 
       let fIndex = 0;
       let fFront = true;
 
       function drawFlash() {
-        const v = vocab4[fIndex];
+        const v = vocab[fIndex];
         const face = document.getElementById("f-face");
         const counter = document.getElementById("f-counter");
         const idxText = document.getElementById("f-idx");
         const cardEl = document.getElementById("f-card");
 
-        counter.textContent = `${fIndex + 1} / ${vocab4.length}`;
-        idxText.textContent = `${fIndex + 1} / ${vocab4.length}`;
+        counter.textContent = `${fIndex + 1} / ${vocab.length}`;
+        idxText.textContent = `${fIndex + 1} / ${vocab.length}`;
 
         if (fFront) {
           cardEl.classList.remove("back");
@@ -625,443 +829,410 @@
         drawFlash();
       };
       document.getElementById("f-prev").onclick = () => {
-        fIndex = (fIndex - 1 + vocab4.length) % vocab4.length;
+        fIndex = (fIndex - 1 + vocab.length) % vocab.length;
         fFront = true;
         drawFlash();
       };
       document.getElementById("f-next").onclick = () => {
-        fIndex = (fIndex + 1) % vocab4.length;
+        fIndex = (fIndex + 1) % vocab.length;
         fFront = true;
         drawFlash();
       };
       document.getElementById("f-speak").onclick = () => {
-        const v = vocab4[fIndex];
+        const v = vocab[fIndex];
         speakChineseOnce(v.hanzi);
       };
 
       drawFlash();
     }
 
-    /* ===== 탭 3: (   )은 즐거운 곳이에요 문장 만들기 ===== */
-    function renderTab3() {
-      clear(contentEl);
-
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <div class="section-label">4-3 · (    )은 즐거운 곳이에요 · 문장 만들기</div>
-        <div style="background:#e0f2fe; padding:12px 16px; border-radius:12px;">
-          <div id="t43-zh" class="zh" style="font-size:36px; margin-bottom:6px;">
-            <span class="inline-highlight">(    )</span>是个快乐处。
-          </div>
-          <div id="t43-ko" class="ko" style="margin:0;">
-            <span class="inline-highlight">(    )</span>은 즐거운 곳이에요.
-          </div>
-        </div>
-        <div class="hint" style="margin-top:8px;">
-          아래 <b>장소 카드</b>를 눌러서 문장을 만들어 보아요.  
-          선택하면 위 문장에 들어가고, 중국어 문장을 읽어 줘요.
-        </div>
-        <div class="mini-card-container" id="wrap43"></div>
-        <div class="zh" id="out43-zh" style="display:none; margin-top:16px;"></div>
-        <div class="pinyin" id="out43-py" style="display:none;"></div>
-        <div class="ko" id="out43-ko" style="display:none; font-size:22px;"></div>
+    function renderQuiz(step, c) {
+      const intro = document.createElement("div");
+      intro.className = "card";
+      intro.innerHTML = `
+        <div class="section-label">${step.label} · 말하기 퀴즈</div>
+        <div class="ko">우리말 힌트를 보고 중국어 문장을 떠올려 보고, 정답을 들어 보아요.</div>
       `;
-      contentEl.appendChild(card);
+      c.appendChild(intro);
 
-      const wrap = document.getElementById("wrap43");
-      const tZh = document.getElementById("t43-zh");
-      const tKo = document.getElementById("t43-ko");
-      const oZh = document.getElementById("out43-zh");
-      const oPy = document.getElementById("out43-py");
-      const oKo = document.getElementById("out43-ko");
-
-      words43.forEach(w => {
-        const mc = document.createElement("div");
-        mc.className = "mini-card";
-        mc.innerHTML = `
-          <div class="mini-card-title">${w.kr}</div>
-          <div class="mini-card-zh">${w.zh}</div>
-          <div class="mini-card-sub">${w.pinyin} · ${w.meaning}</div>
+      /* 문장 만들기 미니카드 (4-3, 4-4, 4-5, 4-6) */
+      const builder = builderMaps4[step.id];
+      if (builder) {
+        const bCard = document.createElement("div");
+        bCard.className = "card";
+        bCard.innerHTML = `
+          <div class="section-label">${builder.title}</div>
+          <div style="background:#e0f2fe; padding:12px 16px; border-radius:12px;">
+            <div id="tmpl-zh-${step.id}" class="zh" style="font-size:36px; margin-bottom:6px;">
+              ${builder.zhTemplate}
+            </div>
+            <div id="tmpl-ko-${step.id}" class="ko" style="margin:0;">
+              ${builder.koTemplate}
+            </div>
+          </div>
+          <div class="hint" style="margin-top:4px;">
+            아래 <b>카드</b>를 눌러 괄호 안에 들어갈 말을 골라 보세요.  
+            선택하면 문장이 완성되고, 중국어로 읽어 줘요.
+          </div>
+          <div class="mini-card-container" id="mini-wrap-${step.id}"></div>
+          <div class="zh" id="builder-zh-${step.id}" style="display:none; margin-top:16px;"></div>
+          <div class="pinyin" id="builder-py-${step.id}" style="display:none;"></div>
+          <div class="ko" id="builder-ko-${step.id}" style="display:none; font-size:22px;"></div>
+          <div class="btn-row">
+            <button id="builder-once-${step.id}">문장 한번 듣기 ▶</button>
+            <button class="secondary" id="builder-five-${step.id}">다섯 번 듣기 ▶▶</button>
+          </div>
+          <div class="hint" id="builder-status-${step.id}"></div>
         `;
-        mc.onclick = () => {
-          const zhSentence = `${w.zh}是个快乐处。`;
-          const koSentence = `${w.kr}은(는) 즐거운 곳이에요.`;
+        c.appendChild(bCard);
 
-          tZh.innerHTML = `<span class="inline-highlight">${w.zh}</span>是个快乐处。`;
-          tKo.innerHTML = `<span class="inline-highlight">${w.kr}</span>은 즐거운 곳이에요.`;
+        const wrap = document.getElementById(`mini-wrap-${step.id}`);
+        const tmplZhEl = document.getElementById(`tmpl-zh-${step.id}`);
+        const tmplKoEl = document.getElementById(`tmpl-ko-${step.id}`);
+        const zhEl = document.getElementById(`builder-zh-${step.id}`);
+        const pyEl = document.getElementById(`builder-py-${step.id}`);
+        const koEl = document.getElementById(`builder-ko-${step.id}`);
+        const statusEl = document.getElementById(`builder-status-${step.id}`);
 
-          oZh.style.display = "block";
-          oPy.style.display = "block";
-          oKo.style.display = "block";
-          oZh.textContent = zhSentence;
-          oPy.textContent = w.pinyin + " shì gè kuàilè chù";
-          oKo.textContent = `“${w.kr}”를 넣어서 만든 문장이에요.`;
+        let currentSentenceZh = "";
 
-          speakChineseOnce(zhSentence);
-        };
-        wrap.appendChild(mc);
-      });
-    }
+        builder.words.forEach(w => {
+          const mc = document.createElement("div");
+          mc.className = "mini-card";
+          mc.innerHTML = `
+            <div class="mini-card-title">${w.labelKo}</div>
+            <div class="mini-card-zh">${w.zh}</div>
+            <div class="mini-card-sub">${w.pinyin} · ${w.meaning}</div>
+          `;
+          mc.onclick = () => {
+            const zhSentence = builder.zhPrefix
+              ? `${builder.zhPrefix}${w.zh}${builder.zhSuffix}`
+              : `${w.zh}${builder.zhSuffix}`;
 
-    /* ===== 탭 4: (   )은 누구예요? 문장 만들기 ===== */
-    function renderTab4() {
-      clear(contentEl);
+            currentSentenceZh = zhSentence;
 
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <div class="section-label">4-4 · (   )은 누구예요? · 문장 만들기</div>
-        <div style="background:#e0f2fe; padding:12px 16px; border-radius:12px;">
-          <div id="t44-zh" class="zh" style="font-size:36px; margin-bottom:6px;">
-            <span class="inline-highlight">(    )</span>是谁？
-          </div>
-          <div id="t44-ko" class="ko" style="margin:0;">
-            <span class="inline-highlight">(    )</span>는 누구예요?
-          </div>
-        </div>
-        <div class="hint" style="margin-top:8px;">
-          아래 <b>사람 카드</b>를 눌러서 “누구인가요?” 문장을 만들어 보아요.
-        </div>
-        <div class="mini-card-container" id="wrap44"></div>
-        <div class="zh" id="out44-zh" style="display:none; margin-top:16px;"></div>
-        <div class="pinyin" id="out44-py" style="display:none;"></div>
-        <div class="ko" id="out44-ko" style="display:none; font-size:22px;"></div>
-      `;
-      contentEl.appendChild(card);
+            const zhSpan = builder.zhPrefix
+              ? `${builder.zhPrefix}<span class="inline-highlight">${w.zh}</span>${builder.zhSuffix}`
+              : `<span class="inline-highlight">${w.zh}</span>${builder.zhSuffix}`;
 
-      const wrap = document.getElementById("wrap44");
-      const tZh = document.getElementById("t44-zh");
-      const tKo = document.getElementById("t44-ko");
-      const oZh = document.getElementById("out44-zh");
-      const oPy = document.getElementById("out44-py");
-      const oKo = document.getElementById("out44-ko");
+            tmplZhEl.innerHTML = zhSpan;
+            tmplKoEl.innerHTML = builder.koTemplate.replace("(      )", w.labelKo);
 
-      words44.forEach(w => {
-        const mc = document.createElement("div");
-        mc.className = "mini-card";
-        mc.innerHTML = `
-          <div class="mini-card-title">${w.kr}</div>
-          <div class="mini-card-zh">${w.zh}</div>
-          <div class="mini-card-sub">${w.pinyin} · ${w.meaning}</div>
-        `;
-        mc.onclick = () => {
-          const zhSentence = `${w.zh}是谁？`;
-          const koSentence = `${w.kr}는(은) 누구예요?`;
+            zhEl.style.display = "block";
+            pyEl.style.display = "block";
+            koEl.style.display = "block";
 
-          tZh.innerHTML = `<span class="inline-highlight">${w.zh}</span>是谁？`;
-          tKo.innerHTML = `<span class="inline-highlight">${w.kr}</span>는(은) 누구예요?`;
+            zhEl.textContent = zhSentence;
+            pyEl.textContent = w.pinyin;
+            koEl.textContent = builder.buildKo(w.labelKo);
+            statusEl.textContent = "완성된 문장을 중국어로 한 번 읽어 줄게요.";
 
-          oZh.style.display = "block";
-          oPy.style.display = "block";
-          oKo.style.display = "block";
-          oZh.textContent = zhSentence;
-          oPy.textContent = `${w.pinyin} shì shéi?`;
-          oKo.textContent = `“${w.kr}”를 넣어서 만든 문장이에요.`;
+            speakChineseOnce(zhSentence);
+          };
+          wrap.appendChild(mc);
+        });
 
-          speakChineseOnce(zhSentence);
-        };
-        wrap.appendChild(mc);
-      });
-    }
-
-    // 새 탭 5: (    )는(은) 기독교인이다 · 문장 만들기
-    function renderTab5SubjectChristian() {
-      clear(contentEl);
-
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <div class="section-label">4-5 · (    )는(은) 기독교인이다 · 문장 만들기</div>
-        <div style="background:#e0f2fe; padding:12px 16px; border-radius:12px;">
-          <div id="t5c-zh" class="zh" style="font-size:36px; margin-bottom:6px;">
-            <span class="inline-highlight">(    )</span>是基督徒。
-          </div>
-          <div id="t5c-ko" class="ko" style="margin:0;">
-            <span class="inline-highlight">(    )</span>는(은) 기독교인이다.
-          </div>
-        </div>
-        <div class="hint" style="margin-top:8px;">
-          아래 <b>사람 카드</b>를 눌러서 “(    )는(은) 기독교인이다.” 문장을 만들어 보아요.
-        </div>
-        <div class="mini-card-container" id="wrap5c"></div>
-
-        <div class="zh" id="out5c-zh" style="display:none; margin-top:16px;"></div>
-        <div class="pinyin" id="out5c-py" style="display:none;"></div>
-        <div class="ko" id="out5c-ko" style="display:none; font-size:22px;"></div>
-      `;
-      contentEl.appendChild(card);
-
-      const wrap = document.getElementById("wrap5c");
-      const tZh  = document.getElementById("t5c-zh");
-      const tKo  = document.getElementById("t5c-ko");
-      const oZh  = document.getElementById("out5c-zh");
-      const oPy  = document.getElementById("out5c-py");
-      const oKo  = document.getElementById("out5c-ko");
-
-      words45Subject.forEach(w => {
-        const mc = document.createElement("div");
-        mc.className = "mini-card";
-        mc.innerHTML = `
-          <div class="mini-card-title">${w.kr}</div>
-          <div class="mini-card-zh">${w.zh}</div>
-          <div class="mini-card-sub">${w.pinyin} · ${w.meaning}</div>
-        `;
-        mc.onclick = () => {
-          const zhSentence = `${w.zh}是基督徒。`;
-          const koSentence = `${w.subjKo} 기독교인이다.`;
-
-          tZh.innerHTML = `<span class="inline-highlight">${w.zh}</span>是基督徒。`;
-          tKo.innerHTML = `<span class="inline-highlight">${w.subjKo}</span> 기독교인이다.`;
-
-          oZh.style.display = "block";
-          oPy.style.display = "block";
-          oKo.style.display = "block";
-
-          oZh.textContent = zhSentence;
-          oPy.textContent = `${w.pinyin} shì jīdūtú`;
-          oKo.textContent = `“${w.subjKo} 기독교인이다.” 문장이에요.`;
-
-          speakChineseOnce(zhSentence);
-        };
-        wrap.appendChild(mc);
-      });
-    }
-
-    /* ===== 탭 5: 나는 (   )입니다. 문장 만들기 ===== */
-    function renderTab5() {
-      clear(contentEl);
-
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <div class="section-label">4-5 · 나는 (   )입니다 · 문장 만들기</div>
-        <div style="background:#e0f2fe; padding:12px 16px; border-radius:12px;">
-          <div id="t45-zh" class="zh" style="font-size:36px; margin-bottom:6px;">
-            我是<span class="inline-highlight">(    )</span>。
-          </div>
-          <div id="t45-ko" class="ko" style="margin:0;">
-            나는 <span class="inline-highlight">(    )</span>입니다.
-          </div>
-        </div>
-        <div class="hint" style="margin-top:8px;">
-          아래 <b>정체성 카드</b>를 눌러서 “나는 누구인가요?” 문장을 만들어 보아요.
-        </div>
-        <div class="mini-card-container" id="wrap45"></div>
-        <div class="zh" id="out45-zh" style="display:none; margin-top:16px;"></div>
-        <div class="pinyin" id="out45-py" style="display:none;"></div>
-        <div class="ko" id="out45-ko" style="display:none; font-size:22px;"></div>
-      `;
-      contentEl.appendChild(card);
-
-      const wrap = document.getElementById("wrap45");
-      const tZh = document.getElementById("t45-zh");
-      const tKo = document.getElementById("t45-ko");
-      const oZh = document.getElementById("out45-zh");
-      const oPy = document.getElementById("out45-py");
-      const oKo = document.getElementById("out45-ko");
-
-      words45.forEach(w => {
-        const mc = document.createElement("div");
-        mc.className = "mini-card";
-        mc.innerHTML = `
-          <div class="mini-card-title">${w.kr}</div>
-          <div class="mini-card-zh">${w.zh}</div>
-          <div class="mini-card-sub">${w.pinyin} · ${w.meaning}</div>
-        `;
-        mc.onclick = () => {
-          const zhSentence = `我是${w.zh}。`;
-          const koSentence = `나는 ${w.kr}입니다.`;
-
-          tZh.innerHTML = `我是<span class="inline-highlight">${w.zh}</span>。`;
-          tKo.innerHTML = `나는 <span class="inline-highlight">${w.kr}</span>입니다.`;
-
-          oZh.style.display = "block";
-          oPy.style.display = "block";
-          oKo.style.display = "block";
-          oZh.textContent = zhSentence;
-          oPy.textContent = `wǒ shì ${w.pinyin}`;
-          oKo.textContent = `“${w.kr}”를 넣어서 만든 문장이에요.`;
-
-          speakChineseOnce(zhSentence);
-        };
-        wrap.appendChild(mc);
-      });
-
-      const ex = document.createElement("div");
-      ex.className = "card";
-      ex.innerHTML = `
-        <div class="section-label">예시 문장</div>
-        <div class="zh">我是基督徒。</div>
-        <div class="pinyin">wǒ shì jīdūtú</div>
-        <div class="ko">나는 기독교인입니다.</div>
-        <div class="btn-row">
-          <button onclick="speakChineseOnce('我是基督徒')">한번 듣기 ▶</button>
-          <button class="secondary" onclick="speakChineseFive('我是基督徒')">다섯 번 듣기 ▶▶</button>
-        </div>
-      `;
-      contentEl.appendChild(ex);
-    }
-
-    /* ===== 탭 6: 찬양 복습 + 매칭 게임 ===== */
-    function renderTab6() {
-      clear(contentEl);
-
-      const songCard = document.createElement("div");
-      songCard.className = "card";
-      songCard.innerHTML = `
-        <div class="section-label">4-6 · 찬양 복습</div>
-        <div class="zh">天堂是个快乐处，哈利路亚。</div>
-        <div class="pinyin">tiāntáng shì gè kuàilè chù, hālìlùyà</div>
-        <div class="ko">천국은 즐거운 곳, 할렐루야.</div>
-        <div class="btn-row">
-          <button onclick="speakChineseOnce('天堂是个快乐处，哈利路亚')">한번 듣기 ▶</button>
-          <button class="secondary" onclick="speakChineseFive('天堂是个快乐处，哈利路亚')">다섯 번 듣기 ▶▶</button>
-        </div>
-        <div class="hint">가사를 보지 않고도 불러 볼 수 있을 때까지 여러 번 연습해 보아요.</div>
-      `;
-      contentEl.appendChild(songCard);
-
-      const matchCard = document.createElement("div");
-      matchCard.className = "card";
-      matchCard.innerHTML = `
-        <div class="section-label">단어 · 뜻 매칭 게임</div>
-        <div class="ko">
-          왼쪽 중국어 단어와 오른쪽 뜻을 <b>순서대로 눌러서</b> 짝을 맞춰 보아요.<br>
-          정답이면 초록색이 되고, 중국어 발음도 들려줘요.
-        </div>
-        <div class="match-layout">
-          <div class="match-col" id="matchL"></div>
-          <div class="match-col" id="matchR"></div>
-        </div>
-        <div class="hint" id="match-status" style="margin-top:10px;"></div>
-      `;
-      contentEl.appendChild(matchCard);
-
-      const leftWords = [
-        { key: "天堂", label: "天堂" },
-        { key: "是", label: "是" },
-        { key: "个", label: "个" },
-        { key: "快乐", label: "快乐" },
-        { key: "处", label: "处" },
-        { key: "哈利路亚", label: "哈利路亚" },
-        { key: "基督徒", label: "基督徒" },
-        { key: "家", label: "家" },
-        { key: "教会", label: "教会" },
-        { key: "학교", label: "学校" },
-        { key: "谁", label: "谁" },
-        { key: "我", label: "我" },
-        { key: "你", label: "你" }
-      ];
-
-      const rightWords = [
-        { key: "학교", label: "학교" },
-        { key: "教会", label: "교회" },
-        { key: "个", label: "(양사: 개)" },
-        { key: "天堂", label: "천국" },
-        { key: "快乐", label: "즐거운 / 기쁜" },
-        { key: "我", label: "나" },
-        { key: "是", label: "~이다" },
-        { key: "处", label: "장소 / 곳" },
-        { key: "基督徒", label: "기독교인" },
-        { key: "家", label: "집" },
-        { key: "谁", label: "누구" },
-        { key: "哈利路亚", label: "할렐루야" },
-        { key: "你", label: "너" }
-      ];
-
-      const L = document.getElementById("matchL");
-      const R = document.getElementById("matchR");
-      const status = document.getElementById("match-status");
-
-      let selectedLeft = null;
-      let solved = 0;
-      const total = leftWords.length;
-
-      leftWords.forEach(item => {
-        const btn = document.createElement("button");
-        btn.className = "match-btn";
-        btn.textContent = item.label;
-        btn.dataset.key = item.key;
-        btn.onclick = () => {
-          if (btn.classList.contains("correct")) return;
-          document.querySelectorAll("#matchL .match-btn").forEach(b => b.classList.remove("selected"));
-          btn.classList.add("selected");
-          selectedLeft = item.key;
-          status.textContent = "이제 오른쪽에서 뜻을 골라 보아요.";
-        };
-        L.appendChild(btn);
-      });
-
-      rightWords.forEach(item => {
-        const btn = document.createElement("button");
-        btn.className = "match-btn";
-        btn.textContent = item.label;
-        btn.dataset.key = item.key;
-        btn.onclick = () => {
-          if (btn.classList.contains("correct")) return;
-          const leftBtn = document.querySelector("#matchL .match-btn.selected");
-          if (!leftBtn) {
-            status.textContent = "먼저 왼쪽 단어를 선택해 주세요.";
+        document.getElementById(`builder-once-${step.id}`).onclick = () => {
+          if (!currentSentenceZh) {
+            statusEl.textContent = "먼저 카드를 눌러 문장을 완성해 보세요.";
             return;
           }
-          const leftKey = leftBtn.dataset.key;
-          const rightKey = item.key;
-
-          if (leftKey === rightKey) {
-            leftBtn.classList.remove("selected");
-            leftBtn.classList.add("correct");
-            btn.classList.add("correct");
-            solved++;
-            status.textContent = "정답이에요! 잘했어요 👍";
-            speakChineseOnce(leftKey);
-
-            if (solved === total) {
-              status.textContent = "모든 단어를 다 맞췄어요! 최고예요 🎉";
-            }
-          } else {
-            btn.classList.add("wrong");
-            status.textContent = "아쉬워요. 다시 한 번 생각해 보자!";
-            setTimeout(() => {
-              btn.classList.remove("wrong");
-              if (leftBtn) leftBtn.classList.remove("selected");
-            }, 600);
+          speakChineseOnce(currentSentenceZh);
+        };
+        document.getElementById(`builder-five-${step.id}`).onclick = () => {
+          if (!currentSentenceZh) {
+            statusEl.textContent = "먼저 카드를 눌러 문장을 완성해 보세요.";
+            return;
           }
-          selectedLeft = null;
+          speakChineseFive(currentSentenceZh);
         };
-        R.appendChild(btn);
-      });
-    }
+      }
 
-    /* ===== 탭 렌더링 ===== */
-    function renderTabs() {
-      clear(tabsEl);
-      for (let i = 1; i <= 7; i++) {
-        const b = document.createElement("button");
-        b.className = "step-tab";
-        if (i === currentTab) b.classList.add("active");
-        b.textContent = i.toString();
-        b.onclick = () => {
-          currentTab = i;
-          renderTabs();
-          renderCurrent();
-        };
-        tabsEl.appendChild(b);
+      /* 기본 문장 퀴즈 (한국어 힌트 → 정답 듣기) */
+      if (step.sentences && step.sentences.length) {
+        step.sentences.forEach((s, i) => {
+          const q = document.createElement("div");
+          q.className = "card";
+          q.style.marginTop = "12px";
+          q.innerHTML = `
+            <div class="section-label">퀴즈 ${i + 1}</div>
+            <div class="ko">Q${i + 1}. <span class="inline-highlight">${s.ko}</span></div>
+            <div class="btn-row">
+              <button id="quiz-ans-${s.id}">정답 듣기 ▶</button>
+              <button class="ghost" id="quiz-show-${s.id}">정답 보기</button>
+            </div>
+            <div class="zh" id="quiz-zh-${s.id}" style="display:none; margin-top:10px;"></div>
+          `;
+          c.appendChild(q);
+
+          document.getElementById(`quiz-ans-${s.id}`).onclick = () => {
+            speakChineseOnce(s.zh);
+            const zhEl = document.getElementById(`quiz-zh-${s.id}`);
+            zhEl.style.display = "block";
+            zhEl.textContent = `${s.zh} (${s.pinyin})`;
+          };
+          document.getElementById(`quiz-show-${s.id}`).onclick = () => {
+            const zhEl = document.getElementById(`quiz-zh-${s.id}`);
+            zhEl.style.display = "block";
+            zhEl.textContent = `${s.zh} (${s.pinyin})`;
+          };
+        });
+      }
+
+      /* 4-7: 단어·뜻 매칭 게임 */
+      if (step.id === "4-7") {
+        const matchCard = document.createElement("div");
+        matchCard.className = "card";
+        matchCard.innerHTML = `
+          <div class="section-label">단어 · 뜻 매칭 게임</div>
+          <div class="ko">
+            왼쪽 중국어 단어와 오른쪽 뜻을 <b>순서대로 눌러서</b> 짝을 맞춰 보아요.<br>
+            정답이면 초록색이 되고, 중국어 발음도 들려줘요.
+          </div>
+          <div class="match-layout">
+            <div class="match-col">
+              <div class="section-label">중국어</div>
+              <div id="matchL"></div>
+            </div>
+            <div class="match-col">
+              <div class="section-label">뜻</div>
+              <div id="matchR"></div>
+            </div>
+          </div>
+          <div class="hint" id="match-status" style="margin-top:10px;"></div>
+        `;
+        c.appendChild(matchCard);
+
+        const leftWords = [
+          { key: "天堂", label: "天堂" },
+          { key: "是", label: "是" },
+          { key: "个", label: "个" },
+          { key: "快乐", label: "快乐" },
+          { key: "处", label: "处" },
+          { key: "哈利路亚", label: "哈利路亚" },
+          { key: "基督徒", label: "基督徒" },
+          { key: "家", label: "家" },
+          { key: "教会", label: "教会" },
+          { key: "学校", label: "学校" },
+          { key: "谁", label: "谁" },
+          { key: "我", label: "我" },
+          { key: "你", label: "你" }
+        ];
+
+        const rightWords = [
+          { key: "天堂", label: "천국" },
+          { key: "是", label: "~이다" },
+          { key: "个", label: "(양사: 개)" },
+          { key: "快乐", label: "즐거운 / 기쁜" },
+          { key: "处", label: "장소 / 곳" },
+          { key: "哈利路亚", label: "할렐루야" },
+          { key: "基督徒", label: "기독교인" },
+          { key: "家", label: "집" },
+          { key: "教会", label: "교회" },
+          { key: "학교", label: "학교" },
+          { key: "谁", label: "누구" },
+          { key: "我", label: "나" },
+          { key: "你", label: "너" }
+        ];
+
+        const L = document.getElementById("matchL");
+        const R = document.getElementById("matchR");
+        const status = document.getElementById("match-status");
+
+        const leftItems = shuffleArray(leftWords);
+        const rightItems = shuffleArray(rightWords);
+
+        let selectedLeftKey = null;
+        let solved = 0;
+        const total = leftItems.length;
+
+        leftItems.forEach(item => {
+          const btn = document.createElement("button");
+          btn.className = "match-btn";
+          btn.textContent = item.label;
+          btn.dataset.key = item.key;
+          btn.onclick = () => {
+            if (btn.classList.contains("correct")) return;
+            L.querySelectorAll(".match-btn").forEach(b => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            selectedLeftKey = item.key;
+            status.textContent = "이제 오른쪽에서 뜻을 골라 보아요.";
+          };
+          L.appendChild(btn);
+        });
+
+        rightItems.forEach(item => {
+          const btn = document.createElement("button");
+          btn.className = "match-btn";
+          btn.textContent = item.label;
+          btn.dataset.key = item.key;
+          btn.onclick = () => {
+            if (btn.classList.contains("correct")) return;
+            if (!selectedLeftKey) {
+              status.textContent = "먼저 왼쪽 단어를 선택해 주세요.";
+              return;
+            }
+            const leftBtn = L.querySelector(`.match-btn[data-key="${selectedLeftKey}"]`);
+            if (!leftBtn) return;
+
+            const leftKey = selectedLeftKey;
+            const rightKey = item.key;
+
+            if (leftKey === rightKey) {
+              leftBtn.classList.remove("selected");
+              leftBtn.classList.add("correct");
+              btn.classList.add("correct");
+              solved++;
+              status.textContent = "정답이에요! 잘했어요 👍";
+              speakChineseOnce(leftBtn.textContent);
+              selectedLeftKey = null;
+              if (solved === total) {
+                status.textContent = "모든 단어를 다 맞췄어요! 최고예요 🎉";
+              }
+            } else {
+              btn.classList.add("wrong");
+              status.textContent = "아쉬워요. 다시 한 번 생각해 보자!";
+              setTimeout(() => {
+                btn.classList.remove("wrong");
+                L.querySelectorAll(".match-btn").forEach(b => b.classList.remove("selected"));
+                selectedLeftKey = null;
+              }, 600);
+            }
+          };
+          R.appendChild(btn);
+        });
       }
     }
 
-    function renderCurrent() {
-      if (currentTab === 1) renderTab1();
-      else if (currentTab === 2) renderTab2();
-      else if (currentTab === 3) renderTab3();
-      else if (currentTab === 4) renderTab4();
-      else if (currentTab === 5) renderTab5SubjectChristian();
-      else if (currentTab === 6) renderTab5();
-      else if (currentTab === 7) renderTab6();
+    function renderVerse(step, c) {
+      const intro = document.createElement("div");
+      intro.className = "card";
+      intro.innerHTML = `
+        <div class="section-label">${step.label} · 말씀 카드</div>
+        <div class="ko">${step.description || ""}</div>
+      `;
+      c.appendChild(intro);
+
+      (step.verses || []).forEach(v => {
+        const card = document.createElement("div");
+        card.className = "card verse-card";
+        card.innerHTML = `
+          <div class="verse-ref">📖 ${v.ref}</div>
+          <div class="verse-text">${v.text}</div>
+        `;
+        c.appendChild(card);
+      });
     }
 
-    renderTabs();
-    renderCurrent();
+    function renderSong(step, c) {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="section-label">${step.label} · 찬양 영상</div>
+        <h2>천국은 즐거운 곳 · 天堂是个快乐处</h2>
+        <div class="video-wrapper">
+          <iframe
+            src="https://www.youtube.com/embed/${step.songVideoId || songVideoId4}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen>
+          </iframe>
+        </div>
+        <div class="hint">영상을 보며 율동과 함께 자유롭게 따라 불러 보아요.</div>
+      `;
+      c.appendChild(card);
+
+      if (step.sentences && step.sentences.length) {
+        const lyric = document.createElement("div");
+        lyric.className = "card";
+        lyric.innerHTML = `<div class="section-label">핵심 가사 & 표현</div>`;
+        step.sentences.forEach(s => {
+          const block = document.createElement("div");
+          block.style.marginBottom = "16px";
+          block.innerHTML = `
+            <div class="zh">${s.zh}</div>
+            <div class="pinyin">${s.pinyin}</div>
+            <div class="ko">${s.ko}</div>
+            <div class="btn-row">
+              <button>한번 듣기 ▶</button>
+              <button class="secondary">다섯 번 듣기 ▶▶</button>
+            </div>
+          `;
+          const [btnOnce, btnFive] = block.querySelectorAll("button");
+          btnOnce.onclick = () => speakChineseOnce(s.zh);
+          btnFive.onclick = () => speakChineseFive(s.zh);
+          lyric.appendChild(block);
+        });
+        c.appendChild(lyric);
+      }
+    }
+
+    /* ===== 5. 탭 렌더링 ===== */
+
+    function renderStepTabs() {
+      clear(stepTabsEl);
+      lesson4.steps.forEach((step, idx) => {
+        const b = document.createElement("button");
+        b.className = "step-tab";
+        if (step.id === currentStepId) b.classList.add("active");
+        b.textContent = (idx + 1).toString();
+        b.onclick = () => {
+          currentStepId = step.id;
+          const allowed = getStepModes(step);
+          if (!allowed.includes(currentModeId)) {
+            currentModeId = allowed[0];
+          }
+          renderStepTabs();
+          renderModeTabs();
+          renderContent();
+        };
+        stepTabsEl.appendChild(b);
+      });
+    }
+
+    function renderModeTabs() {
+      clear(modeTabsEl);
+      const step = getCurrentStep();
+      if (!step) return;
+
+      const enabledIds = getStepModes(step);
+      enabledIds.forEach(id => {
+        const m = modesBase4.find(mm => mm.id === id);
+        if (!m) return;
+        const b = document.createElement("button");
+        b.className = "mode-tab";
+        if (m.id === currentModeId) b.classList.add("active");
+        b.textContent = m.label;
+        b.onclick = () => {
+          currentModeId = m.id;
+          renderModeTabs();
+          renderContent();
+        };
+        modeTabsEl.appendChild(b);
+      });
+    }
+
+    function renderContent() {
+      clear(contentEl);
+      const step = getCurrentStep();
+      if (!step) return;
+
+      const enabled = getStepModes(step);
+      if (!enabled.includes(currentModeId)) {
+        currentModeId = enabled[0];
+        renderModeTabs();
+      }
+
+      if (currentModeId === "study") renderStudy(step, contentEl);
+      else if (currentModeId === "flash") renderFlash(step, contentEl);
+      else if (currentModeId === "quiz") renderQuiz(step, contentEl);
+      else if (currentModeId === "verse") renderVerse(step, contentEl);
+      else if (currentModeId === "song") renderSong(step, contentEl);
+    }
+
+    renderStepTabs();
+    renderModeTabs();
+    renderContent();
   </script>
 </body>
 </html>
