@@ -1,332 +1,427 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>SOWBIBLE · 중국어 찬양 1권</title>
-
+  <meta charset="UTF-8" />
+  <title>중국어 찬양 1권 · 찬양으로 배우는 첫 중국어</title>
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --bg-grad-1: #fff7f0;
+      --bg-grad-2: #eef2ff;
+      --accent: #f97316;
+      --accent-soft: #fed7aa;
+      --text-main: #1f2933;
+      --text-sub: #6b7280;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      padding: 0;
+      min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #fff7ed;
+      background: radial-gradient(circle at top left, var(--bg-grad-2) 0, var(--bg-grad-1) 45%, #ffffff 100%);
+      color: var(--text-main);
       display: flex;
       justify-content: center;
-      min-height: 100vh;
     }
 
     .page {
       width: 100%;
-      max-width: 1100px;
-      padding: 24px 20px 40px;
-    }
-
-    /* HEADER -------------------------------------------------- */
-    header {
+      max-width: 980px;
+      padding: 18px 18px 24px;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* 상단 바 */
+    .top-bar {
+      display: flex;
       align-items: center;
-      flex-wrap: wrap;
+      justify-content: space-between;
       gap: 10px;
-      margin-bottom: 24px;
-    }
-
-    .title-main {
-      font-size: 26px;
-      font-weight: 800;
-    }
-
-    .title-sub {
-      font-size: 14px;
-      color: #6b7280;
-      margin-top: 4px;
+      font-size: 13px;
+      color: var(--text-sub);
     }
 
     .back-btn {
-      padding: 8px 14px;
-      background: #e0e7ff;
-      color: #4338ca;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
       border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(255,255,255,0.85);
+      color: #4f46e5;
       text-decoration: none;
       font-size: 13px;
+      font-weight: 500;
     }
 
-    .back-btn:hover { background: #c7d2fe; }
+    .back-btn span.icon {
+      font-size: 14px;
+    }
 
-    /* HERO -------------------------------------------------- */
+    .brand-chip {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(79,70,229,0.06);
+      color: #4f46e5;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    /* 히어로 영역 */
     .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 20px;
+      align-items: center;
+    }
+
+    @media (max-width: 720px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .hero-text {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .hero-eyebrow {
+      font-size: 13px;
+      color: var(--text-sub);
+      letter-spacing: 0.04em;
+    }
+
+    .hero-title-main {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #111827;
+    }
+
+    .hero-title-sub {
+      font-size: 20px;
+      font-weight: 600;
+      color: #f97316;
+      margin-top: 2px;
+    }
+
+    .hero-desc {
+      font-size: 14px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    .hero-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 24px;
-      margin-bottom: 32px;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(248, 250, 252, 0.9);
+      border: 1px dashed rgba(148, 163, 184, 0.6);
+      color: #4b5563;
     }
 
     .hero-img {
-      flex: 1 1 260px;
-      max-width: 420px;
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.15);
-      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .hero-img img {
       width: 100%;
+      max-width: 380px;   /* 표지 크기 여기서 조절 */
+      height: auto;
       display: block;
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(15,23,42,0.18);
     }
 
-    .hero-info {
-      flex: 1 1 260px;
-      padding: 18px 20px;
-      background: #fefce8;
-      border-radius: 24px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    /* 곡 목록 영역 */
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 2px;
     }
 
-    .hero-tag {
-      background: #f97316;
-      padding: 4px 10px;
-      color: white;
-      border-radius: 999px;
-      font-size: 12px;
-      display: inline-block;
-      margin-bottom: 10px;
+    .section-heading-left {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
     }
 
-    .hero-info h2 {
-      margin: 0 0 12px;
-      font-size: 22px;
-    }
-
-    .hero-info p {
-      margin: 0 0 6px;
-      font-size: 14px;
-      color: #4b5563;
-      line-height: 1.5;
-    }
-
-    /* LESSON LIST -------------------------------------------------- */
-    .lesson-title {
-      font-size: 18px;
+    .section-title {
+      font-size: 16px;
       font-weight: 700;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      letter-spacing: -0.02em;
     }
 
-    .badge {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: #fed7aa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 13px;
-      color: #7c2d12;
+    .section-sub {
+      font-size: 12px;
+      color: var(--text-sub);
     }
 
-    .lessons {
+    .hint-text {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .lesson-list {
+      margin-top: 4px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
+      gap: 10px;
     }
 
-    .lesson-card {
-      background: #ffffff;
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    .lesson-pill {
       display: flex;
-      gap: 14px;
-    }
-
-    .lesson-num {
-      width: 44px;
-      height: 44px;
-      background: #fed7aa;
-      border-radius: 999px;
-      display: flex;
-      justify-content: center;
       align-items: center;
-      color: #7c2d12;
-      font-weight: 800;
-      font-size: 16px;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      text-decoration: none;
+      background: #fed7aa;
+      background: linear-gradient(90deg, #fed7aa 0%, #fbbf77 60%, #f97316 100%);
+      box-shadow: 0 4px 10px rgba(248, 148, 60, 0.35);
+      color: #111827;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+
+    .lesson-pill:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 7px 16px rgba(248, 148, 60, 0.45);
+      filter: brightness(1.03);
+    }
+
+    .pill-no {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: #f97316;
       flex-shrink: 0;
     }
 
-    .lesson-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .lesson-zh {
-      font-size: 16px;
-      font-weight: 700;
-      line-height: 1.4;
-      white-space: normal;
-      word-break: keep-all;
-    }
-
-    .lesson-ko {
-      font-size: 14px;
-      color: #4b5563;
-      margin-top: 4px;
-      white-space: normal;
-      word-break: keep-all;
-      line-height: 1.4;
-    }
-
-    .lesson-action {
+    .pill-texts {
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1;
     }
 
-    .btn-open {
-      padding: 8px 14px;
-      font-size: 13px;
-      background: #f97316;
-      color: white;
-      border-radius: 999px;
-      text-decoration: none;
+    .pill-zh {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
       white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
-    .btn-open:hover { background: #ea580c; }
-
-    /* FOOTER -------------------------------------------------- */
-    footer {
-      margin-top: 40px;
-      text-align: center;
-      color: #9ca3af;
+    .pill-ko {
       font-size: 12px;
+      color: #111827;
+      opacity: 0.92;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .pill-badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.85);
+      color: #b45309;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    footer {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-sub);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-right {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 14px 12px 18px;
+      }
+      .hero-title-main {
+        font-size: 22px;
+      }
+      .hero-title-sub {
+        font-size: 18px;
+      }
+      .lesson-list {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
   </style>
 </head>
-
 <body>
   <div class="page">
+    <!-- 상단 바 -->
+    <div class="top-bar">
+      <a class="back-btn" href="../index.html">
+        <span class="icon">←</span>
+        이전 단계로 돌아가기
+      </a>
+      <div class="brand-chip">SOWBIBLE · 중국어 찬양 1권</div>
+    </div>
 
-    <!-- HEADER -->
-    <header>
-      <div>
-        <div class="title-main">SOWBIBLE · 찬양으로 배우는 첫 중국어</div>
-        <div class="title-sub">어린이를 위한 8과 중국어 찬양 · 말씀 · 문장 학습</div>
-      </div>
-
-      <a class="back-btn" href="../index.html">⬅ 이전 단계로 돌아가기</a>
-    </header>
-
-    <!-- HERO -->
+    <!-- 히어로 영역 -->
     <section class="hero">
-
-      <!-- 표지 이미지 (GitHub에 cover.png 업로드 필수) -->
-      <div class="hero-img">
-        <img src="cover-main.png"> alt="중국어 찬양 1권 표지">
+      <div class="hero-text">
+        <div class="hero-eyebrow">성실(성령의 열매) 엄마표 스터디</div>
+        <div>
+          <div class="hero-title-main">찬양으로 배우는 첫 중국어</div>
+          <div class="hero-title-sub">예수님과 중국어로 노래해요 ♪</div>
+        </div>
+        <p class="hero-desc">
+          중국어 찬양 8곡을 따라 부르며<br>
+          한 글자 한 글자, 한 문장 한 문장씩<br>
+          아이들의 마음에 <b>말씀과 복음</b>을 심어가는 1권이에요.
+        </p>
+        <div class="hero-tags">
+          <span class="tag">초등 · 유초등 저학년</span>
+          <span class="tag">말씀 + 찬양 + 중국어 기초</span>
+          <span class="tag">가정 예배 · 공과 활동용</span>
+        </div>
       </div>
 
-      <div class="hero-info">
-        <div class="hero-tag">🎵 중국어 찬양 1권</div>
-
-        <h2>찬양하며 배우는 첫 중국어 워크북</h2>
-
-        <p>찬양 가사와 말씀을 통해 자연스럽게 중국어를 듣고 말하며,</p>
-        <p>단어·문장 학습과 플래시카드·퀴즈까지 포함된 8과 구성의 책입니다.</p>
-
-        <p style="margin-top: 10px; font-size:12px; color:#9ca3af;">
-          아래에서 원하는 과를 선택해 주세요.
-        </p>
+      <div class="hero-img">
+        <!-- cn-praise-1 폴더 안에 cover-main.png 가 있어야 합니다 -->
+        <img src="cover-main.png" alt="찬양으로 배우는 첫 중국어 표지">
       </div>
     </section>
 
-    <!-- LESSON LIST -->
+    <!-- 곡/과 목록 -->
     <section>
-      <div class="lesson-title"><span class="badge">8</span> 과별 바로가기</div>
-
-      <div class="lessons">
-
-        <div class="lesson-card">
-          <div class="lesson-num">01</div>
-          <div class="lesson-info">
-            <div class="lesson-zh">神就是爱</div>
-            <div class="lesson-ko">하나님은 사랑이에요</div>
-          </div>
-          <div class="lesson-action"><a class="btn-open" href="lesson1.html">열기</a></div>
+      <div class="section-heading">
+        <div class="section-heading-left">
+          <div class="section-title">중국어 찬양 1권 · 8과 목차</div>
+          <div class="section-sub">버튼을 눌러 각 과로 바로 들어가요</div>
         </div>
+        <div class="hint-text">중국어 제목 + 한국어 뜻이 한 줄에 보여요</div>
+      </div>
 
-        <div class="lesson-card">
-          <div class="lesson-num">02</div>
-          <div class="lesson-info">
-            <div class="lesson-zh">我要歌颂我神</div>
-            <div class="lesson-ko">하나님을 찬양할 거예요</div>
+      <div class="lesson-list">
+        <!-- 1과 -->
+        <a class="lesson-pill" href="lesson1.html">
+          <div class="pill-no">01</div>
+          <div class="pill-texts">
+            <div class="pill-zh">神就是爱</div>
+            <div class="pill-ko">하나님은 사랑이에요</div>
           </div>
-          <div class="lesson-action"><a class="btn-open" href="lesson2.html">열기</a></div>
-        </div>
+          <div class="pill-badge">요한일서 4:8</div>
+        </a>
 
-        <div class="lesson-card">
-          <div class="lesson-num">03</div>
-          <div class="lesson-info">
-            <div class="lesson-zh">不要不要不要怕</div>
-            <div class="lesson-ko">두려워하지 마!</div>
+        <!-- 2과 -->
+        <a class="lesson-pill" href="lesson2.html">
+          <div class="pill-no">02</div>
+          <div class="pill-texts">
+            <div class="pill-zh">我要歌颂我神</div>
+            <div class="pill-ko">하나님을 찬양할 거예요</div>
           </div>
-          <div class="lesson-action"><a class="btn-open" href="lesson3.html">열기</a></div>
-        </div>
+          <div class="pill-badge">찬양 · 결단</div>
+        </a>
 
-        <div class="lesson-card">
-          <div class="lesson-num">04</div>
-          <div class="lesson-info">
-            <div class="lesson-zh">天堂是个快乐处</div>
-            <div class="lesson-ko">천국은 즐거운 곳</div>
+        <!-- 3과 -->
+        <a class="lesson-pill" href="lesson3.html">
+          <div class="pill-no">03</div>
+          <div class="pill-texts">
+            <div class="pill-zh">不要不要不要怕</div>
+            <div class="pill-ko">두려워 하지 마!</div>
           </div>
-          <div class="lesson-action"><a class="btn-open" href="lesson4.html">열기</a></div>
-        </div>
+          <div class="pill-badge">두려움 대신 믿음</div>
+        </a>
 
-        <div class="lesson-card">
-          <div class="lesson-num">05</div>
-          <div class="lesson-info">
-            <div class="lesson-zh">今我有快乐</div>
-            <div class="lesson-ko">지금 내게 기쁨이 있어요!</div>
+        <!-- 4과 -->
+        <a class="lesson-pill" href="lesson4.html">
+          <div class="pill-no">04</div>
+          <div class="pill-texts">
+            <div class="pill-zh">天堂是个快乐处</div>
+            <div class="pill-ko">천국은 즐거운 곳</div>
           </div>
-          <div class="lesson-action"><a class="btn-open" href="lesson5.html">열기</a></div>
-        </div>
+          <div class="pill-badge">천국 소망</div>
+        </a>
 
-        <div class="lesson-card">
-          <div class="lesson-num">06</div>
-          <div class="lesson-info">
-            <div class="lesson-zh">只有一位真神</div>
-            <div class="lesson-ko">진짜 신은 한 분이세요!</div>
+        <!-- 5과 -->
+        <a class="lesson-pill" href="lesson5.html">
+          <div class="pill-no">05</div>
+          <div class="pill-texts">
+            <div class="pill-zh">今我有快乐</div>
+            <div class="pill-ko">지금 내게 기쁨이 있어요!</div>
           </div>
-          <div class="lesson-action"><a class="btn-open" href="lesson6.html">열기</a></div>
-        </div>
+          <div class="pill-badge">기쁨</div>
+        </a>
 
-        <div class="lesson-card">
-          <div class="lesson-num">07</div>
-          <div class="lesson-info">
-            <div class="lesson-zh">赞美，赞美</div>
-            <div class="lesson-ko">찬양해, 찬양해</div>
+        <!-- 6과 -->
+        <a class="lesson-pill" href="lesson6.html">
+          <div class="pill-no">06</div>
+          <div class="pill-texts">
+            <div class="pill-zh">只有一位真神</div>
+            <div class="pill-ko">진짜 신은 한 분이세요!</div>
           </div>
-          <div class="lesson-action"><a class="btn-open" href="lesson7.html">열기</a></div>
-        </div>
+          <div class="pill-badge">하나님 한 분</div>
+        </a>
 
-        <div class="lesson-card">
-          <div class="lesson-num">08</div>
-          <div class="lesson-info">
-            <div class="lesson-zh">我已经决定要跟从耶稣</div>
-            <div class="lesson-ko">나는 이미 예수님을 따르기로 결정했어요!</div>
+        <!-- 7과 -->
+        <a class="lesson-pill" href="lesson7.html">
+          <div class="pill-no">07</div>
+          <div class="pill-texts">
+            <div class="pill-zh">赞美，赞美</div>
+            <div class="pill-ko">찬양해, 찬양해</div>
           </div>
-          <div class="lesson-action"><a class="btn-open" href="lesson8.html">열기</a></div>
-        </div>
+          <div class="pill-badge">일상 속 찬양</div>
+        </a>
 
+        <!-- 8과 -->
+        <a class="lesson-pill" href="lesson8.html">
+          <div class="pill-no">08</div>
+          <div class="pill-texts">
+            <div class="pill-zh">我已经决定要跟从耶稣</div>
+            <div class="pill-ko">나는 이미 예수님을 따르기로 결정했어요!</div>
+          </div>
+          <div class="pill-badge">제자도 · 결단</div>
+        </a>
       </div>
     </section>
 
     <footer>
-      SOWBIBLE · 찬양으로 배우는 첫 중국어 · 중국어 찬양 1권
+      <div>© SOWBIBLE · 찬양으로 배우는 첫 중국어</div>
+      <div class="footer-right">“아이들이 노래하며 복음을 마음에 새기도록”</div>
     </footer>
-
   </div>
 </body>
 </html>
