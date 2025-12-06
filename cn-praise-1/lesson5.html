@@ -19,12 +19,12 @@
       color: #000;
     }
 
-    /* 상단 탭 (1~6) */
+    /* 상단 큰 탭 (1~6) */
     .step-tabs {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
     .step-tab {
       width: 48px;
@@ -44,6 +44,29 @@
       background: #f97316;
       color: #fff;
       box-shadow: 0 0 0 2px #ffedd5 inset;
+    }
+
+    /* 파란 소탭 (모드 탭) */
+    .mode-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 10px;
+    }
+    .mode-tab {
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: #e0e7ff;
+      font-size: 20px;
+      color: #111827;
+    }
+    .mode-tab.active {
+      background: #2563eb;
+      color: #fff;
     }
 
     .card {
@@ -284,27 +307,6 @@
       margin-bottom:8px;
     }
 
-    /* 탭2 소탭 버튼 */
-    .sub-mode-row {
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin:8px 0 16px;
-    }
-    .sub-mode-btn {
-      padding:8px 14px;
-      border-radius:999px;
-      border:none;
-      font-size:20px;
-      cursor:pointer;
-      background:#e5e7eb;
-      color:#111827;
-    }
-    .sub-mode-btn.active {
-      background:#2563eb;
-      color:#fff;
-    }
-
     /* 매칭 게임 */
     .match-layout {
       display: flex;
@@ -351,10 +353,11 @@
   <h1>5과. 지금 내게 기쁨이 있어요 · 今我有快乐</h1>
 
   <div id="step-tabs" class="step-tabs"></div>
+  <div id="mode-tabs" class="mode-tabs"></div>
   <div id="content"></div>
 
   <script>
-    /* ===== 0. 공통 유틸 & 중국어 TTS 설정 ===== */
+    /* ===== 0. 공통 유틸 & 중국어 TTS / 녹음 ===== */
 
     const recordings = {};
 
@@ -362,7 +365,16 @@
       while (el.firstChild) el.removeChild(el.firstChild);
     }
 
-    // ---- 중국어 음성(TTS) 설정 ----
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    // ---- 중국어 음성(TTS) ----
     let zhVoices = [];
     let selectedZhVoice = null;
 
@@ -371,19 +383,15 @@
         console.warn("이 브라우저는 음성 합성을 지원하지 않습니다.");
         return;
       }
-
       const voices = window.speechSynthesis.getVoices();
       zhVoices = voices.filter(v =>
         (v.lang && v.lang.toLowerCase().startsWith("zh")) ||
         (v.lang && v.lang.toLowerCase().includes("hans")) ||
         (v.name && v.name.toLowerCase().includes("chinese"))
       );
-
-      // 우선순위: zh-CN -> zh-... -> 나머지 Chinese
       selectedZhVoice =
         zhVoices.find(v => v.lang && v.lang.toLowerCase() === "zh-cn") ||
-        zhVoices[0] ||
-        null;
+        zhVoices[0] || null;
     }
 
     if ("speechSynthesis" in window) {
@@ -409,41 +417,31 @@
 
     function speakChineseOnce(text) {
       if (!ensureChineseVoice()) return;
-
       window.speechSynthesis.cancel();
-
       const u = new SpeechSynthesisUtterance(text);
       u.lang  = "zh-CN";
       u.voice = selectedZhVoice;
-      u.rate  = 0.8;
+      u.rate  = 0.65;
       u.pitch = 1.0;
-
       window.speechSynthesis.speak(u);
     }
 
-    function speakChineseRepeated(text) {
+    function speakChineseFive(text) {
       if (!ensureChineseVoice()) return;
-
       window.speechSynthesis.cancel();
       let count = 0;
-
       function playOnce() {
         const u = new SpeechSynthesisUtterance(text);
         u.lang  = "zh-CN";
         u.voice = selectedZhVoice;
-        u.rate  = 0.8;
+        u.rate  = 0.65;
         u.pitch = 1.0;
-
         u.onend = () => {
           count++;
-          if (count < 5) {
-            setTimeout(playOnce, 300);
-          }
+          if (count < 5) setTimeout(playOnce, 300);
         };
-
         window.speechSynthesis.speak(u);
       }
-
       playOnce();
     }
 
@@ -500,8 +498,7 @@
 
     const songVideo5Id = "hyj6TH7FWjk";
 
-    // 탭 2 플래시 카드 단어
-    const vocabTab2 = [
+    const vocab5 = [
       { hanzi: "今", pinyin: "jīn", meaning: "지금" },
       { hanzi: "我", pinyin: "wǒ", meaning: "나" },
       { hanzi: "有", pinyin: "yǒu", meaning: "있다/가지다" },
@@ -512,7 +509,6 @@
       { hanzi: "永远", pinyin: "yǒngyuǎn", meaning: "영원히" }
     ];
 
-    // 탭 3,4,5용 A/B 세트
     const subjectsAB = [
       { id: "wo",   zh: "我",   pinyin: "wǒ",      ko: "나" },
       { id: "ni",   zh: "你",   pinyin: "nǐ",      ko: "너" },
@@ -540,106 +536,170 @@
       { id: "drink",   zh: "饮料",   pinyin: "yǐnliào", ko: "음료수" }
     ];
 
-    /* ===== 2. 각 탭 렌더 ===== */
+    const mainSentences5 = [
+      {
+        id: "5-2-1",
+        zh: "今我有快乐。",
+        pinyin: "jīn wǒ yǒu kuàilè",
+        ko: "지금 내게 기쁨이 있어요."
+      },
+      {
+        id: "5-2-2",
+        zh: "快乐在我心中。",
+        pinyin: "kuàilè zài wǒ xīnzhōng",
+        ko: "기쁨이 내 마음 가운데 있어요."
+      },
+      {
+        id: "5-2-3",
+        zh: "永远在我心中。",
+        pinyin: "yǒngyuǎn zài wǒ xīnzhōng",
+        ko: "영원히 내 마음에 있어요."
+      }
+    ];
 
-    // 탭1: 말씀 카드
-    function renderTab1(container) {
+    const quizItems5 = [
+      {
+        id: "5-6-1",
+        ko: "지금 내게 기쁨이 있어요.",
+        zh: "今我有快乐。",
+        py: "jīn wǒ yǒu kuàilè"
+      },
+      {
+        id: "5-6-2",
+        ko: "기쁨이 내 마음 가운데 있어요.",
+        zh: "快乐在我心中。",
+        py: "kuàilè zài wǒ xīnzhōng"
+      },
+      {
+        id: "5-6-3",
+        ko: "영원히 내 마음에 있어요.",
+        zh: "永远在我心中。",
+        py: "yǒngyuǎn zài wǒ xīnzhōng"
+      }
+    ];
+
+    const lesson5 = {
+      steps: [
+        {
+          id: "5-1",
+          label: "1",
+          title: "5-1 말씀 & 기도",
+          description: "‘지금 내게 기쁨이 있어요’라는 고백과 함께\n기쁨에 대한 말씀을 읽어 보아요.",
+          verses: verses5
+        },
+        {
+          id: "5-2",
+          label: "2",
+          title: "5-2 찬양 - 今我有快乐",
+          description: "찬양 ‘今我有快乐’를 들으며 가사를 배워요.",
+          sentences: mainSentences5,
+          songVideoId: songVideo5Id,
+          verses: [verses5[0], verses5[2]]
+        },
+        {
+          id: "5-3",
+          label: "3",
+          title: "5-3 나는 (   )이 있어요",
+          description: "“A는 B가 있어요” 형태의 문장을 연습해요.",
+          verses: [verses5[0]]
+        },
+        {
+          id: "5-4",
+          label: "4",
+          title: "5-4 나는 (   )이 없어요",
+          description: "“A는 B가 없어요” 문장을 연습해요.",
+          verses: [verses5[1]]
+        },
+        {
+          id: "5-5",
+          label: "5",
+          title: "5-5 (   )는 (   )이 있니?",
+          description: "친구에게 물어보는 질문 문장을 연습해요.",
+          verses: [verses5[2]]
+        },
+        {
+          id: "5-6",
+          label: "6",
+          title: "5-6 찬양 복습 & 퀴즈",
+          description: "찬양을 복습하고, 문장·단어 퀴즈를 풀어 봐요.",
+          sentences: quizItems5,
+          verses: verses5
+        }
+      ]
+    };
+
+    const modesBase5 = [
+      { id: "study", label: "학습 문장" },
+      { id: "flash", label: "플래시 카드" },
+      { id: "quiz",  label: "퀴즈" },
+      { id: "verse", label: "말씀 카드" },
+      { id: "song",  label: "찬양 배우기" }
+    ];
+
+    function getStepModes(step) {
+      if (!step) return ["study"];
+      if (step.id === "5-1") return ["verse"];
+      if (step.id === "5-2") return ["song", "study", "flash", "verse"];
+      if (step.id === "5-3") return ["study", "flash", "verse"];
+      if (step.id === "5-4") return ["study", "flash", "verse"];
+      if (step.id === "5-5") return ["study", "flash", "verse"];
+      if (step.id === "5-6") return ["study", "quiz", "flash", "verse"];
+      return ["study"];
+    }
+
+    function getFlashVocab(step) {
+      return vocab5; // 5과 전체 공통 단어
+    }
+
+    const abConfigs5 = {
+      "5-3": {
+        type: "have",
+        title: "5-3 나는 (   )이 있어요 · 문장 만들기",
+        sentenceIdPrefix: "5-3"
+      },
+      "5-4": {
+        type: "nothave",
+        title: "5-4 나는 (   )이 없어요 · 문장 만들기",
+        sentenceIdPrefix: "5-4"
+      },
+      "5-5": {
+        type: "question",
+        title: "5-5 (   )는 (   )이 있니? · 문장 만들기",
+        sentenceIdPrefix: "5-5"
+      }
+    };
+
+    /* ===== 2. DOM & 상태 ===== */
+
+    const stepTabsEl = document.getElementById("step-tabs");
+    const modeTabsEl = document.getElementById("mode-tabs");
+    const contentEl  = document.getElementById("content");
+
+    let currentStepId = "5-1";
+    let currentModeId = "verse";
+
+    function getCurrentStep() {
+      return lesson5.steps.find(s => s.id === currentStepId);
+    }
+
+    /* ===== 3. 모드별 렌더링 ===== */
+
+    function renderStudy(step, container) {
+      clear(container);
+
       const intro = document.createElement("div");
       intro.className = "card";
       intro.innerHTML = `
-        <div class="section-label">5-1 말씀 & 기도</div>
-        <div class="ko">‘지금 내게 기쁨이 있어요’라는 고백과 함께\n기쁨에 대한 말씀을 읽어 보아요.</div>
+        <div class="section-label">${step.title} · 학습 문장</div>
+        <div class="ko">${step.description || ""}</div>
       `;
       container.appendChild(intro);
 
-      verses5.forEach(v => {
-        const card = document.createElement("div");
-        card.className = "card verse-card";
-        card.innerHTML = `
-          <div class="verse-ref">📖 ${v.ref}</div>
-          <div class="verse-text">${v.textKo}</div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    // 탭2: 소탭(찬양 보기 / 학습 문장 / 말씀 카드) + 플래시카드
-    function renderTab2(container) {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <div class="sub-mode-row">
-          <button class="sub-mode-btn active" id="sub-song">찬양 보기</button>
-          <button class="sub-mode-btn" id="sub-study">학습 문장</button>
-          <button class="sub-mode-btn" id="sub-verse">말씀 카드</button>
-        </div>
-        <div id="tab2-body"></div>
-      `;
-      container.appendChild(card);
-
-      const body = document.getElementById("tab2-body");
-      const btnSong = document.getElementById("sub-song");
-      const btnStudy = document.getElementById("sub-study");
-      const btnVerse = document.getElementById("sub-verse");
-
-      function setActiveBtn(target) {
-        [btnSong, btnStudy, btnVerse].forEach(b => b.classList.remove("active"));
-        target.classList.add("active");
-      }
-
-      function renderSongView() {
-        clear(body);
-        const songBlock = document.createElement("div");
-        songBlock.innerHTML = `
-          <div class="video-wrapper">
-            <iframe
-              src="https://www.youtube.com/embed/${songVideo5Id}"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen>
-            </iframe>
-          </div>
-          <div class="hint">먼저 찬양을 여러 번 보면서, 멜로디와 분위기를 느껴 봐요.</div>
-        `;
-        body.appendChild(songBlock);
-      }
-
-      function renderStudyView() {
-        clear(body);
-
-        // 주요 문장
-        const mainSentCard = document.createElement("div");
-        mainSentCard.className = "card";
-        mainSentCard.innerHTML = `
-          <div class="section-label">주요 문장 따라 말하기</div>
-          <div class="ko">찬양에서 나오는 핵심 문장을 듣고 따라 말해 보세요.</div>
-        `;
-        body.appendChild(mainSentCard);
-
-        const mainSentences = [
-          {
-            id: "5-2-1",
-            zh: "今我有快乐。",
-            pinyin: "jīn wǒ yǒu kuàilè",
-            ko: "지금 내게 기쁨이 있어요."
-          },
-          {
-            id: "5-2-2",
-            zh: "快乐在我心中。",
-            pinyin: "kuàilè zài wǒ xīnzhōng",
-            ko: "기쁨이 내 마음 가운데 있어요."
-          },
-          {
-            id: "5-2-3",
-            zh: "永远在我心中。",
-            pinyin: "yǒngyuǎn zài wǒ xīnzhōng",
-            ko: "영원히 내 마음에 있어요."
-          }
-        ];
-
-        mainSentences.forEach((s, idx) => {
+      // 5-2: 찬양 핵심 문장
+      if (step.id === "5-2") {
+        step.sentences.forEach((s, idx) => {
           const block = document.createElement("div");
-          block.style.marginTop = "16px";
+          block.className = "card";
           block.innerHTML = `
             <div class="section-label">문장 ${idx + 1}</div>
             <div class="zh">${s.zh}</div>
@@ -653,10 +713,10 @@
             </div>
             <div class="hint" id="status-${s.id}">문장을 듣고 여러 번 따라 말해 보세요.</div>
           `;
-          mainSentCard.appendChild(block);
+          container.appendChild(block);
 
           document.getElementById(`once-${s.id}`).onclick = () => speakChineseOnce(s.zh);
-          document.getElementById(`five-${s.id}`).onclick = () => speakChineseRepeated(s.zh);
+          document.getElementById(`five-${s.id}`).onclick = () => speakChineseFive(s.zh);
           document.getElementById(`rec-${s.id}`).onclick = () => {
             recordSentence(s.id, document.getElementById(`status-${s.id}`));
           };
@@ -664,142 +724,56 @@
             playRecording(s.id);
           };
         });
-
-        // 플래시 카드
-        const flashCard = document.createElement("div");
-        flashCard.className = "card";
-        flashCard.innerHTML = `
-          <div class="section-label">단어 플래시 카드</div>
-          <div class="ko">한자를 앞면, 뜻과 병음을 뒷면에서 보며 단어를 익혀요.</div>
-          <div class="flash-wrapper">
-            <button class="arrow-btn" id="flash-prev">◀</button>
-            <div class="flashcard" id="flash-card">
-              <div class="flash-counter" id="flash-counter"></div>
-              <div class="flash-face" id="flash-face"></div>
-            </div>
-            <button class="arrow-btn" id="flash-next">▶</button>
-          </div>
-          <div class="idx-text" id="flash-idx"></div>
-          <div class="btn-row">
-            <button id="flash-speak">다시 듣기 ▶</button>
-            <button class="secondary" id="flash-rec">녹음하기 🎤</button>
-            <button class="ghost" id="flash-play">녹음 듣기 ▶</button>
-          </div>
-          <div class="hint" id="flash-status">카드를 눌러 앞/뒷면을 바꾸어 보세요.</div>
-        `;
-        body.appendChild(flashCard);
-
-        let fIdx = 0;
-        let fFront = true;
-
-        function drawFlash() {
-          const v = vocabTab2[fIdx];
-          const face = document.getElementById("flash-face");
-          const counterEl = document.getElementById("flash-counter");
-          const cardEl = document.getElementById("flash-card");
-          const idxEl = document.getElementById("flash-idx");
-
-          counterEl.textContent = `${fIdx + 1} / ${vocabTab2.length}`;
-          idxEl.textContent = `${fIdx + 1} / ${vocabTab2.length}`;
-
-          if (fFront) {
-            cardEl.classList.remove("back");
-            face.innerHTML = `<div class="flash-front">${v.hanzi}</div>`;
-            speakChineseOnce(v.hanzi);
-          } else {
-            cardEl.classList.add("back");
-            face.innerHTML = `
-              <div class="flash-back-main">${v.meaning}</div>
-              <div class="flash-back-sub">${v.hanzi} · ${v.pinyin}</div>
-            `;
-          }
-        }
-
-        document.getElementById("flash-card").onclick = () => {
-          fFront = !fFront;
-          drawFlash();
-        };
-        document.getElementById("flash-prev").onclick = () => {
-          fIdx = (fIdx - 1 + vocabTab2.length) % vocabTab2.length;
-          fFront = true;
-          drawFlash();
-        };
-        document.getElementById("flash-next").onclick = () => {
-          fIdx = (fIdx + 1) % vocabTab2.length;
-          fFront = true;
-          drawFlash();
-        };
-        document.getElementById("flash-speak").onclick = () => {
-          const v = vocabTab2[fIdx];
-          speakChineseOnce(v.hanzi);
-        };
-        document.getElementById("flash-rec").onclick = () => {
-          const v = vocabTab2[fIdx];
-          recordSentence("flash-5-" + v.hanzi, document.getElementById("flash-status"));
-        };
-        document.getElementById("flash-play").onclick = () => {
-          const v = vocabTab2[fIdx];
-          playRecording("flash-5-" + v.hanzi);
-        };
-
-        drawFlash();
+        return;
       }
 
-      function renderVerseView() {
-        clear(body);
-        const intro = document.createElement("div");
-        intro.className = "card verse-card";
-        intro.innerHTML = `
-          <div class="verse-ref">📖 기쁨에 대한 말씀</div>
-          <div class="verse-text">
-하나님께서 주시는 기쁨이 내 마음에 가득 차도록,
-찬양 가사와 연결된 말씀을 다시 한 번 읽어 보아요.
-          </div>
-        `;
-        body.appendChild(intro);
+      // 5-3, 5-4, 5-5: A/B 문장 만들기
+      if (abConfigs5[step.id]) {
+        renderABSentenceStudy(step, container, abConfigs5[step.id]);
+        return;
+      }
 
-        verses5.forEach(v => {
+      // 5-6: 찬양 복습 문장
+      if (step.id === "5-6") {
+        (step.sentences || []).forEach((q, idx) => {
           const card = document.createElement("div");
-          card.className = "card verse-card";
+          card.className = "card";
           card.innerHTML = `
-            <div class="verse-ref">📖 ${v.ref}</div>
-            <div class="verse-text">${v.textKo}</div>
+            <div class="section-label">복습 문장 ${idx + 1}</div>
+            <div class="ko">${q.ko}</div>
+            <div class="btn-row">
+              <button id="study-ans-${q.id}">중국어 듣기 ▶</button>
+            </div>
+            <div class="zh" id="study-zh-${q.id}" style="display:none; margin-top:10px;"></div>
+            <div class="pinyin" id="study-py-${q.id}" style="display:none;"></div>
           `;
-          body.appendChild(card);
+          container.appendChild(card);
+
+          document.getElementById(`study-ans-${q.id}`).onclick = () => {
+            speakChineseOnce(q.zh);
+            const zhEl = document.getElementById(`study-zh-${q.id}`);
+            const pyEl = document.getElementById(`study-py-${q.id}`);
+            zhEl.style.display = "block";
+            pyEl.style.display = "block";
+            zhEl.textContent = q.zh;
+            pyEl.textContent = q.py;
+          };
         });
       }
-
-      // 초기: 찬양 보기
-      renderSongView();
-
-      btnSong.onclick = () => {
-        setActiveBtn(btnSong);
-        renderSongView();
-      };
-      btnStudy.onclick = () => {
-        setActiveBtn(btnStudy);
-        renderStudyView();
-      };
-      btnVerse.onclick = () => {
-        setActiveBtn(btnVerse);
-        renderVerseView();
-      };
     }
 
-    /* 공통: A/B 구조 문장 만들기 렌더러 */
-    function renderABSentenceTab(container, config) {
-      const { stepLabel, type, sentenceIdPrefix } = config;
+    function renderABSentenceStudy(step, container, config) {
+      const { type, title, sentenceIdPrefix } = config;
 
       const outer = document.createElement("div");
       outer.className = "card";
       outer.innerHTML = `
-        <div class="section-label">${stepLabel} · 문장 만들기</div>
+        <div class="section-label">${title}</div>
         <div class="template-box">
           <div id="tmpl-zh-${sentenceIdPrefix}" class="zh" style="font-size:40px; margin-bottom:6px;"></div>
           <div id="tmpl-ko-${sentenceIdPrefix}" class="ko" style="margin:0;"></div>
         </div>
         <div class="hint">
-          위의 문장을 완성해 볼게요.<br>
           <span class="inline-a">A (노랑 카드)</span>는 <b>누가?</b>, 
           <span class="inline-b">B (초록 카드)</span>는 <b>무엇?</b>을 나타내요.
         </div>
@@ -859,32 +833,32 @@
       let lastSentenceZh = "";
 
       function updateTemplateAndOutput() {
-        let subjTextZh = selectedSubj ? selectedSubj.zh : "(   )";
-        let subjTextKo = selectedSubj ? selectedSubj.ko : "(   )";
-        let objTextZh  = selectedObj ? selectedObj.zh  : "(   )";
-        let objTextKo  = selectedObj ? selectedObj.ko  : "(   )";
+        const subjZh = selectedSubj ? selectedSubj.zh : "(   )";
+        const subjKo = selectedSubj ? selectedSubj.ko : "(   )";
+        const objZh  = selectedObj ? selectedObj.zh  : "(   )";
+        const objKo  = selectedObj ? selectedObj.ko  : "(   )";
 
         if (type === "have") {
           tmplZhEl.innerHTML =
-            `<span class="inline-a">${subjTextZh}</span>有` +
-            `<span class="inline-b">${objTextZh}</span>。`;
+            `<span class="inline-a">${subjZh}</span>有` +
+            `<span class="inline-b">${objZh}</span>。`;
           tmplKoEl.innerHTML =
-            `<span class="inline-a">${subjTextKo}</span>는(은) ` +
-            `<span class="inline-b">${objTextKo}</span>이/가 있어요.`;
+            `<span class="inline-a">${subjKo}</span>는(은) ` +
+            `<span class="inline-b">${objKo}</span>이/가 있어요.`;
         } else if (type === "nothave") {
           tmplZhEl.innerHTML =
-            `<span class="inline-a">${subjTextZh}</span>没有` +
-            `<span class="inline-b">${objTextZh}</span>。`;
+            `<span class="inline-a">${subjZh}</span>没有` +
+            `<span class="inline-b">${objZh}</span>。`;
           tmplKoEl.innerHTML =
-            `<span class="inline-a">${subjTextKo}</span>는(은) ` +
-            `<span class="inline-b">${objTextKo}</span>이/가 없어요.`;
+            `<span class="inline-a">${subjKo}</span>는(은) ` +
+            `<span class="inline-b">${objKo}</span>이/가 없어요.`;
         } else if (type === "question") {
           tmplZhEl.innerHTML =
-            `<span class="inline-a">${subjTextZh}</span>有` +
-            `<span class="inline-b">${objTextZh}</span>吗？`;
+            `<span class="inline-a">${subjZh}</span>有` +
+            `<span class="inline-b">${objZh}</span>吗？`;
           tmplKoEl.innerHTML =
-            `<span class="inline-a">${subjTextKo}</span>는(은) ` +
-            `<span class="inline-b">${objTextKo}</span>이/가 있니?`;
+            `<span class="inline-a">${subjKo}</span>는(은) ` +
+            `<span class="inline-b">${objKo}</span>이/가 있니?`;
         }
 
         if (!selectedSubj || !selectedObj) {
@@ -896,24 +870,19 @@
 
         let zhSentence = "";
         let pySentence = "";
+        let koSentence = "";
 
         if (type === "have") {
           zhSentence = `${selectedSubj.zh}有${selectedObj.zh}。`;
           pySentence = `${selectedSubj.pinyin} yǒu ${selectedObj.pinyin}`;
+          koSentence = `${selectedSubj.ko}는(은) ${selectedObj.ko}이/가 있어요.`;
         } else if (type === "nothave") {
           zhSentence = `${selectedSubj.zh}没有${selectedObj.zh}。`;
           pySentence = `${selectedSubj.pinyin} méiyǒu ${selectedObj.pinyin}`;
+          koSentence = `${selectedSubj.ko}는(은) ${selectedObj.ko}이/가 없어요.`;
         } else if (type === "question") {
           zhSentence = `${selectedSubj.zh}有${selectedObj.zh}吗？`;
           pySentence = `${selectedSubj.pinyin} yǒu ${selectedObj.pinyin} ma?`;
-        }
-
-        let koSentence = "";
-        if (type === "have") {
-          koSentence = `${selectedSubj.ko}는(은) ${selectedObj.ko}이/가 있어요.`;
-        } else if (type === "nothave") {
-          koSentence = `${selectedSubj.ko}는(은) ${selectedObj.ko}이/가 없어요.`;
-        } else if (type === "question") {
           koSentence = `${selectedSubj.ko}는(은) ${selectedObj.ko}이/가 있니?`;
         }
 
@@ -939,9 +908,7 @@
         `;
         card.onclick = () => {
           selectedSubj = s;
-          subjWrap.querySelectorAll(".mini-card").forEach(el => {
-            el.style.outline = "none";
-          });
+          subjWrap.querySelectorAll(".mini-card").forEach(el => el.style.outline = "none");
           card.style.outline = "3px solid #2563eb";
           updateTemplateAndOutput();
         };
@@ -958,9 +925,7 @@
         `;
         card.onclick = () => {
           selectedObj = o;
-          objWrap.querySelectorAll(".mini-card").forEach(el => {
-            el.style.outline = "none";
-          });
+          objWrap.querySelectorAll(".mini-card").forEach(el => el.style.outline = "none");
           card.style.outline = "3px solid #22c55e";
           updateTemplateAndOutput();
         };
@@ -982,35 +947,118 @@
       };
     }
 
-    // 탭3: 我有( ) — 나는 ( )이 있어요
-    function renderTab3(container) {
-      renderABSentenceTab(container, {
-        stepLabel: "5-3 나는 (   )이 있어요",
-        type: "have",
-        sentenceIdPrefix: "5-3"
-      });
+    function renderFlash(step, container) {
+      clear(container);
+
+      const vocab = getFlashVocab(step);
+
+      const intro = document.createElement("div");
+      intro.className = "card";
+      intro.innerHTML = `
+        <div class="section-label">${step.title} · 플래시 카드</div>
+        <div class="ko">한자를 앞면, 뜻과 병음을 뒷면에서 보며 단어를 익혀요.</div>
+      `;
+      container.appendChild(intro);
+
+      if (!vocab || !vocab.length) {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `<div class="ko">이 단계에는 플래시 카드 단어가 없어요.</div>`;
+        container.appendChild(card);
+        return;
+      }
+
+      const flashCard = document.createElement("div");
+      flashCard.className = "card";
+      flashCard.innerHTML = `
+        <div class="flash-wrapper">
+          <button class="arrow-btn" id="flash-prev">◀</button>
+          <div class="flashcard" id="flash-card">
+            <div class="flash-counter" id="flash-counter"></div>
+            <div class="flash-face" id="flash-face"></div>
+          </div>
+          <button class="arrow-btn" id="flash-next">▶</button>
+        </div>
+        <div class="idx-text" id="flash-idx"></div>
+        <div class="btn-row">
+          <button id="flash-speak">다시 듣기 ▶</button>
+          <button class="secondary" id="flash-rec">녹음하기 🎤</button>
+          <button class="ghost" id="flash-play">녹음 듣기 ▶</button>
+        </div>
+        <div class="hint" id="flash-status">카드를 눌러 앞/뒷면을 바꾸어 보세요.</div>
+      `;
+      container.appendChild(flashCard);
+
+      let fIdx = 0;
+      let fFront = true;
+
+      function drawFlash() {
+        const v = vocab[fIdx];
+        const face = document.getElementById("flash-face");
+        const counterEl = document.getElementById("flash-counter");
+        const cardEl = document.getElementById("flash-card");
+        const idxEl = document.getElementById("flash-idx");
+
+        counterEl.textContent = `${fIdx + 1} / ${vocab.length}`;
+        idxEl.textContent = `${fIdx + 1} / ${vocab.length}`;
+
+        if (fFront) {
+          cardEl.classList.remove("back");
+          face.innerHTML = `<div class="flash-front">${v.hanzi}</div>`;
+          speakChineseOnce(v.hanzi);
+        } else {
+          cardEl.classList.add("back");
+          face.innerHTML = `
+            <div class="flash-back-main">${v.meaning}</div>
+            <div class="flash-back-sub">${v.hanzi} · ${v.pinyin}</div>
+          `;
+        }
+      }
+
+      document.getElementById("flash-card").onclick = () => {
+        fFront = !fFront;
+        drawFlash();
+      };
+      document.getElementById("flash-prev").onclick = () => {
+        fIdx = (fIdx - 1 + vocab.length) % vocab.length;
+        fFront = true;
+        drawFlash();
+      };
+      document.getElementById("flash-next").onclick = () => {
+        fIdx = (fIdx + 1) % vocab.length;
+        fFront = true;
+        drawFlash();
+      };
+      document.getElementById("flash-speak").onclick = () => {
+        const v = vocab[fIdx];
+        speakChineseOnce(v.hanzi);
+      };
+      document.getElementById("flash-rec").onclick = () => {
+        const v = vocab[fIdx];
+        recordSentence("flash-5-" + v.hanzi, document.getElementById("flash-status"));
+      };
+      document.getElementById("flash-play").onclick = () => {
+        const v = vocab[fIdx];
+        playRecording("flash-5-" + v.hanzi);
+      };
+
+      drawFlash();
     }
 
-    // 탭4: 我没有( ) — 나는 ( )이 없어요
-    function renderTab4(container) {
-      renderABSentenceTab(container, {
-        stepLabel: "5-4 나는 (   )이 없어요",
-        type: "nothave",
-        sentenceIdPrefix: "5-4"
-      });
-    }
+    function renderQuiz(step, container) {
+      clear(container);
 
-    // 탭5: 你有( )吗? — (   )는 (   )이 있니?
-    function renderTab5(container) {
-      renderABSentenceTab(container, {
-        stepLabel: "5-5 (   )는 (   )이 있니?",
-        type: "question",
-        sentenceIdPrefix: "5-5"
-      });
-    }
+      if (step.id !== "5-6") {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="section-label">${step.title} · 퀴즈</div>
+          <div class="ko">이 단계에는 별도의 퀴즈가 없어요.</div>
+        `;
+        container.appendChild(card);
+        return;
+      }
 
-    // 탭6: 찬양 복습 퀴즈 + 단어–뜻 매칭 게임
-    function renderTab6(container) {
       const intro = document.createElement("div");
       intro.className = "card";
       intro.innerHTML = `
@@ -1022,28 +1070,7 @@
       `;
       container.appendChild(intro);
 
-      const quizItems = [
-        {
-          id: "5-6-1",
-          ko: "지금 내게 기쁨이 있어요.",
-          zh: "今我有快乐。",
-          py: "jīn wǒ yǒu kuàilè"
-        },
-        {
-          id: "5-6-2",
-          ko: "기쁨이 내 마음 가운데 있어요.",
-          zh: "快乐在我心中。",
-          py: "kuàilè zài wǒ xīnzhōng"
-        },
-        {
-          id: "5-6-3",
-          ko: "영원히 내 마음에 있어요.",
-          zh: "永远在我心中。",
-          py: "yǒngyuǎn zài wǒ xīnzhōng"
-        }
-      ];
-
-      quizItems.forEach((q, idx) => {
+      quizItems5.forEach((q, idx) => {
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
@@ -1097,7 +1124,7 @@
       const rightEl = document.getElementById("match-right-5");
       const statusEl = document.getElementById("match-status-5");
 
-      const leftItems = [
+      const leftItems = shuffleArray([
         { key: "今", label: "今" },
         { key: "我", label: "我" },
         { key: "有", label: "有" },
@@ -1106,20 +1133,21 @@
         { key: "心", label: "心" },
         { key: "中", label: "中" },
         { key: "永远", label: "永远" }
-      ];
+      ]);
 
-      const rightItems = [
-        { key: "中", label: "~안, 속" },
-        { key: "有", label: "있다/가지다" },
+      const rightItems = shuffleArray([
         { key: "今", label: "지금" },
-        { key: "在", label: "~에 있다" },
         { key: "我", label: "나" },
+        { key: "有", label: "있다/가지다" },
         { key: "快乐", label: "기쁨, 즐거움" },
+        { key: "在", label: "~에 있다" },
         { key: "心", label: "마음" },
+        { key: "中", label: "~안, 속" },
         { key: "永远", label: "영원히" }
-      ];
+      ]);
 
-      let completed = 0;
+      let selectedLeftKey = null;
+      let solved = 0;
       const total = leftItems.length;
 
       leftItems.forEach(item => {
@@ -1129,8 +1157,9 @@
         btn.dataset.key = item.key;
         btn.onclick = () => {
           if (btn.classList.contains("correct")) return;
-          document.querySelectorAll("#match-left-5 .match-btn").forEach(b => b.classList.remove("selected"));
+          leftEl.querySelectorAll(".match-btn").forEach(b => b.classList.remove("selected"));
           btn.classList.add("selected");
+          selectedLeftKey = item.key;
           statusEl.textContent = "이제 오른쪽에서 뜻을 골라 보세요.";
         };
         leftEl.appendChild(btn);
@@ -1144,7 +1173,7 @@
         btn.onclick = () => {
           if (btn.classList.contains("correct")) return;
 
-          const leftSelectedBtn = document.querySelector("#match-left-5 .match-btn.selected");
+          const leftSelectedBtn = leftEl.querySelector(".match-btn.selected");
           if (!leftSelectedBtn) {
             statusEl.textContent = "먼저 왼쪽 단어를 선택해 주세요.";
             return;
@@ -1156,12 +1185,11 @@
             leftSelectedBtn.classList.remove("selected");
             leftSelectedBtn.classList.add("correct");
             btn.classList.add("correct");
-            completed++;
+            solved++;
             statusEl.textContent = "정답이에요! 👍";
-
             speakChineseOnce(leftKey);
-
-            if (completed === total) {
+            selectedLeftKey = null;
+            if (solved === total) {
               statusEl.textContent = "모든 단어를 다 맞췄어요! 너무 잘했어요 🎉";
             }
           } else {
@@ -1170,6 +1198,7 @@
             setTimeout(() => {
               btn.classList.remove("wrong");
               if (leftSelectedBtn) leftSelectedBtn.classList.remove("selected");
+              selectedLeftKey = null;
             }, 600);
           }
         };
@@ -1177,49 +1206,149 @@
       });
     }
 
-    /* ===== 3. 탭 관리 ===== */
+    function renderVerse(step, container) {
+      clear(container);
 
-    const steps5 = [
-      { id: "5-1", label: "1" },
-      { id: "5-2", label: "2" },
-      { id: "5-3", label: "3" },
-      { id: "5-4", label: "4" },
-      { id: "5-5", label: "5" },
-      { id: "5-6", label: "6" }
-    ];
+      const intro = document.createElement("div");
+      intro.className = "card";
+      intro.innerHTML = `
+        <div class="section-label">${step.title} · 말씀 카드</div>
+        <div class="ko">${step.description || ""}</div>
+      `;
+      container.appendChild(intro);
 
-    let currentStepId = "5-1";
+      (step.verses || verses5).forEach(v => {
+        const card = document.createElement("div");
+        card.className = "card verse-card";
+        card.innerHTML = `
+          <div class="verse-ref">📖 ${v.ref}</div>
+          <div class="verse-text">${v.textKo}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
 
-    const stepTabsEl = document.getElementById("step-tabs");
-    const contentEl = document.getElementById("content");
+    function renderSong(step, container) {
+      clear(container);
+
+      if (!step.songVideoId) {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="section-label">${step.title} · 찬양</div>
+          <div class="ko">이 단계에는 찬양 영상이 없어요.</div>
+        `;
+        container.appendChild(card);
+        return;
+      }
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="section-label">${step.title} · 찬양 영상</div>
+        <h2>지금 내게 기쁨이 있어요 · 今我有快乐</h2>
+        <div class="video-wrapper">
+          <iframe
+            src="https://www.youtube.com/embed/${step.songVideoId}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen>
+          </iframe>
+        </div>
+        <div class="hint">먼저 찬양을 여러 번 보면서, 멜로디와 분위기를 느껴 봐요.</div>
+      `;
+      container.appendChild(card);
+
+      if (step.sentences && step.sentences.length) {
+        const lyric = document.createElement("div");
+        lyric.className = "card";
+        lyric.innerHTML = `<div class="section-label">핵심 가사 & 표현</div>`;
+        step.sentences.forEach(s => {
+          const block = document.createElement("div");
+          block.style.marginTop = "10px";
+          block.innerHTML = `
+            <div class="zh">${s.zh}</div>
+            <div class="pinyin">${s.pinyin}</div>
+            <div class="ko">${s.ko}</div>
+            <div class="btn-row">
+              <button>한번 듣기 ▶</button>
+              <button class="secondary">다섯 번 듣기 ▶▶</button>
+            </div>
+          `;
+          const [btnOnce, btnFive] = block.querySelectorAll("button");
+          btnOnce.onclick = () => speakChineseOnce(s.zh);
+          btnFive.onclick = () => speakChineseFive(s.zh);
+          lyric.appendChild(block);
+        });
+        container.appendChild(lyric);
+      }
+    }
+
+    /* ===== 4. 탭 렌더링 ===== */
 
     function renderStepTabs() {
       clear(stepTabsEl);
-      steps5.forEach(step => {
+      lesson5.steps.forEach(step => {
         const b = document.createElement("button");
         b.className = "step-tab";
         if (step.id === currentStepId) b.classList.add("active");
         b.textContent = step.label;
         b.onclick = () => {
           currentStepId = step.id;
+          const allowed = getStepModes(step);
+          if (!allowed.includes(currentModeId)) {
+            currentModeId = allowed[0];
+          }
           renderStepTabs();
+          renderModeTabs();
           renderContent();
         };
         stepTabsEl.appendChild(b);
       });
     }
 
+    function renderModeTabs() {
+      clear(modeTabsEl);
+      const step = getCurrentStep();
+      if (!step) return;
+
+      const allowedIds = getStepModes(step);
+      allowedIds.forEach(id => {
+        const m = modesBase5.find(mm => mm.id === id);
+        if (!m) return;
+        const b = document.createElement("button");
+        b.className = "mode-tab";
+        if (m.id === currentModeId) b.classList.add("active");
+        b.textContent = m.label;
+        b.onclick = () => {
+          currentModeId = m.id;
+          renderModeTabs();
+          renderContent();
+        };
+        modeTabsEl.appendChild(b);
+      });
+    }
+
     function renderContent() {
       clear(contentEl);
-      if (currentStepId === "5-1") renderTab1(contentEl);
-      else if (currentStepId === "5-2") renderTab2(contentEl);
-      else if (currentStepId === "5-3") renderTab3(contentEl);
-      else if (currentStepId === "5-4") renderTab4(contentEl);
-      else if (currentStepId === "5-5") renderTab5(contentEl);
-      else if (currentStepId === "5-6") renderTab6(contentEl);
+      const step = getCurrentStep();
+      if (!step) return;
+
+      const allowed = getStepModes(step);
+      if (!allowed.includes(currentModeId)) {
+        currentModeId = allowed[0];
+        renderModeTabs();
+      }
+
+      if (currentModeId === "study") renderStudy(step, contentEl);
+      else if (currentModeId === "flash") renderFlash(step, contentEl);
+      else if (currentModeId === "quiz") renderQuiz(step, contentEl);
+      else if (currentModeId === "verse") renderVerse(step, contentEl);
+      else if (currentModeId === "song") renderSong(step, contentEl);
     }
 
     renderStepTabs();
+    renderModeTabs();
     renderContent();
   </script>
 </body>
